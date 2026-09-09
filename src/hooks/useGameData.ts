@@ -166,7 +166,10 @@ export function useTouchStreak(profile: Profile | null | undefined) {
         .eq("id", profile.id);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["profile"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+    },
   });
 }
 

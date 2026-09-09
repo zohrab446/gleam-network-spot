@@ -84,7 +84,9 @@ function Leaderboard() {
             <PlayerAvatar shape={myRow.avatar_shape} color={myRow.avatar_color} />
             <div className="min-w-0 flex-1">
               <p className="truncate font-bold">{myRow.username} (sen)</p>
-              <p className="text-sm text-muted-foreground">Seviye {myRow.level}</p>
+              <p className="text-sm text-muted-foreground">
+                Seviye {myRow.level} · 🪙 {myRow.coins} coin · 🔥 {myRow.streak} gün
+              </p>
             </div>
             <span className="font-display font-extrabold text-primary">
               {scope === "weekly" ? myRow.weekly_xp : myRow.xp} XP

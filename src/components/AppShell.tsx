@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useGameData";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { ChatWidget } from "@/components/ChatWidget";
+import { ParticipantsRail } from "@/components/ParticipantsRail";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/store/settings";
 

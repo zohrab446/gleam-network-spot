@@ -79,11 +79,16 @@ export function ParticipantsRail() {
                   {row.rank_position <= 3 ? ["🥇", "🥈", "🥉"][row.rank_position - 1] : row.rank_position}
                 </span>
                 <PlayerAvatar size="sm" shape={row.avatar_shape} color={row.avatar_color} />
-                <span className="min-w-0 flex-1 truncate text-xs font-bold">
-                  {row.username}
-                  {row.user_id === user?.id && " (sen)"}
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-xs font-bold">
+                    {row.username}
+                    {row.user_id === user?.id && " (sen)"}
+                  </span>
+                  <span className="block truncate text-[11px] font-semibold text-muted-foreground">
+                    🪙 {row.coins} · 🔥 {row.streak}
+                  </span>
                 </span>
-                <span className="text-xs font-extrabold text-primary">{xpOf(row)}</span>
+                <span className="text-xs font-extrabold text-primary">{xpOf(row)} XP</span>
               </li>
             ))}
 

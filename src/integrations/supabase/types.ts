@@ -14,13 +14,181 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      lesson_progress: {
+        Row: {
+          code: string | null
+          coins_earned: number
+          completed_at: string
+          duration_seconds: number | null
+          id: string
+          language: string
+          lesson_id: string
+          level: number
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          code?: string | null
+          coins_earned?: number
+          completed_at?: string
+          duration_seconds?: number | null
+          id?: string
+          language: string
+          lesson_id: string
+          level: number
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          code?: string | null
+          coins_earned?: number
+          completed_at?: string
+          duration_seconds?: number | null
+          id?: string
+          language?: string
+          lesson_id?: string
+          level?: number
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_color: string
+          avatar_shape: string
+          coins: number
+          created_at: string
+          email: string | null
+          favorite_language: string | null
+          id: string
+          language: string
+          last_active_date: string | null
+          last_login_at: string
+          level: number
+          longest_streak: number
+          onboarded: boolean
+          sound_enabled: boolean
+          streak: number
+          theme: string
+          updated_at: string
+          username: string | null
+          week_start: string
+          weekly_xp: number
+          xp: number
+        }
+        Insert: {
+          avatar_color?: string
+          avatar_shape?: string
+          coins?: number
+          created_at?: string
+          email?: string | null
+          favorite_language?: string | null
+          id: string
+          language?: string
+          last_active_date?: string | null
+          last_login_at?: string
+          level?: number
+          longest_streak?: number
+          onboarded?: boolean
+          sound_enabled?: boolean
+          streak?: number
+          theme?: string
+          updated_at?: string
+          username?: string | null
+          week_start?: string
+          weekly_xp?: number
+          xp?: number
+        }
+        Update: {
+          avatar_color?: string
+          avatar_shape?: string
+          coins?: number
+          created_at?: string
+          email?: string | null
+          favorite_language?: string | null
+          id?: string
+          language?: string
+          last_active_date?: string | null
+          last_login_at?: string
+          level?: number
+          longest_streak?: number
+          onboarded?: boolean
+          sound_enabled?: boolean
+          streak?: number
+          theme?: string
+          updated_at?: string
+          username?: string | null
+          week_start?: string
+          weekly_xp?: number
+          xp?: number
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_leaderboard: {
+        Args: { p_limit?: number; p_scope?: string }
+        Returns: {
+          avatar_color: string
+          avatar_shape: string
+          level: number
+          rank_position: number
+          streak: number
+          user_id: string
+          username: string
+          weekly_xp: number
+          xp: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

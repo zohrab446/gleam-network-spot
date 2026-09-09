@@ -111,7 +111,7 @@ function Leaderboard() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold">{row.username}</p>
                   <p className="text-sm text-muted-foreground">
-                    Seviye {row.level} · 🔥 {row.streak} gün
+                    Seviye {row.level} · 🪙 {row.coins} coin · 🔥 {row.streak} gün
                   </p>
                 </div>
                 <span className="font-display font-extrabold text-primary">

@@ -105,7 +105,9 @@ export type LeaderboardRow = {
   level: number;
   xp: number;
   weekly_xp: number;
+  coins: number;
   streak: number;
+  longest_streak: number;
   rank_position: number;
 };
 
@@ -114,6 +116,11 @@ export function useLeaderboard(scope: "all" | "weekly") {
   return useQuery({
     queryKey: ["leaderboard", scope, user?.id],
     enabled: !!user,
+    // Herkesin XP / coin / seri değerleri canlı kalsın.
+    refetchInterval: 20_000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
+    staleTime: 10_000,
     queryFn: async (): Promise<LeaderboardRow[]> => {
       const { data, error } = await supabase.rpc("get_leaderboard", { p_scope: scope, p_limit: 50 });
       if (error) throw error;
@@ -130,7 +137,10 @@ export function useUpdateProfile() {
       const { error } = await supabase.from("profiles").update(patch).eq("id", user!.id);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["profile"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+    },
   });
 }
 
@@ -156,7 +166,10 @@ export function useTouchStreak(profile: Profile | null | undefined) {
         .eq("id", profile.id);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["profile"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+    },
   });
 }
 

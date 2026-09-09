@@ -180,7 +180,9 @@ export type Database = {
         Returns: {
           avatar_color: string
           avatar_shape: string
+          coins: number
           level: number
+          longest_streak: number
           rank_position: number
           streak: number
           user_id: string

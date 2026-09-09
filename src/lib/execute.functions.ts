@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const PISTON_URL = "https://emkc.org/api/v2/piston/execute";
 
@@ -17,6 +18,7 @@ export type RemoteRunResult = {
 
 /** C++ ve Java kodunu ücretsiz Piston derleyicisinde çalıştırır. */
 export const executeRemote = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data) =>
     z
       .object({

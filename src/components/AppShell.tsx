@@ -75,9 +75,12 @@ export function AppShell({
         </div>
       </header>
 
-      <main className={`mx-auto w-full flex-1 px-4 py-6 ${wide ? "max-w-[110rem]" : "max-w-7xl"}`}>
-        {children}
-      </main>
+      <div
+        className={`mx-auto flex w-full flex-1 items-start gap-6 px-4 py-6 ${wide ? "max-w-[120rem]" : "max-w-[85rem]"}`}
+      >
+        <main className="min-w-0 flex-1">{children}</main>
+        <ParticipantsRail />
+      </div>
 
       <nav
         className="sticky bottom-0 z-30 flex justify-around border-t border-border bg-card/95 py-2 backdrop-blur sm:hidden"

@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Check, Coins, Flame, Lock, Play, Trophy, Zap } from "lucide-react";
-import { CATEGORIES, LANGUAGE_META, LESSONS, MAX_LEVEL, isLessonUnlocked } from "@/data/lessons";
+import { CATEGORIES, LANGUAGE_META, LESSONS, MAX_LEVEL, isLessonUnlocked, nextLevelInTrack, trackProgress } from "@/data/lessons";
+import { TRACKS } from "@/data/types";
 import {
   nextLessonLevel,
   useLeaderboard,

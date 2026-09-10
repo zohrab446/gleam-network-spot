@@ -174,21 +174,20 @@ function LessonPage() {
   const difficulty = difficultyOf(lesson.level);
   const notEnoughEnergy = !pro && penalty > 0 && profile.energy < penalty;
 
-  function handleSkip() {
+  async function handleSkip() {
     if (!pro && profile!.energy < SKIP_COST) {
       setEnergyBlocked(true);
       return;
     }
-    spendEnergy.mutate(
-      { amount: SKIP_COST, reason: "skip_level", level: lesson!.level },
-      {
-        onSuccess: () => {
-          toast(pro ? "Seviye atlandı (Pro) 👑" : `Seviye atlandı: -${SKIP_COST} enerji`);
-          navigate({ to: "/lesson/$level", params: { level: String(nextLevel) } });
-        },
-        onError: (error) => toast.error(energyErrorMessage(error)),
-      },
-    );
+    try {
+      await spendEnergy.mutateAsync({ amount: SKIP_COST, reason: "skip_level", level: lesson!.level });
+      // Enerji harcandıysa ders "atlandı" sayılmalı, yoksa sonraki ders kilitli kalır.
+      await skipLevel.mutateAsync({ lesson: lesson!, profile: profile! });
+      toast(pro ? "Seviye atlandı (Pro) 👑" : `Seviye atlandı: -${SKIP_COST} enerji`);
+      navigate({ to: "/lesson/$level", params: { level: String(nextLevel) } });
+    } catch (error) {
+      toast.error(energyErrorMessage(error));
+    }
   }
 
   async function handleRun() {

@@ -82,6 +82,7 @@ export function ParticipantsRail() {
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-xs font-bold">
                     {row.username}
+                    {row.is_pro && " 👑"}
                     {row.user_id === user?.id && " (sen)"}
                   </span>
                   <span className="block truncate text-[11px] font-semibold text-muted-foreground">

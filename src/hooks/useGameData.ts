@@ -11,6 +11,7 @@ import {
   streakMultiplier,
   xpRewardFor,
 } from "@/lib/gamification";
+import { isProActive } from "@/lib/energy";
 
 export type Profile = {
   id: string;
@@ -32,6 +33,34 @@ export type Profile = {
   language: string;
   onboarded: boolean;
   created_at: string;
+  // Enerji
+  energy: number;
+  max_energy: number;
+  energy_updated_at: string;
+  energy_day: string;
+  total_energy_spent: number;
+  total_energy_gained: number;
+  // Pro
+  is_pro: boolean;
+  pro_plan: string | null;
+  pro_started_at: string | null;
+  pro_expires_at: string | null;
+  pro_trial_used: boolean;
+  // Davet
+  referral_code: string | null;
+  referred_by: string | null;
+  referral_rewarded: boolean;
+  completed_referrals: number;
+  referral_energy_earned: number;
+  // Ödüller
+  daily_login_streak: number;
+  last_login_reward_date: string | null;
+  last_spin_at: string | null;
+  ads_watched_today: number;
+  ads_day: string | null;
+  last_ad_at: string | null;
+  energy_badges_claimed: string[];
+  milestones_claimed: string[];
 };
 
 export type Progress = {
@@ -108,6 +137,7 @@ export type LeaderboardRow = {
   coins: number;
   streak: number;
   longest_streak: number;
+  is_pro: boolean;
   rank_position: number;
 };
 
@@ -201,9 +231,11 @@ export function useCompleteLesson() {
       progress: Progress[];
     }): Promise<CompletionReward> => {
       const alreadyCompleted = progress.some((p) => p.lesson_id === lesson.id);
-      const multiplier = streakMultiplier(profile.streak);
-      const xp = alreadyCompleted ? 0 : xpRewardFor(lesson.level) * multiplier;
-      const coins = alreadyCompleted ? 0 : coinRewardFor(lesson.level);
+      const pro = isProActive(profile);
+      // Pro: seri çarpanı her zaman 2x, üstüne 1.5x XP ve 2x coin.
+      const multiplier = pro ? 2 * 1.5 : streakMultiplier(profile.streak);
+      const xp = alreadyCompleted ? 0 : Math.round(xpRewardFor(lesson.level) * multiplier);
+      const coins = alreadyCompleted ? 0 : coinRewardFor(lesson.level) * (pro ? 2 : 1);
 
       if (!alreadyCompleted) {
         const { error } = await supabase.from("lesson_progress").insert({

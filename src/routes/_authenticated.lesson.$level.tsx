@@ -40,7 +40,13 @@ import {
   type RunResult,
 } from "@/lib/runner";
 import { executeRemote } from "@/lib/execute.functions";
-import { useCompleteLesson, useProfile, useProgress, type CompletionReward } from "@/hooks/useGameData";
+import {
+  useCompleteLesson,
+  useProfile,
+  useProgress,
+  useSkipLevel,
+  type CompletionReward,
+} from "@/hooks/useGameData";
 import { BADGES } from "@/lib/gamification";
 import { celebrate } from "@/lib/celebrate";
 import { AppShell } from "@/components/AppShell";
@@ -87,6 +93,7 @@ function LessonPage() {
   const completeLesson = useCompleteLesson();
   const settings = useSettings();
   const spendEnergy = useSpendEnergy();
+  const skipLevel = useSkipLevel();
   const referralCheck = useReferralCheck();
   useEnergySync();
 
@@ -167,21 +174,20 @@ function LessonPage() {
   const difficulty = difficultyOf(lesson.level);
   const notEnoughEnergy = !pro && penalty > 0 && profile.energy < penalty;
 
-  function handleSkip() {
+  async function handleSkip() {
     if (!pro && profile!.energy < SKIP_COST) {
       setEnergyBlocked(true);
       return;
     }
-    spendEnergy.mutate(
-      { amount: SKIP_COST, reason: "skip_level", level: lesson!.level },
-      {
-        onSuccess: () => {
-          toast(pro ? "Seviye atlandı (Pro) 👑" : `Seviye atlandı: -${SKIP_COST} enerji`);
-          navigate({ to: "/lesson/$level", params: { level: String(nextLevel) } });
-        },
-        onError: (error) => toast.error(energyErrorMessage(error)),
-      },
-    );
+    try {
+      await spendEnergy.mutateAsync({ amount: SKIP_COST, reason: "skip_level", level: lesson!.level });
+      // Enerji harcandıysa ders "atlandı" sayılmalı, yoksa sonraki ders kilitli kalır.
+      await skipLevel.mutateAsync({ lesson: lesson!, profile: profile! });
+      toast(pro ? "Seviye atlandı (Pro) 👑" : `Seviye atlandı: -${SKIP_COST} enerji`);
+      navigate({ to: "/lesson/$level", params: { level: String(nextLevel) } });
+    } catch (error) {
+      toast.error(energyErrorMessage(error));
+    }
   }
 
   async function handleRun() {

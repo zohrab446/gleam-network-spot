@@ -304,6 +304,38 @@ export function useCompleteLesson() {
   });
 }
 
+/** Seviye atlama: XP/coin vermeden dersi tamamlanmış sayar, böylece sonraki ders açılır. */
+export function useSkipLevel() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ lesson, profile }: { lesson: Lesson; profile: Profile }) => {
+      const { error } = await supabase.from("lesson_progress").insert({
+        user_id: user!.id,
+        lesson_id: lesson.id,
+        level: lesson.level,
+        language: lesson.language,
+        xp_earned: 0,
+        coins_earned: 0,
+        duration_seconds: 0,
+        code: null,
+      });
+      if (error && error.code !== "23505") throw error;
+
+      const nextLevel = Math.min(MAX_LEVEL, Math.max(profile.level, lesson.level + 1));
+      if (nextLevel !== profile.level) {
+        await supabase.from("profiles").update({ level: nextLevel }).eq("id", profile.id);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["progress"] });
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+    },
+  });
+}
+
 export function badgeById(id: string) {
   return BADGES.find((b) => b.id === id);
 }

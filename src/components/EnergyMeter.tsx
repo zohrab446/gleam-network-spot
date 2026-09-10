@@ -70,7 +70,7 @@ export function EnergyCard({ profile }: { profile: Profile }) {
   useTicker();
   const pro = isProActive(profile);
   const max = profile.max_energy ?? MAX_ENERGY;
-  const pct = pro ? 100 : Math.round((profile.energy / max) * 100);
+  const pct = pro ? 100 : Math.min(100, Math.round((profile.energy / max) * 100));
 
   return (
     <section className="card-surface p-5" aria-labelledby="energy-heading">

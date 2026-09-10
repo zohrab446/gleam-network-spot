@@ -93,6 +93,7 @@ function LessonPage() {
   const completeLesson = useCompleteLesson();
   const settings = useSettings();
   const spendEnergy = useSpendEnergy();
+  const skipLevel = useSkipLevel();
   const referralCheck = useReferralCheck();
   useEnergySync();
 

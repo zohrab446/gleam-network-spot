@@ -40,7 +40,13 @@ import {
   type RunResult,
 } from "@/lib/runner";
 import { executeRemote } from "@/lib/execute.functions";
-import { useCompleteLesson, useProfile, useProgress, type CompletionReward } from "@/hooks/useGameData";
+import {
+  useCompleteLesson,
+  useProfile,
+  useProgress,
+  useSkipLevel,
+  type CompletionReward,
+} from "@/hooks/useGameData";
 import { BADGES } from "@/lib/gamification";
 import { celebrate } from "@/lib/celebrate";
 import { AppShell } from "@/components/AppShell";

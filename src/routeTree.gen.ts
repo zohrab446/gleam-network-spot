@@ -15,7 +15,9 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated.leaderboard'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
+import { Route as AuthenticatedProRouteImport } from './routes/_authenticated.pro'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
+import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated.rewards'
 import { Route as AuthenticatedLessonLevelRouteImport } from './routes/_authenticated.lesson.$level'
 
 const IndexRoute = IndexRouteImport.update({
@@ -48,9 +50,19 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedProRoute = AuthenticatedProRouteImport.update({
+  id: '/pro',
+  path: '/pro',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRewardsRoute = AuthenticatedRewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedLessonLevelRoute =
@@ -66,7 +78,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/pro': typeof AuthenticatedProRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/rewards': typeof AuthenticatedRewardsRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
 }
 export interface FileRoutesByTo {
@@ -75,7 +89,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/pro': typeof AuthenticatedProRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/rewards': typeof AuthenticatedRewardsRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
 }
 export interface FileRoutesById {
@@ -86,7 +102,9 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/pro': typeof AuthenticatedProRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
   '/_authenticated/lesson/$level': typeof AuthenticatedLessonLevelRoute
 }
 export interface FileRouteTypes {
@@ -97,7 +115,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/leaderboard'
     | '/onboarding'
+    | '/pro'
     | '/profile'
+    | '/rewards'
     | '/lesson/$level'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -106,7 +126,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/leaderboard'
     | '/onboarding'
+    | '/pro'
     | '/profile'
+    | '/rewards'
     | '/lesson/$level'
   id:
     | '__root__'
@@ -116,7 +138,9 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/leaderboard'
     | '/_authenticated/onboarding'
+    | '/_authenticated/pro'
     | '/_authenticated/profile'
+    | '/_authenticated/rewards'
     | '/_authenticated/lesson/$level'
   fileRoutesById: FileRoutesById
 }
@@ -170,11 +194,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pro': {
+      id: '/_authenticated/pro'
+      path: '/pro'
+      fullPath: '/pro'
+      preLoaderRoute: typeof AuthenticatedProRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/rewards': {
+      id: '/_authenticated/rewards'
+      path: '/rewards'
+      fullPath: '/rewards'
+      preLoaderRoute: typeof AuthenticatedRewardsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/lesson/$level': {
@@ -191,7 +229,9 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedProRoute: typeof AuthenticatedProRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
   AuthenticatedLessonLevelRoute: typeof AuthenticatedLessonLevelRoute
 }
 
@@ -199,7 +239,9 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedProRoute: AuthenticatedProRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
   AuthenticatedLessonLevelRoute: AuthenticatedLessonLevelRoute,
 }
 

@@ -1,9 +1,11 @@
 import { useEffect, type ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Coins, Flame, LogOut, Trophy, User as UserIcon, Zap } from "lucide-react";
+import { Coins, Flame, Gift, LogOut, Trophy, User as UserIcon, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useGameData";
+import { useEnergySync } from "@/hooks/useEnergy";
+import { EnergyChip } from "@/components/EnergyMeter";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { ChatWidget } from "@/components/ChatWidget";
 import { ParticipantsRail } from "@/components/ParticipantsRail";
@@ -28,6 +30,7 @@ export function AppShell({
   wide?: boolean;
 }) {
   useThemeSync();
+  useEnergySync();
   const { data: profile } = useProfile();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -54,11 +57,13 @@ export function AppShell({
 
           <nav className="ml-2 hidden items-center gap-1 sm:flex" aria-label="Ana menü">
             <NavItem to="/dashboard" icon={<Zap className="h-4 w-4" />} label="Panom" />
+            <NavItem to="/rewards" icon={<Gift className="h-4 w-4" />} label="Ödüller" />
             <NavItem to="/leaderboard" icon={<Trophy className="h-4 w-4" />} label="Liderlik" />
             <NavItem to="/profile" icon={<UserIcon className="h-4 w-4" />} label="Profil" />
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
+            <EnergyChip profile={profile} />
             <Chip icon={<Flame className="h-4 w-4 text-streak" />} value={profile?.streak ?? 0} label="gün seri" />
             <Chip icon={<Coins className="h-4 w-4 text-coin" />} value={profile?.coins ?? 0} label="coin" />
             <Chip icon={<Zap className="h-4 w-4 text-primary" />} value={profile?.xp ?? 0} label="XP" />
@@ -88,6 +93,7 @@ export function AppShell({
         aria-label="Mobil menü"
       >
         <NavItem to="/dashboard" icon={<Zap className="h-5 w-5" />} label="Panom" stacked />
+        <NavItem to="/rewards" icon={<Gift className="h-5 w-5" />} label="Ödüller" stacked />
         <NavItem to="/leaderboard" icon={<Trophy className="h-5 w-5" />} label="Liderlik" stacked />
         <NavItem to="/profile" icon={<UserIcon className="h-5 w-5" />} label="Profil" stacked />
       </nav>
@@ -103,7 +109,7 @@ function NavItem({
   label,
   stacked = false,
 }: {
-  to: "/dashboard" | "/leaderboard" | "/profile";
+  to: "/dashboard" | "/leaderboard" | "/profile" | "/rewards" | "/pro";
   icon: ReactNode;
   label: string;
   stacked?: boolean;

@@ -111,7 +111,10 @@ function Leaderboard() {
                 </span>
                 <PlayerAvatar shape={row.avatar_shape} color={row.avatar_color} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-bold">{row.username}</p>
+                  <p className="truncate font-bold">
+                    {row.username}
+                    {row.is_pro && " 👑"}
+                  </p>
                   <p className="text-sm text-muted-foreground">
                     Seviye {row.level} · 🪙 {row.coins} coin · 🔥 {row.streak} gün
                   </p>

@@ -17,6 +17,11 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { EnergyCard } from "@/components/EnergyMeter";
+import { useClaimDailyLogin, useEnergySync } from "@/hooks/useEnergy";
+import { energyErrorMessage, isProActive } from "@/lib/energy";
+import { toast } from "sonner";
+import { Gift } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -39,6 +44,8 @@ function Dashboard() {
   const { data: progress = [], isLoading: progressLoading } = useProgress();
   const { data: leaders = [] } = useLeaderboard("all");
   const touchStreak = useTouchStreak(profile);
+  const dailyLogin = useClaimDailyLogin();
+  useEnergySync();
 
   useEffect(() => {
     if (profile && !profile.onboarded) navigate({ to: "/onboarding", replace: true });
@@ -71,6 +78,7 @@ function Dashboard() {
   const continueLevel = nextLessonLevel(progress);
   const multiplier = streakMultiplier(profile.streak);
   const pct = levelProgress(profile.level, profile.xp);
+  const dailyClaimed = profile.last_login_reward_date === new Date().toISOString().slice(0, 10);
 
   return (
     <AppShell>
@@ -112,6 +120,33 @@ function Dashboard() {
               )}
             </div>
           </section>
+
+          <EnergyCard profile={profile} />
+
+          {!dailyClaimed && (
+            <section className="card-surface flex flex-wrap items-center gap-3 p-5">
+              <Gift className="h-6 w-6 text-accent" />
+              <div className="min-w-0 flex-1">
+                <p className="font-display text-base font-extrabold">Günlük ödülün hazır!</p>
+                <p className="text-sm text-muted-foreground">
+                  Enerji + {isProActive(profile) ? "150" : "50"} coin seni bekliyor.
+                </p>
+              </div>
+              <Button
+                className="font-bold"
+                disabled={dailyLogin.isPending}
+                onClick={() =>
+                  dailyLogin.mutate(undefined, {
+                    onSuccess: (result) =>
+                      toast.success(`${result.day}. gün: +${result.energy} enerji, +${result.coins} coin!`),
+                    onError: (error) => toast.error(energyErrorMessage(error)),
+                  })
+                }
+              >
+                Ödülü al
+              </Button>
+            </section>
+          )}
 
           <section className="grid gap-4 sm:grid-cols-3">
             <StatCard icon={<Flame className="h-5 w-5 text-streak" />} label="Günlük seri" value={`${profile.streak} gün`} />

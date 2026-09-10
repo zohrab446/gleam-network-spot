@@ -49,6 +49,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { useSettings, playSound } from "@/store/settings";
 import { cn } from "@/lib/utils";
+import { useEnergySync, useReferralCheck, useSpendEnergy } from "@/hooks/useEnergy";
+import { EnergyEmptyModal } from "@/components/EnergyEmptyModal";
+import { EnergyPips } from "@/components/EnergyMeter";
+import {
+  DIFFICULTY_LABEL,
+  SKIP_COST,
+  difficultyOf,
+  energyErrorMessage,
+  energyPenalty,
+  isProActive,
+} from "@/lib/energy";
 
 export const Route = createFileRoute("/_authenticated/lesson/$level")({
   head: () => ({
@@ -75,6 +86,9 @@ function LessonPage() {
   const { data: progress = [] } = useProgress();
   const completeLesson = useCompleteLesson();
   const settings = useSettings();
+  const spendEnergy = useSpendEnergy();
+  const referralCheck = useReferralCheck();
+  useEnergySync();
 
   const [files, setFiles] = useState<Files>(() => (lesson ? filesToRecord(lesson) : {}));
   const [activeFile, setActiveFile] = useState<string>(() => (lesson ? editableFile(lesson).name : ""));
@@ -85,6 +99,8 @@ function LessonPage() {
   const [reward, setReward] = useState<CompletionReward | null>(null);
   const [busy, setBusy] = useState(false);
   const startedAt = useRef(Date.now());
+  const [energyFlash, setEnergyFlash] = useState<{ amount: number; left: number } | null>(null);
+  const [energyBlocked, setEnergyBlocked] = useState(false);
 
   useEffect(() => {
     if (!lesson) return;
@@ -146,6 +162,27 @@ function LessonPage() {
 
   const editable = editableFile(lesson);
   const isReadonly = lesson.files.find((f) => f.name === activeFile)?.readonly ?? false;
+  const pro = isProActive(profile);
+  const penalty = energyPenalty(lesson.level, { isPro: pro, streak: profile.streak });
+  const difficulty = difficultyOf(lesson.level);
+  const notEnoughEnergy = !pro && penalty > 0 && profile.energy < penalty;
+
+  function handleSkip() {
+    if (!pro && profile!.energy < SKIP_COST) {
+      setEnergyBlocked(true);
+      return;
+    }
+    spendEnergy.mutate(
+      { amount: SKIP_COST, reason: "skip_level", level: lesson!.level },
+      {
+        onSuccess: () => {
+          toast(pro ? "Seviye atlandı (Pro) 👑" : `Seviye atlandı: -${SKIP_COST} enerji`);
+          navigate({ to: "/lesson/$level", params: { level: String(nextLevel) } });
+        },
+        onError: (error) => toast.error(energyErrorMessage(error)),
+      },
+    );
+  }
 
   async function handleRun() {
     setBusy(true);
@@ -169,6 +206,18 @@ function LessonPage() {
       setChecks(results);
       if (!passed) {
         playSound("error");
+        const penalty = energyPenalty(lesson!.level, { isPro: pro, streak: profile!.streak });
+        if (penalty > 0) {
+          const updated = await spendEnergy.mutateAsync({
+            amount: penalty,
+            reason: "challenge_fail",
+            level: lesson!.level,
+          });
+          const left = updated?.energy ?? Math.max(0, profile!.energy - penalty);
+          setEnergyFlash({ amount: penalty, left });
+          window.setTimeout(() => setEnergyFlash(null), 2600);
+          if (left === 0) setEnergyBlocked(true);
+        }
         toast.error(
           runResult.connection.ok
             ? "Henüz tam olmadı. Testlere bak ve tekrar dene!"
@@ -187,6 +236,11 @@ function LessonPage() {
       setReward(earned);
       playSound("success");
       void celebrate();
+      referralCheck.mutate(undefined, {
+        onSuccess: (result) => {
+          if (result.rewarded) toast.success("Davet ödülü: +5 enerji ⚡");
+        },
+      });
     } catch {
       toast.error("Gönderilemedi, tekrar dener misin?");
     } finally {
@@ -483,6 +537,21 @@ function LessonPage() {
         <span className="text-sm text-muted-foreground">
           Seviye {lesson.level} / {MAX_LEVEL}
         </span>
+        <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-bold">
+          {DIFFICULTY_LABEL[difficulty]}
+        </span>
+        <span
+          className="rounded-full bg-secondary px-2.5 py-1 text-xs font-bold"
+          title={pro ? "Pro: enerji kaybı yok" : `Yanlış cevap: -${penalty} enerji`}
+        >
+          {pro ? "Pro · kayıp yok 👑" : penalty === 0 ? "Bu derste enerji kaybı yok" : `Yanlış: -${penalty} ⚡`}
+        </span>
+        <span className="ml-auto flex items-center gap-3">
+          <EnergyPips profile={profile} size="sm" />
+          <Button variant="ghost" size="sm" className="font-bold" onClick={handleSkip} disabled={spendEnergy.isPending}>
+            Seviyeyi atla {pro ? "" : `(-${SKIP_COST} ⚡)`}
+          </Button>
+        </span>
       </div>
 
       <div className="mb-4 inline-flex rounded-xl bg-secondary p-1 lg:hidden" role="tablist">
@@ -512,6 +581,30 @@ function LessonPage() {
         <div className={cn(pane === "info" ? "block" : "hidden", "lg:block")}>{infoPanel}</div>
         <div className={cn(pane === "editor" ? "block" : "hidden", "lg:block")}>{editorPanel}</div>
       </div>
+
+      {energyFlash && (
+        <div className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center">
+          <div className="pop-in rounded-3xl bg-destructive px-8 py-6 text-center text-destructive-foreground shadow-card">
+            <p className="font-display text-3xl font-extrabold">🔋 -{energyFlash.amount} ENERJİ</p>
+            <p className="mt-1 text-sm font-bold">
+              {energyFlash.left > 0
+                ? `${energyFlash.left} yanlış hakkın kaldı`
+                : "Enerji bitti! Doldurma yollarına bak"}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {(energyBlocked || notEnoughEnergy) && !reward && (
+        <EnergyEmptyModal
+          profile={profile}
+          {...(notEnoughEnergy ? { requirement: penalty } : {})}
+          onClose={() => {
+            setEnergyBlocked(false);
+            if (notEnoughEnergy) navigate({ to: "/dashboard" });
+          }}
+        />
+      )}
 
       {reward && (
         <div

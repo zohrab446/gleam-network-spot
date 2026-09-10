@@ -27,7 +27,7 @@ export function EnergyPips({ profile, size = "md" }: { profile: Profile; size?: 
     );
   }
   return (
-    <span className="inline-flex items-center gap-1" aria-label={`${profile.energy} / ${max} enerji`}>
+    <span className="inline-flex items-center gap-1" aria-label={`${profile.energy} enerji`}>
       {Array.from({ length: max }).map((_, i) => (
         <span
           key={i}
@@ -39,7 +39,7 @@ export function EnergyPips({ profile, size = "md" }: { profile: Profile; size?: 
         />
       ))}
       <span className={cn("ml-1 font-bold", size === "sm" ? "text-xs" : "text-sm")}>
-        {profile.energy}/{max}
+        {profile.energy > max ? `${profile.energy} ⚡` : `${profile.energy}/${max}`}
       </span>
     </span>
   );

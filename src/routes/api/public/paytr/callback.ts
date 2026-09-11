@@ -15,8 +15,8 @@ export const Route = createFileRoute("/api/public/paytr/callback")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const merchantKey = process.env["PAYTR_MERCHANT_KEY"];
-        const merchantSalt = process.env["PAYTR_MERCHANT_SALT"];
+        const merchantKey = process.env["PAYTR_MERCHANT_KEY"]?.trim();
+        const merchantSalt = process.env["PAYTR_MERCHANT_SALT"]?.trim();
         if (!merchantKey || !merchantSalt) return new Response("Configuration error", { status: 503 });
 
         const raw = Object.fromEntries((await request.formData()).entries());

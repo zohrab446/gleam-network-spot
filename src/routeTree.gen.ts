@@ -18,6 +18,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedProRouteImport } from './routes/_authenticated.pro'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated.rewards'
+import { Route as ApiTestEndpointRouteImport } from './routes/api/test-endpoint'
 import { Route as AuthenticatedLessonLevelRouteImport } from './routes/_authenticated.lesson.$level'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +66,11 @@ const AuthenticatedRewardsRoute = AuthenticatedRewardsRouteImport.update({
   path: '/rewards',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const ApiTestEndpointRoute = ApiTestEndpointRouteImport.update({
+  id: '/api/test-endpoint',
+  path: '/api/test-endpoint',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedLessonLevelRoute =
   AuthenticatedLessonLevelRouteImport.update({
     id: '/lesson/$level',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/pro': typeof AuthenticatedProRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/rewards': typeof AuthenticatedRewardsRoute
+  '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
 }
 export interface FileRoutesByTo {
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/pro': typeof AuthenticatedProRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/rewards': typeof AuthenticatedRewardsRoute
+  '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
 }
 export interface FileRoutesById {
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/_authenticated/pro': typeof AuthenticatedProRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
+  '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/_authenticated/lesson/$level': typeof AuthenticatedLessonLevelRoute
 }
 export interface FileRouteTypes {
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/pro'
     | '/profile'
     | '/rewards'
+    | '/api/test-endpoint'
     | '/lesson/$level'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/pro'
     | '/profile'
     | '/rewards'
+    | '/api/test-endpoint'
     | '/lesson/$level'
   id:
     | '__root__'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pro'
     | '/_authenticated/profile'
     | '/_authenticated/rewards'
+    | '/api/test-endpoint'
     | '/_authenticated/lesson/$level'
   fileRoutesById: FileRoutesById
 }
@@ -148,6 +160,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiTestEndpointRoute: typeof ApiTestEndpointRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -215,6 +228,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRewardsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/test-endpoint': {
+      id: '/api/test-endpoint'
+      path: '/api/test-endpoint'
+      fullPath: '/api/test-endpoint'
+      preLoaderRoute: typeof ApiTestEndpointRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/lesson/$level': {
       id: '/_authenticated/lesson/$level'
       path: '/lesson/$level'
@@ -253,6 +273,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiTestEndpointRoute: ApiTestEndpointRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

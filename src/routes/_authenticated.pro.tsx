@@ -9,6 +9,8 @@ import { useEnergySync, useStartProTrial } from "@/hooks/useEnergy";
 import { PRO_PERKS, PRO_PLANS, energyErrorMessage, isProActive } from "@/lib/energy";
 import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
+import { PaytrCheckoutDialog } from "@/components/PaytrCheckoutDialog";
+import { PRO_PRODUCTS } from "@/lib/store";
 
 export const Route = createFileRoute("/_authenticated/pro")({
   head: () => ({
@@ -92,9 +94,7 @@ function ProPage() {
           <h2 id="plans-heading" className="text-lg">
             Planlar
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Ödeme altyapısı henüz bağlı değil; şimdilik ücretsiz denemeyi başlatabilirsin.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">Ücretli planlarda kart ödemen PayTR güvencesiyle alınır.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {PRO_PLANS.map((plan) => (
               <div
@@ -124,11 +124,7 @@ function ProPage() {
                   >
                     {pro ? "Aktif" : profile.pro_trial_used ? "Kullanıldı" : "Başlat"}
                   </Button>
-                ) : (
-                  <Button size="sm" variant="secondary" className="mt-3 w-full font-bold" disabled>
-                    Yakında
-                  </Button>
-                )}
+                ) : <PaytrCheckoutDialog product={PRO_PRODUCTS.find((item) => item.id === `pro-${plan.id}`)!} />}
               </div>
             ))}
           </div>

@@ -33,7 +33,8 @@ export const createPaytrCheckout = createServerFn({ method: "POST" })
     const hashStr = `${merchantId}${userIp}${merchantOid}${email}${paymentAmount}${userBasket}${noInstallment}${maxInstallment}${currency}${testMode}`;
     const paytrToken = createHmac("sha256", merchantKey).update(`${hashStr}${merchantSalt}`).digest("base64");
 
-    const { error: orderError } = await context.supabase.from("payment_orders").insert({
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error: orderError } = await supabaseAdmin.from("payment_orders").insert({
       merchant_oid: merchantOid,
       user_id: context.userId,
       product_id: product.id,

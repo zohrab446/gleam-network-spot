@@ -1,7 +1,7 @@
 export type StoreProduct = {
   id: string;
   name: string;
-  type: "energy" | "hints";
+  type: "energy" | "hints" | "pro";
   quantity: number;
   amountKurus: number;
   price: string;
@@ -20,7 +20,13 @@ export const HINT_PRODUCTS: StoreProduct[] = [
   { id: "hints50", name: "50 İpucu", type: "hints", quantity: 50, amountKurus: 16900, price: "₺169", note: "%31 indirim" },
 ];
 
-export const STORE_PRODUCTS = [...ENERGY_PRODUCTS, ...HINT_PRODUCTS];
+export const PRO_PRODUCTS: StoreProduct[] = [
+  { id: "pro-monthly", name: "CodeQuest Pro · 1 ay", type: "pro", quantity: 30, amountKurus: 14900, price: "₺149" },
+  { id: "pro-quarterly", name: "CodeQuest Pro · 3 ay", type: "pro", quantity: 90, amountKurus: 39900, price: "₺399", note: "%25 indirim" },
+  { id: "pro-yearly", name: "CodeQuest Pro · 1 yıl", type: "pro", quantity: 365, amountKurus: 109900, price: "₺1.099", note: "%40 indirim" },
+];
+
+export const STORE_PRODUCTS = [...ENERGY_PRODUCTS, ...HINT_PRODUCTS, ...PRO_PRODUCTS];
 
 export function getStoreProduct(id: string): StoreProduct | undefined {
   return STORE_PRODUCTS.find((product) => product.id === id);

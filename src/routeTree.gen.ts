@@ -20,6 +20,9 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated.rewards'
 import { Route as ApiTestEndpointRouteImport } from './routes/api/test-endpoint'
 import { Route as AuthenticatedLessonLevelRouteImport } from './routes/_authenticated.lesson.$level'
+import { Route as AuthenticatedPaymentFailedRouteImport } from './routes/_authenticated.payment.failed'
+import { Route as AuthenticatedPaymentSuccessRouteImport } from './routes/_authenticated.payment.success'
+import { Route as ApiPublicPaytrCallbackRouteImport } from './routes/api/public/paytr/callback'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -77,6 +80,23 @@ const AuthenticatedLessonLevelRoute =
     path: '/lesson/$level',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedPaymentFailedRoute =
+  AuthenticatedPaymentFailedRouteImport.update({
+    id: '/payment/failed',
+    path: '/payment/failed',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPaymentSuccessRoute =
+  AuthenticatedPaymentSuccessRouteImport.update({
+    id: '/payment/success',
+    path: '/payment/success',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const ApiPublicPaytrCallbackRoute = ApiPublicPaytrCallbackRouteImport.update({
+  id: '/api/public/paytr/callback',
+  path: '/api/public/paytr/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +109,9 @@ export interface FileRoutesByFullPath {
   '/rewards': typeof AuthenticatedRewardsRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
+  '/payment/failed': typeof AuthenticatedPaymentFailedRoute
+  '/payment/success': typeof AuthenticatedPaymentSuccessRoute
+  '/api/public/paytr/callback': typeof ApiPublicPaytrCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,6 +124,9 @@ export interface FileRoutesByTo {
   '/rewards': typeof AuthenticatedRewardsRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
+  '/payment/failed': typeof AuthenticatedPaymentFailedRoute
+  '/payment/success': typeof AuthenticatedPaymentSuccessRoute
+  '/api/public/paytr/callback': typeof ApiPublicPaytrCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,6 +141,9 @@ export interface FileRoutesById {
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/_authenticated/lesson/$level': typeof AuthenticatedLessonLevelRoute
+  '/_authenticated/payment/failed': typeof AuthenticatedPaymentFailedRoute
+  '/_authenticated/payment/success': typeof AuthenticatedPaymentSuccessRoute
+  '/api/public/paytr/callback': typeof ApiPublicPaytrCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,6 +158,9 @@ export interface FileRouteTypes {
     | '/rewards'
     | '/api/test-endpoint'
     | '/lesson/$level'
+    | '/payment/failed'
+    | '/payment/success'
+    | '/api/public/paytr/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -141,6 +173,9 @@ export interface FileRouteTypes {
     | '/rewards'
     | '/api/test-endpoint'
     | '/lesson/$level'
+    | '/payment/failed'
+    | '/payment/success'
+    | '/api/public/paytr/callback'
   id:
     | '__root__'
     | '/'
@@ -154,6 +189,9 @@ export interface FileRouteTypes {
     | '/_authenticated/rewards'
     | '/api/test-endpoint'
     | '/_authenticated/lesson/$level'
+    | '/_authenticated/payment/failed'
+    | '/_authenticated/payment/success'
+    | '/api/public/paytr/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -161,6 +199,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiTestEndpointRoute: typeof ApiTestEndpointRoute
+  ApiPublicPaytrCallbackRoute: typeof ApiPublicPaytrCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -242,6 +281,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLessonLevelRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/payment/failed': {
+      id: '/_authenticated/payment/failed'
+      path: '/payment/failed'
+      fullPath: '/payment/failed'
+      preLoaderRoute: typeof AuthenticatedPaymentFailedRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/payment/success': {
+      id: '/_authenticated/payment/success'
+      path: '/payment/success'
+      fullPath: '/payment/success'
+      preLoaderRoute: typeof AuthenticatedPaymentSuccessRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/public/paytr/callback': {
+      id: '/api/public/paytr/callback'
+      path: '/api/public/paytr/callback'
+      fullPath: '/api/public/paytr/callback'
+      preLoaderRoute: typeof ApiPublicPaytrCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -253,6 +313,8 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
   AuthenticatedLessonLevelRoute: typeof AuthenticatedLessonLevelRoute
+  AuthenticatedPaymentFailedRoute: typeof AuthenticatedPaymentFailedRoute
+  AuthenticatedPaymentSuccessRoute: typeof AuthenticatedPaymentSuccessRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -263,6 +325,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
   AuthenticatedLessonLevelRoute: AuthenticatedLessonLevelRoute,
+  AuthenticatedPaymentFailedRoute: AuthenticatedPaymentFailedRoute,
+  AuthenticatedPaymentSuccessRoute: AuthenticatedPaymentSuccessRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -274,6 +338,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiTestEndpointRoute: ApiTestEndpointRoute,
+  ApiPublicPaytrCallbackRoute: ApiPublicPaytrCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

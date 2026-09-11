@@ -1,0 +1,2 @@
+ALTER TABLE public.payment_orders DROP CONSTRAINT payment_orders_product_type_check;
+ALTER TABLE public.payment_orders ADD CONSTRAINT payment_orders_product_type_check CHECK (product_type = ANY (ARRAY['energy'::text, 'hints'::text, 'pro'::text]));

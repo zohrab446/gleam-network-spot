@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import type { Profile } from "@/hooks/useGameData";
+import { useServerFn } from "@tanstack/react-start";
+import { runGameAction } from "@/lib/game.functions";
 
 function invalidate(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -13,14 +15,14 @@ function invalidate(queryClient: ReturnType<typeof useQueryClient>) {
 export function useEnergySync() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const runAction = useServerFn(runGameAction);
   return useQuery({
     queryKey: ["energy-sync", user?.id],
     enabled: !!user,
     refetchInterval: 60_000,
     refetchOnWindowFocus: true,
     queryFn: async (): Promise<Profile | null> => {
-      const { data, error } = await supabase.rpc("energy_sync");
-      if (error) throw error;
+      const data = await runAction({ data: { action: "sync" } });
       const profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
       if (profile) queryClient.setQueryData(["profile", user?.id], profile);
       return profile;
@@ -31,6 +33,7 @@ export function useEnergySync() {
 /** Yanlış cevap / seviye atlama gibi enerji harcamaları. */
 export function useSpendEnergy() {
   const queryClient = useQueryClient();
+  const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async ({
       amount,
@@ -41,12 +44,7 @@ export function useSpendEnergy() {
       reason: "challenge_fail" | "skip_level";
       level?: number;
     }): Promise<Profile | null> => {
-      const { data, error } = await supabase.rpc("energy_spend", {
-        p_amount: amount,
-        p_reason: reason,
-        ...(level ? { p_meta: { level } } : {}),
-      });
-      if (error) throw error;
+      const data = await runAction({ data: { action: "spend", amount, reason, ...(level ? { level } : {}) } });
       return (Array.isArray(data) ? data[0] : data) as Profile | null;
     },
     onSuccess: (profile) => {
@@ -58,10 +56,10 @@ export function useSpendEnergy() {
 
 export function useClaimDailyLogin() {
   const queryClient = useQueryClient();
+  const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async (): Promise<{ day: number; energy: number; coins: number }> => {
-      const { data, error } = await supabase.rpc("energy_claim_daily_login");
-      if (error) throw error;
+      const data = await runAction({ data: { action: "daily" } });
       return data as unknown as { day: number; energy: number; coins: number };
     },
     onSuccess: () => invalidate(queryClient),
@@ -70,10 +68,10 @@ export function useClaimDailyLogin() {
 
 export function useSpinWheel() {
   const queryClient = useQueryClient();
+  const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async (): Promise<{ energy: number }> => {
-      const { data, error } = await supabase.rpc("energy_spin");
-      if (error) throw error;
+      const data = await runAction({ data: { action: "spin" } });
       return data as unknown as { energy: number };
     },
     onSuccess: () => invalidate(queryClient),
@@ -82,10 +80,10 @@ export function useSpinWheel() {
 
 export function useWatchAd() {
   const queryClient = useQueryClient();
+  const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async (): Promise<{ energy: number; watched_today: number }> => {
-      const { data, error } = await supabase.rpc("energy_watch_ad");
-      if (error) throw error;
+      const data = await runAction({ data: { action: "ad" } });
       return data as unknown as { energy: number; watched_today: number };
     },
     onSuccess: () => invalidate(queryClient),
@@ -94,10 +92,10 @@ export function useWatchAd() {
 
 export function useClaimBadgeEnergy() {
   const queryClient = useQueryClient();
+  const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async (badgeId: string): Promise<{ energy: number }> => {
-      const { data, error } = await supabase.rpc("energy_claim_badge", { p_badge_id: badgeId });
-      if (error) throw error;
+      const data = await runAction({ data: { action: "badge", id: badgeId } });
       return data as unknown as { energy: number };
     },
     onSuccess: () => invalidate(queryClient),
@@ -106,10 +104,10 @@ export function useClaimBadgeEnergy() {
 
 export function useClaimMilestone() {
   const queryClient = useQueryClient();
+  const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async (id: string): Promise<{ energy: number }> => {
-      const { data, error } = await supabase.rpc("energy_claim_milestone", { p_id: id });
-      if (error) throw error;
+      const data = await runAction({ data: { action: "milestone", id } });
       return data as unknown as { energy: number };
     },
     onSuccess: () => invalidate(queryClient),
@@ -118,10 +116,10 @@ export function useClaimMilestone() {
 
 export function useApplyReferral() {
   const queryClient = useQueryClient();
+  const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async (code: string) => {
-      const { error } = await supabase.rpc("referral_apply", { p_code: code });
-      if (error) throw error;
+      await runAction({ data: { action: "referral-apply", code } });
     },
     onSuccess: () => invalidate(queryClient),
   });
@@ -130,10 +128,10 @@ export function useApplyReferral() {
 /** Ders tamamlandıktan sonra davet ödülünü kontrol eder. */
 export function useReferralCheck() {
   const queryClient = useQueryClient();
+  const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async (): Promise<{ rewarded: boolean; energy?: number }> => {
-      const { data, error } = await supabase.rpc("referral_check");
-      if (error) throw error;
+      const data = await runAction({ data: { action: "referral-check" } });
       return data as unknown as { rewarded: boolean; energy?: number };
     },
     onSuccess: () => invalidate(queryClient),
@@ -142,10 +140,10 @@ export function useReferralCheck() {
 
 export function useStartProTrial() {
   const queryClient = useQueryClient();
+  const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async (): Promise<Profile | null> => {
-      const { data, error } = await supabase.rpc("pro_start_trial");
-      if (error) throw error;
+      const data = await runAction({ data: { action: "trial" } });
       return (Array.isArray(data) ? data[0] : data) as Profile | null;
     },
     onSuccess: () => invalidate(queryClient),

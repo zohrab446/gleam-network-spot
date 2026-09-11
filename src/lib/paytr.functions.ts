@@ -30,7 +30,7 @@ export const createPaytrCheckout = createServerFn({ method: "POST" })
     const noInstallment = "0";
     const maxInstallment = "0";
     const currency = "TL";
-    const testMode = "1";
+    const testMode = "0";
     const hashStr = `${merchantId}${userIp}${merchantOid}${email}${paymentAmount}${userBasket}${noInstallment}${maxInstallment}${currency}${testMode}`;
     const paytrToken = createHmac("sha256", merchantKey).update(`${hashStr}${merchantSalt}`).digest("base64");
 
@@ -53,7 +53,7 @@ export const createPaytrCheckout = createServerFn({ method: "POST" })
       payment_amount: paymentAmount,
       paytr_token: paytrToken,
       user_basket: userBasket,
-      debug_on: "1",
+      debug_on: "0",
       no_installment: noInstallment,
       max_installment: maxInstallment,
       user_name: typeof context.claims.user_metadata === "object" ? String((context.claims.user_metadata as Record<string, unknown>)["full_name"] ?? "CodeQuest Oyuncusu") : "CodeQuest Oyuncusu",
@@ -78,5 +78,5 @@ export const createPaytrCheckout = createServerFn({ method: "POST" })
       console.error("PayTR token error", result.reason ?? response.status);
       throw new Error("Ödeme ekranı açılamadı.");
     }
-    return { token: result.token, merchantOid, testMode: testMode === "1" };
+    return { token: result.token, merchantOid, testMode: false };
   });

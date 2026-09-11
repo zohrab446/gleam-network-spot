@@ -270,6 +270,21 @@ function styleMatches(actual: string, expected: string): boolean {
   return a.includes(e);
 }
 
+/**
+ * Türkçe karakterleri İngilizce (ASCII) karşılıklarına indirger.
+ * Böylece "ç/ş/ğ/ı/ö/ü" yerine "c/s/g/i/o/u" yazan çözümler de kabul edilir.
+ */
+export function fold(value: string): string {
+  return value
+    .replace(/[İIı]/g, "i")
+    .replace(/[Şş]/g, "s")
+    .replace(/[Ğğ]/g, "g")
+    .replace(/[Çç]/g, "c")
+    .replace(/[Öö]/g, "o")
+    .replace(/[Üü]/g, "u")
+    .toLowerCase();
+}
+
 function checkOne(check: LessonCheck, lesson: Lesson, files: Files, logs: string[], web: WebRun | null): boolean {
   const main = editableFile(lesson).name;
   const fileOf = (name?: string) => files[name ?? main] ?? "";
@@ -277,9 +292,9 @@ function checkOne(check: LessonCheck, lesson: Lesson, files: Files, logs: string
 
   switch (check.type) {
     case "includes":
-      return fileOf(check.file).toLowerCase().includes(check.value.toLowerCase());
+      return fold(fileOf(check.file)).includes(fold(check.value));
     case "not-includes":
-      return !fileOf(check.file).toLowerCase().includes(check.value.toLowerCase());
+      return !fold(fileOf(check.file)).includes(fold(check.value));
     case "regex":
       try {
         return new RegExp(check.value, "is").test(fileOf(check.file));
@@ -287,10 +302,10 @@ function checkOne(check: LessonCheck, lesson: Lesson, files: Files, logs: string
         return false;
       }
     case "output":
-      return output.toLowerCase().includes(check.value.toLowerCase());
+      return fold(output).includes(fold(check.value));
     case "output-exact": {
       const norm = (s: string) =>
-        s
+        fold(s)
           .split("\n")
           .map((l) => l.replace(/\s+$/, ""))
           .filter((l, i, arr) => !(l === "" && i === arr.length - 1))
@@ -310,15 +325,15 @@ function checkOne(check: LessonCheck, lesson: Lesson, files: Files, logs: string
       if (nodes.length === 0) return false;
       if (check.count !== undefined && nodes.length < check.count) return false;
       if (check.text !== undefined) {
-        const t = check.text.toLowerCase();
-        if (!nodes.some((n) => (n.textContent ?? "").toLowerCase().includes(t))) return false;
+        const t = fold(check.text);
+        if (!nodes.some((n) => fold(n.textContent ?? "").includes(t))) return false;
       }
       if (check.attr !== undefined) {
         const ok = nodes.some((n) => {
           const val = n.getAttribute(check.attr!);
           if (val === null) return false;
           if (check.attrValue === undefined) return true;
-          return val.toLowerCase().includes(check.attrValue.toLowerCase());
+          return fold(val).includes(fold(check.attrValue));
         });
         if (!ok) return false;
       }

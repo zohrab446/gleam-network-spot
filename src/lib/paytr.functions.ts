@@ -78,5 +78,5 @@ export const createPaytrCheckout = createServerFn({ method: "POST" })
       console.error("PayTR token error", result.reason ?? response.status);
       throw new Error("Ödeme ekranı açılamadı.");
     }
-    return { token: result.token, merchantOid, testMode: testMode === "1" };
+    return { token: result.token, merchantOid, testMode: false };
   });

@@ -593,10 +593,12 @@ export type Database = {
       }
       referral_apply: { Args: { p_code: string }; Returns: Json }
       referral_check: { Args: never; Returns: Json }
-      unlock_lesson_hint: {
-        Args: { p_hint_index: number; p_lesson_id: string }
-        Returns: Json
-      }
+      unlock_lesson_hint:
+        | { Args: { p_hint_index: number; p_lesson_id: string }; Returns: Json }
+        | {
+            Args: { p_hint_index: number; p_lesson_id: string; p_user: string }
+            Returns: Json
+          }
     }
     Enums: {
       [_ in never]: never

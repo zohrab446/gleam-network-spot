@@ -14,9 +14,9 @@ export const createPaytrCheckout = createServerFn({ method: "POST" })
     const product = getStoreProduct(data.productId);
     if (!product) throw new Error("Geçersiz paket.");
 
-    const merchantId = process.env["PAYTR_MERCHANT_ID"];
-    const merchantKey = process.env["PAYTR_MERCHANT_KEY"];
-    const merchantSalt = process.env["PAYTR_MERCHANT_SALT"];
+    const merchantId = process.env["PAYTR_MERCHANT_ID"]?.replace(/\D/g, "");
+    const merchantKey = process.env["PAYTR_MERCHANT_KEY"]?.trim();
+    const merchantSalt = process.env["PAYTR_MERCHANT_SALT"]?.trim();
     if (!merchantId || !merchantKey || !merchantSalt) throw new Error("PAYTR_NOT_CONFIGURED");
 
     const request = getRequest();

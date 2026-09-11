@@ -71,6 +71,30 @@ export type Database = {
         }
         Relationships: []
       }
+      hint_unlocks: {
+        Row: {
+          created_at: string
+          hint_index: number
+          id: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hint_index: number
+          id?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hint_index?: number
+          id?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       lesson_progress: {
         Row: {
           code: string | null
@@ -110,6 +134,60 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_orders: {
+        Row: {
+          amount_kurus: number
+          created_at: string
+          failure_code: string | null
+          failure_message: string | null
+          fulfilled_at: string | null
+          id: string
+          merchant_oid: string
+          product_id: string
+          product_type: string
+          provider: string
+          provider_total_amount: number | null
+          quantity: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_kurus: number
+          created_at?: string
+          failure_code?: string | null
+          failure_message?: string | null
+          fulfilled_at?: string | null
+          id?: string
+          merchant_oid: string
+          product_id: string
+          product_type: string
+          provider?: string
+          provider_total_amount?: number | null
+          quantity: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_kurus?: number
+          created_at?: string
+          failure_code?: string | null
+          failure_message?: string | null
+          fulfilled_at?: string | null
+          id?: string
+          merchant_oid?: string
+          product_id?: string
+          product_type?: string
+          provider?: string
+          provider_total_amount?: number | null
+          quantity?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           ads_day: string | null
@@ -126,6 +204,7 @@ export type Database = {
           energy_day: string
           energy_updated_at: string
           favorite_language: string | null
+          hint_credits: number
           id: string
           is_pro: boolean
           language: string
@@ -152,6 +231,7 @@ export type Database = {
           theme: string
           total_energy_gained: number
           total_energy_spent: number
+          total_hints_used: number
           updated_at: string
           username: string | null
           week_start: string
@@ -173,6 +253,7 @@ export type Database = {
           energy_day?: string
           energy_updated_at?: string
           favorite_language?: string | null
+          hint_credits?: number
           id: string
           is_pro?: boolean
           language?: string
@@ -199,6 +280,7 @@ export type Database = {
           theme?: string
           total_energy_gained?: number
           total_energy_spent?: number
+          total_hints_used?: number
           updated_at?: string
           username?: string | null
           week_start?: string
@@ -220,6 +302,7 @@ export type Database = {
           energy_day?: string
           energy_updated_at?: string
           favorite_language?: string | null
+          hint_credits?: number
           id?: string
           is_pro?: boolean
           language?: string
@@ -246,6 +329,7 @@ export type Database = {
           theme?: string
           total_energy_gained?: number
           total_energy_spent?: number
+          total_hints_used?: number
           updated_at?: string
           username?: string | null
           week_start?: string
@@ -320,6 +404,7 @@ export type Database = {
           energy_day: string
           energy_updated_at: string
           favorite_language: string | null
+          hint_credits: number
           id: string
           is_pro: boolean
           language: string
@@ -346,6 +431,7 @@ export type Database = {
           theme: string
           total_energy_gained: number
           total_energy_spent: number
+          total_hints_used: number
           updated_at: string
           username: string | null
           week_start: string
@@ -377,6 +463,7 @@ export type Database = {
           energy_day: string
           energy_updated_at: string
           favorite_language: string | null
+          hint_credits: number
           id: string
           is_pro: boolean
           language: string
@@ -403,6 +490,7 @@ export type Database = {
           theme: string
           total_energy_gained: number
           total_energy_spent: number
+          total_hints_used: number
           updated_at: string
           username: string | null
           week_start: string
@@ -417,6 +505,16 @@ export type Database = {
         }
       }
       energy_watch_ad: { Args: never; Returns: Json }
+      fulfill_paytr_order: {
+        Args: {
+          p_failure_code?: string
+          p_failure_message?: string
+          p_merchant_oid: string
+          p_status: string
+          p_total_amount: number
+        }
+        Returns: Json
+      }
       gen_referral_code: { Args: never; Returns: string }
       get_leaderboard: {
         Args: { p_limit?: number; p_scope?: string }
@@ -452,6 +550,7 @@ export type Database = {
           energy_day: string
           energy_updated_at: string
           favorite_language: string | null
+          hint_credits: number
           id: string
           is_pro: boolean
           language: string
@@ -478,6 +577,7 @@ export type Database = {
           theme: string
           total_energy_gained: number
           total_energy_spent: number
+          total_hints_used: number
           updated_at: string
           username: string | null
           week_start: string
@@ -493,6 +593,10 @@ export type Database = {
       }
       referral_apply: { Args: { p_code: string }; Returns: Json }
       referral_check: { Args: never; Returns: Json }
+      unlock_lesson_hint: {
+        Args: { p_hint_index: number; p_lesson_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

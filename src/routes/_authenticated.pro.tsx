@@ -11,6 +11,7 @@ import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 import { PaytrCheckoutDialog } from "@/components/PaytrCheckoutDialog";
 import { PRO_PRODUCTS } from "@/lib/store";
+import { PromoCodeCard } from "@/components/PromoCodeCard";
 
 export const Route = createFileRoute("/_authenticated/pro")({
   head: () => ({
@@ -129,6 +130,8 @@ function ProPage() {
             ))}
           </div>
         </section>
+
+        <PromoCodeCard />
 
         <section className="card-surface p-5" aria-labelledby="perks-heading">
           <h2 id="perks-heading" className="text-lg">

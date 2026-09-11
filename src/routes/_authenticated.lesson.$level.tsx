@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import {
   LANGUAGE_META,
   LESSONS,
@@ -58,6 +59,7 @@ import { cn } from "@/lib/utils";
 import { useEnergySync, useReferralCheck, useSpendEnergy } from "@/hooks/useEnergy";
 import { EnergyEmptyModal } from "@/components/EnergyEmptyModal";
 import { EnergyPips } from "@/components/EnergyMeter";
+import { unlockLessonHint } from "@/lib/hints.functions";
 import {
   DIFFICULTY_LABEL,
   SKIP_COST,
@@ -101,6 +103,7 @@ function LessonPage() {
   const [activeFile, setActiveFile] = useState<string>(() => (lesson ? editableFile(lesson).name : ""));
   const [pane, setPane] = useState<"info" | "editor">("info");
   const [openHints, setOpenHints] = useState<number[]>([]);
+  const [unlockingHint, setUnlockingHint] = useState<number | null>(null);
   const [run, setRun] = useState<RunResult | null>(null);
   const [checks, setChecks] = useState<CheckResult[] | null>(null);
   const [reward, setReward] = useState<CompletionReward | null>(null);
@@ -108,6 +111,29 @@ function LessonPage() {
   const startedAt = useRef(Date.now());
   const [energyFlash, setEnergyFlash] = useState<{ amount: number; left: number } | null>(null);
   const [energyBlocked, setEnergyBlocked] = useState(false);
+  const unlockHint = useServerFn(unlockLessonHint);
+
+  async function handleHint(index: number) {
+    if (!lesson) return;
+    if (openHints.includes(index)) {
+      setOpenHints((prev) => prev.filter((item) => item !== index));
+      return;
+    }
+    setUnlockingHint(index);
+    try {
+      const result = await unlockHint({ data: { lessonId: lesson.id, hintIndex: index } });
+      setOpenHints((prev) => [...new Set([...prev, index])]);
+      if (result.consumed) toast.success(`İpucu açıldı · ${result.remaining} hakkın kaldı`);
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("NO_HINT_CREDITS")) {
+        toast.error("İpucu hakkın bitti. Ödüller sayfasından paket alabilirsin.", {
+          action: { label: "Paketler", onClick: () => navigate({ to: "/rewards" }) },
+        });
+      } else toast.error("İpucu açılamadı, tekrar dener misin?");
+    } finally {
+      setUnlockingHint(null);
+    }
+  }
 
   useEffect(() => {
     if (!lesson) return;
@@ -377,11 +403,11 @@ function LessonPage() {
                   size="sm"
                   className="font-bold"
                   aria-expanded={open}
-                  onClick={() =>
-                    setOpenHints((prev) => (open ? prev.filter((i) => i !== index) : [...prev, index]))
-                  }
+                  disabled={unlockingHint === index}
+                  onClick={() => void handleHint(index)}
                 >
                   <Lightbulb className="mr-1 h-4 w-4" /> İpucu {index + 1}
+                  {!open && !pro && <span className="ml-1 text-xs">· 1 hak</span>}
                 </Button>
                 {open && (
                   <p className="mt-2 rounded-xl bg-secondary p-3 text-sm text-muted-foreground">{hint}</p>

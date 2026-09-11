@@ -61,6 +61,9 @@ export type Profile = {
   last_ad_at: string | null;
   energy_badges_claimed: string[];
   milestones_claimed: string[];
+  // İpuçları
+  hint_credits: number;
+  total_hints_used: number;
 };
 
 export type Progress = {

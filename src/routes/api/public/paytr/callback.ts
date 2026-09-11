@@ -37,8 +37,8 @@ export const Route = createFileRoute("/api/public/paytr/callback")({
           p_merchant_oid: input.merchant_oid,
           p_status: input.status,
           p_total_amount: input.total_amount,
-          p_failure_code: input.failed_reason_code,
-          p_failure_message: input.failed_reason_msg,
+          ...(input.failed_reason_code ? { p_failure_code: input.failed_reason_code } : {}),
+          ...(input.failed_reason_msg ? { p_failure_message: input.failed_reason_msg } : {}),
         });
         if (error) {
           console.error("PayTR fulfillment error", error.message);

@@ -338,6 +338,80 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_codes: {
+        Row: {
+          code: string
+          created_at: string
+          duration_months: number
+          id: string
+          is_active: boolean
+          max_uses: number
+          pro_plan: string
+          updated_at: string
+          used_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          duration_months: number
+          id?: string
+          is_active?: boolean
+          max_uses: number
+          pro_plan: string
+          updated_at?: string
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          duration_months?: number
+          id?: string
+          is_active?: boolean
+          max_uses?: number
+          pro_plan?: string
+          updated_at?: string
+          used_count?: number
+        }
+        Relationships: []
+      }
+      promo_redemptions: {
+        Row: {
+          code: string
+          created_at: string
+          duration_months: number
+          id: string
+          pro_plan: string
+          promo_code_id: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          duration_months: number
+          id?: string
+          pro_plan: string
+          promo_code_id: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          duration_months?: number
+          id?: string
+          pro_plan?: string
+          promo_code_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_redemptions_promo_code_id_fkey"
+            columns: ["promo_code_id"]
+            isOneToOne: false
+            referencedRelation: "promo_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_badges: {
         Row: {
           badge_id: string
@@ -783,6 +857,10 @@ export type Database = {
               isSetofReturn: false
             }
           }
+      redeem_promo_code: {
+        Args: { p_code: string; p_user: string }
+        Returns: Json
+      }
       referral_apply:
         | { Args: { p_code: string }; Returns: Json }
         | { Args: { p_code: string; p_user: string }; Returns: Json }

@@ -270,6 +270,21 @@ function styleMatches(actual: string, expected: string): boolean {
   return a.includes(e);
 }
 
+/**
+ * Türkçe karakterleri İngilizce (ASCII) karşılıklarına indirger.
+ * Böylece "ç/ş/ğ/ı/ö/ü" yerine "c/s/g/i/o/u" yazan çözümler de kabul edilir.
+ */
+export function fold(value: string): string {
+  return value
+    .replace(/[İIı]/g, "i")
+    .replace(/[Şş]/g, "s")
+    .replace(/[Ğğ]/g, "g")
+    .replace(/[Çç]/g, "c")
+    .replace(/[Öö]/g, "o")
+    .replace(/[Üü]/g, "u")
+    .toLowerCase();
+}
+
 function checkOne(check: LessonCheck, lesson: Lesson, files: Files, logs: string[], web: WebRun | null): boolean {
   const main = editableFile(lesson).name;
   const fileOf = (name?: string) => files[name ?? main] ?? "";
@@ -277,9 +292,9 @@ function checkOne(check: LessonCheck, lesson: Lesson, files: Files, logs: string
 
   switch (check.type) {
     case "includes":
-      return fileOf(check.file).toLowerCase().includes(check.value.toLowerCase());
+      return fold(fileOf(check.file)).includes(fold(check.value));
     case "not-includes":
-      return !fileOf(check.file).toLowerCase().includes(check.value.toLowerCase());
+      return !fold(fileOf(check.file)).includes(fold(check.value));
     case "regex":
       try {
         return new RegExp(check.value, "is").test(fileOf(check.file));

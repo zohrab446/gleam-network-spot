@@ -379,9 +379,16 @@ function LessonPage() {
 
       <section>
         <h3 className="text-base">💡 Kod örneği</h3>
-        <pre className="code-block mt-2 overflow-x-auto text-xs">
+        <pre
+          className="code-block mt-2 select-none overflow-x-auto text-xs"
+          onCopy={(e) => e.preventDefault()}
+          onCut={(e) => e.preventDefault()}
+          onContextMenu={(e) => e.preventDefault()}
+          onDragStart={(e) => e.preventDefault()}
+        >
           <code>{lesson.example}</code>
         </pre>
+        <p className="mt-1 text-[11px] text-muted-foreground">Örnek kod kopyalanamaz — kendin yazarak öğren.</p>
       </section>
 
       <section>

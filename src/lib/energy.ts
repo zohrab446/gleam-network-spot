@@ -143,12 +143,6 @@ export const PRO_PERKS: { feature: string; free: string; pro: string }[] = [
   { feature: "Asistan önceliği", free: "❌", pro: "✅" },
 ];
 
-export const ENERGY_PACKS = [
-  { id: "pack-5", energy: 5, price: "₺29", note: "$0.99" },
-  { id: "pack-15", energy: 15, price: "₺89", note: "%20 indirim" },
-  { id: "pack-30", energy: 30, price: "₺149", note: "%30 indirim" },
-];
-
 /** Enerji hata kodlarını Türkçe mesaja çevirir. */
 export function energyErrorMessage(error: unknown): string {
   const raw = (error as { message?: string } | null)?.message ?? "";

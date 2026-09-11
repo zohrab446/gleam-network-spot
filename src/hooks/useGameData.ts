@@ -12,6 +12,8 @@ import {
   xpRewardFor,
 } from "@/lib/gamification";
 import { isProActive } from "@/lib/energy";
+import { useServerFn } from "@tanstack/react-start";
+import { getLeaderboard } from "@/lib/game.functions";
 
 export type Profile = {
   id: string;
@@ -61,6 +63,9 @@ export type Profile = {
   last_ad_at: string | null;
   energy_badges_claimed: string[];
   milestones_claimed: string[];
+  // İpuçları
+  hint_credits: number;
+  total_hints_used: number;
 };
 
 export type Progress = {
@@ -143,6 +148,7 @@ export type LeaderboardRow = {
 
 export function useLeaderboard(scope: "all" | "weekly") {
   const { user } = useAuth();
+  const loadLeaderboard = useServerFn(getLeaderboard);
   return useQuery({
     queryKey: ["leaderboard", scope, user?.id],
     enabled: !!user,
@@ -152,8 +158,7 @@ export function useLeaderboard(scope: "all" | "weekly") {
     refetchOnWindowFocus: true,
     staleTime: 10_000,
     queryFn: async (): Promise<LeaderboardRow[]> => {
-      const { data, error } = await supabase.rpc("get_leaderboard", { p_scope: scope, p_limit: 50 });
-      if (error) throw error;
+      const data = await loadLeaderboard({ data: { scope } });
       return (data ?? []) as LeaderboardRow[];
     },
   });

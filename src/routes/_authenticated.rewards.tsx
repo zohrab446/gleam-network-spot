@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Battery, Check, Copy, Crown, Gift, Share2, Trophy, Users, Video } from "lucide-react";
+import { Battery, Check, Copy, Crown, Gift, Lightbulb, Share2, Trophy, Users, Video } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { EnergyCard } from "@/components/EnergyMeter";
@@ -21,7 +21,6 @@ import {
 import {
   AD_DAILY_LIMIT,
   DAILY_LOGIN_REWARDS,
-  ENERGY_PACKS,
   MILESTONES,
   SPIN_SLICES,
   badgeEnergyReward,
@@ -32,6 +31,8 @@ import { BADGES } from "@/lib/gamification";
 import { celebrate } from "@/lib/celebrate";
 import { playSound } from "@/store/settings";
 import { cn } from "@/lib/utils";
+import { PaytrCheckoutDialog } from "@/components/PaytrCheckoutDialog";
+import { ENERGY_PRODUCTS, HINT_PRODUCTS } from "@/lib/store";
 
 export const Route = createFileRoute("/_authenticated/rewards")({
   head: () => ({
@@ -443,18 +444,14 @@ function RewardsPage() {
           <h2 id="pack-heading" className="flex items-center gap-2 text-lg">
             <Crown className="h-5 w-5 text-coin" /> Enerji paketleri
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Ödeme altyapısı henüz açılmadı — paketler yakında satışta. Şimdilik Pro'yu 7 gün ücretsiz deneyebilirsin.
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Kartla güvenli ödeme PayTR üzerinden yapılır.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            {ENERGY_PACKS.map((pack) => (
+            {ENERGY_PRODUCTS.map((pack) => (
               <div key={pack.id} className="rounded-2xl border border-border p-4 text-center">
-                <p className="font-display text-2xl font-extrabold">{pack.energy} ⚡</p>
+                <p className="font-display text-2xl font-extrabold">{pack.quantity} ⚡</p>
                 <p className="text-sm font-bold">{pack.price}</p>
                 <p className="text-xs text-muted-foreground">{pack.note}</p>
-                <Button size="sm" variant="secondary" className="mt-3 w-full font-bold" disabled>
-                  Yakında
-                </Button>
+                <PaytrCheckoutDialog product={pack} />
               </div>
             ))}
           </div>
@@ -463,6 +460,25 @@ function RewardsPage() {
               <Crown className="mr-1 h-4 w-4" /> Pro'yu 7 gün ücretsiz dene
             </Link>
           </Button>
+        </section>
+
+        <section className="card-surface p-5" aria-labelledby="hint-pack-heading">
+          <h2 id="hint-pack-heading" className="flex items-center gap-2 text-lg">
+            <Lightbulb className="h-5 w-5 text-coin" /> İpucu paketleri
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Bakiyen: <strong>{profile.hint_credits} ipucu</strong>. Her ipucunun ilk açılışı bir hak kullanır; Pro'da sınırsızdır.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            {HINT_PRODUCTS.map((pack) => (
+              <div key={pack.id} className="rounded-2xl border border-border p-4 text-center">
+                <p className="font-display text-2xl font-extrabold">{pack.quantity} 💡</p>
+                <p className="text-sm font-bold">{pack.price}</p>
+                <p className="text-xs text-muted-foreground">{pack.note}</p>
+                <PaytrCheckoutDialog product={pack} />
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* Geçmiş */}

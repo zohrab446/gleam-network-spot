@@ -13,25 +13,12 @@ export function PaytrCheckoutDialog({ product }: { product: StoreProduct }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  async function startCheckout() {
+  function startCheckout() {
     // Ödemeler geçici olarak kapalı
     toast.info("Kart ödemeleri şimdilik aktif değil. Çok yakında açılacak!");
-    return;
-    setOpen(true);
-    setLoading(true);
-    try {
-      const result = await checkout({ data: { productId: product.id } });
-      setToken(result.token);
-    } catch (error) {
-      setOpen(false);
-      const message = error instanceof Error && error.message.includes("PAYTR_NOT_CONFIGURED")
-        ? "Kart ödemeleri henüz yapılandırılmadı."
-        : "Ödeme ekranı açılamadı, tekrar dener misin?";
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
   }
+
+  void checkout; void setToken; void setLoading; // ödemeler açıldığında tekrar kullanılacak
 
   return (
     <>

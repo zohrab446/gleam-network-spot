@@ -14,6 +14,9 @@ export function PaytrCheckoutDialog({ product }: { product: StoreProduct }) {
   const [loading, setLoading] = useState(false);
 
   async function startCheckout() {
+    // Ödemeler geçici olarak kapalı
+    toast.info("Kart ödemeleri şimdilik aktif değil. Çok yakında açılacak!");
+    return;
     setOpen(true);
     setLoading(true);
     try {

@@ -1,4 +1,4 @@
-# See My Code
+# See My Cod
 
 github linkden reponu gormek sansin var ?
 

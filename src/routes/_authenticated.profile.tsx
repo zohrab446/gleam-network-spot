@@ -95,6 +95,8 @@ function ProfilePage() {
             <Stat label="Bitirilen ders" value={progress.length} />
             <Stat label="Favori dil" value={LANGUAGE_META[favorite]?.label ?? "—"} />
             <Stat label="Rozet" value={`${owned.size} / ${BADGES.length}`} />
+            <Stat label="İpucu hakkı" value={isProActive(profile) ? "Sınırsız" : profile.hint_credits} />
+
           </dl>
         </section>
 

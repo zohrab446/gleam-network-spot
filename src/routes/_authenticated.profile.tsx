@@ -63,8 +63,18 @@ function ProfilePage() {
             <div className="min-w-0">
               <h1 className="truncate text-2xl">{profile.username ?? "Kodcu"}</h1>
               <p className="truncate text-sm text-muted-foreground">{profile.email}</p>
+              {isProActive(profile) && (
+                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary">
+                  <Crown className="h-3.5 w-3.5" />
+                  {PLAN_LABELS[profile.pro_plan ?? ""] ?? "Pro"}
+                  {profile.pro_expires_at
+                    ? ` · ${new Date(profile.pro_expires_at).toLocaleDateString("tr-TR")} tarihine kadar`
+                    : ""}
+                </p>
+              )}
             </div>
           </div>
+
 
           <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
             <Stat label="Seviye" value={`${profile.level} / ${MAX_LEVEL}`} />

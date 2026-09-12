@@ -1,5 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Crown } from "lucide-react";
 import { toast } from "sonner";
+import { isProActive } from "@/lib/energy";
+
+const PLAN_LABELS: Record<string, string> = {
+  trial: "Pro deneme (7 gün)",
+  monthly: "Pro · 1 aylık",
+  quarterly: "Pro · 3 aylık",
+  yearly: "Pro · 1 yıllık",
+};
+
 import { BADGES, AVATAR_COLORS, AVATAR_SHAPES, SHAPE_GLYPH, avatarHex } from "@/lib/gamification";
 import { LANGUAGE_META, MAX_LEVEL, type LessonLanguage } from "@/data/lessons";
 import { useBadges, useProfile, useProgress, useUpdateProfile } from "@/hooks/useGameData";

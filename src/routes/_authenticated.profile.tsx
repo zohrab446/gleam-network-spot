@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Crown } from "lucide-react";
 import { toast } from "sonner";
+import { isProActive } from "@/lib/energy";
 import { BADGES, AVATAR_COLORS, AVATAR_SHAPES, SHAPE_GLYPH, avatarHex } from "@/lib/gamification";
 import { LANGUAGE_META, MAX_LEVEL, type LessonLanguage } from "@/data/lessons";
 import { useBadges, useProfile, useProgress, useUpdateProfile } from "@/hooks/useGameData";
@@ -11,6 +13,14 @@ import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSettings } from "@/store/settings";
 import { cn } from "@/lib/utils";
+
+const PLAN_LABELS: Record<string, string> = {
+  trial: "Pro deneme (7 gün)",
+  monthly: "Pro · 1 aylık",
+  quarterly: "Pro · 3 aylık",
+  yearly: "Pro · 1 yıllık",
+};
+
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -63,8 +73,18 @@ function ProfilePage() {
             <div className="min-w-0">
               <h1 className="truncate text-2xl">{profile.username ?? "Kodcu"}</h1>
               <p className="truncate text-sm text-muted-foreground">{profile.email}</p>
+              {isProActive(profile) && (
+                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary">
+                  <Crown className="h-3.5 w-3.5" />
+                  {PLAN_LABELS[profile.pro_plan ?? ""] ?? "Pro"}
+                  {profile.pro_expires_at
+                    ? ` · ${new Date(profile.pro_expires_at).toLocaleDateString("tr-TR")} tarihine kadar`
+                    : ""}
+                </p>
+              )}
             </div>
           </div>
+
 
           <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
             <Stat label="Seviye" value={`${profile.level} / ${MAX_LEVEL}`} />
@@ -75,6 +95,8 @@ function ProfilePage() {
             <Stat label="Bitirilen ders" value={progress.length} />
             <Stat label="Favori dil" value={LANGUAGE_META[favorite]?.label ?? "—"} />
             <Stat label="Rozet" value={`${owned.size} / ${BADGES.length}`} />
+            <Stat label="İpucu hakkı" value={isProActive(profile) ? "Sınırsız" : profile.hint_credits} />
+
           </dl>
         </section>
 

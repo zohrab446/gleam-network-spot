@@ -22,7 +22,7 @@ export function PaytrCheckoutDialog({ product }: { product: StoreProduct }) {
 
   return (
     <>
-      <Button size="sm" className="mt-3 w-full font-bold" onClick={() => void startCheckout()}>
+      <Button size="sm" className="mt-3 w-full font-bold" onClick={startCheckout}>
         <CreditCard className="mr-1 h-4 w-4" /> Satın al
       </Button>
       <Dialog open={open} onOpenChange={(next) => { setOpen(next); if (!next) setToken(null); }}>

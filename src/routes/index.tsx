@@ -3,6 +3,7 @@ import { Coins, Flame, MessageCircle, Sparkle, Trophy, Zap } from "lucide-react"
 import { CATEGORIES, LANGUAGE_META, MAX_LEVEL } from "@/data/lessons";
 import { Button } from "@/components/ui/button";
 import { useThemeSync } from "@/components/AppShell";
+import { PublicFooter } from "@/components/PublicFooter";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -126,9 +127,7 @@ function Landing() {
         </div>
       </section>
 
-      <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        CodeQuest · Kodlamayı oyunlaştırarak öğren
-      </footer>
+      <PublicFooter />
     </div>
   );
 }

@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as IletisimRouteImport } from './routes/iletisim'
+import { Route as MesafeliSatisRouteImport } from './routes/mesafeli-satis'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated.leaderboard'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
@@ -36,6 +38,16 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IletisimRoute = IletisimRouteImport.update({
+  id: '/iletisim',
+  path: '/iletisim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MesafeliSatisRoute = MesafeliSatisRouteImport.update({
+  id: '/mesafeli-satis',
+  path: '/mesafeli-satis',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -101,6 +113,8 @@ const ApiPublicPaytrCallbackRoute = ApiPublicPaytrCallbackRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/iletisim': typeof IletisimRoute
+  '/mesafeli-satis': typeof MesafeliSatisRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -116,6 +130,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/iletisim': typeof IletisimRoute
+  '/mesafeli-satis': typeof MesafeliSatisRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -133,6 +149,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
+  '/iletisim': typeof IletisimRoute
+  '/mesafeli-satis': typeof MesafeliSatisRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -150,6 +168,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/iletisim'
+    | '/mesafeli-satis'
     | '/dashboard'
     | '/leaderboard'
     | '/onboarding'
@@ -165,6 +185,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/iletisim'
+    | '/mesafeli-satis'
     | '/dashboard'
     | '/leaderboard'
     | '/onboarding'
@@ -181,6 +203,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/iletisim'
+    | '/mesafeli-satis'
     | '/_authenticated/dashboard'
     | '/_authenticated/leaderboard'
     | '/_authenticated/onboarding'
@@ -198,6 +222,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
+  IletisimRoute: typeof IletisimRoute
+  MesafeliSatisRoute: typeof MesafeliSatisRoute
   ApiTestEndpointRoute: typeof ApiTestEndpointRoute
   ApiPublicPaytrCallbackRoute: typeof ApiPublicPaytrCallbackRoute
 }
@@ -223,6 +249,20 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/iletisim': {
+      id: '/iletisim'
+      path: '/iletisim'
+      fullPath: '/iletisim'
+      preLoaderRoute: typeof IletisimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mesafeli-satis': {
+      id: '/mesafeli-satis'
+      path: '/mesafeli-satis'
+      fullPath: '/mesafeli-satis'
+      preLoaderRoute: typeof MesafeliSatisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/dashboard': {
@@ -337,6 +377,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  IletisimRoute: IletisimRoute,
+  MesafeliSatisRoute: MesafeliSatisRoute,
   ApiTestEndpointRoute: ApiTestEndpointRoute,
   ApiPublicPaytrCallbackRoute: ApiPublicPaytrCallbackRoute,
 }

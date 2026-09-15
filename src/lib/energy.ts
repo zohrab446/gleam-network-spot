@@ -5,7 +5,8 @@
  */
 
 export const MAX_ENERGY = 5;
-export const REFILL_HOURS = 4;
+export const REFILL_MINUTES = 90;
+export const REFILL_HOURS = REFILL_MINUTES / 60;
 export const SKIP_COST = 2;
 export const AD_DAILY_LIMIT = 2;
 export const AD_COOLDOWN_HOURS = 4;
@@ -26,18 +27,15 @@ export const DIFFICULTY_LABEL: Record<Difficulty, string> = {
 };
 
 const BASE_PENALTY: Record<Difficulty, number> = {
-  beginner: 0,
+  beginner: 1,
   intermediate: 1,
-  advanced: 2,
+  advanced: 1,
 };
 
 /** Yanlış cevabın enerji bedeli. Pro hesapta 0; uzun seri bedeli düşürür. */
 export function energyPenalty(level: number, opts: { isPro: boolean; streak: number }): number {
   if (opts.isPro) return 0;
-  const base = BASE_PENALTY[difficultyOf(level)];
-  if (opts.streak >= 14) return 0;
-  if (opts.streak >= 7) return Math.max(0, base - 1);
-  return base;
+  return BASE_PENALTY[difficultyOf(level)];
 }
 
 /** Derse başlamak için gereken minimum enerji. */
@@ -132,14 +130,16 @@ export const PRO_PLANS: ProPlan[] = [
 ];
 
 export const PRO_PERKS: { feature: string; free: string; pro: string }[] = [
-  { feature: "Günlük enerji", free: "5", pro: "Sınırsız" },
-  { feature: "Yanlış cevap bedeli", free: "-1 / -2 enerji", pro: "0" },
+  { feature: "Enerji kapasitesi", free: "Maksimum 5", pro: "Sınırsız" },
+  { feature: "Enerji dolum hızı", free: "90 dk'da +1", pro: "Bekleme yok" },
+  { feature: "Tam dolum süresi", free: "7,5 saat", pro: "Anında sınırsız" },
+  { feature: "Yanlış cevap bedeli", free: "-1 enerji", pro: "0 (can gitmez)" },
   { feature: "Seviye atlama", free: "-2 enerji", pro: "Sınırsız" },
   { feature: "Reklamsız deneyim", free: "❌", pro: "✅" },
   { feature: "Günlük bonus coin", free: "+50", pro: "+150" },
-  { feature: "XP çarpanı", free: "1x", pro: "1.5x" },
+  { feature: "XP çarpanı", free: "1x", pro: "1x (eşit)" },
   { feature: "Coin çarpanı", free: "1x", pro: "2x" },
-  { feature: "Seri çarpanı", free: "7 günde 2x", pro: "Her zaman 2x" },
+  { feature: "Seri çarpanı", free: "7 günde 2x", pro: "7 günde 2x (eşit)" },
   { feature: "Asistan önceliği", free: "❌", pro: "✅" },
 ];
 

@@ -238,7 +238,7 @@ export function useCompleteLesson() {
       const alreadyCompleted = progress.some((p) => p.lesson_id === lesson.id);
       const pro = isProActive(profile);
       // Pro: seri çarpanı her zaman 2x, üstüne 1.5x XP ve 2x coin.
-      const multiplier = pro ? 2 * 1.5 : streakMultiplier(profile.streak);
+      const multiplier = streakMultiplier(profile.streak);
       const xp = alreadyCompleted ? 0 : Math.round(xpRewardFor(lesson.level) * multiplier);
       const coins = alreadyCompleted ? 0 : coinRewardFor(lesson.level) * (pro ? 2 : 1);
 

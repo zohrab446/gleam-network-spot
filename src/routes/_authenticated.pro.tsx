@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/pro")({
       { title: "CodeQuest Pro — Sınırsız enerji" },
       {
         name: "description",
-        content: "Sınırsız enerji, reklamsız deneyim, 1.5x XP ve 2x coin ile 7 gün ücretsiz dene.",
+        content: "Sınırsız enerji, yanlış cevapta can kaybı yok, reklamsız deneyim ve 2x coin ile 7 gün ücretsiz dene.",
       },
       { property: "og:title", content: "CodeQuest Pro — Sınırsız enerji" },
       { property: "og:description", content: "Enerji derdi olmadan kod öğren: CodeQuest Pro." },
@@ -55,7 +55,7 @@ function ProPage() {
             </p>
             <h1 className="mt-3 text-3xl">Enerji derdi olmadan öğren</h1>
             <p className="mt-2 max-w-xl text-sm opacity-90">
-              Sınırsız enerji, yanlış cevapta kayıp yok, reklamsız deneyim, 1.5x XP ve 2x coin.
+              Sınırsız enerji, yanlış cevapta kayıp yok, reklamsız deneyim ve 2x coin.
             </p>
           </div>
           <div className="p-6">

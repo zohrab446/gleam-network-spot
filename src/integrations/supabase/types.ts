@@ -462,10 +462,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      antibot_report: {
-        Args: { p_detail?: Json; p_kind: string }
-        Returns: undefined
-      }
       energy_claim_badge:
         | { Args: { p_badge_id: string }; Returns: Json }
         | { Args: { p_badge_id: string; p_user: string }; Returns: Json }

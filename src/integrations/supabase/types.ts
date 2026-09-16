@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      bot_incidents: {
+        Row: {
+          created_at: string
+          detail: Json
+          id: string
+          kind: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          kind: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          kind?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -438,6 +462,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      antibot_report: {
+        Args: { p_detail?: Json; p_kind: string }
+        Returns: undefined
+      }
       energy_claim_badge:
         | { Args: { p_badge_id: string }; Returns: Json }
         | { Args: { p_badge_id: string; p_user: string }; Returns: Json }

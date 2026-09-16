@@ -25,7 +25,10 @@ export const createPaytrCheckout = createServerFn({ method: "POST" })
     const email = typeof context.claims.email === "string" ? context.claims.email : "customer@codequest.app";
     const merchantOid = `CQ${randomUUID().replaceAll("-", "")}`;
     const userBasket = Buffer.from(JSON.stringify([[product.name, (product.amountKurus / 100).toFixed(2), 1]])).toString("base64");
-    const origin = new URL(request.url).origin;
+    // PayTR mağaza kaydında tanımlı canlı alan adı (önizleme adresleri PayTR tarafından reddedilir)
+    const configuredSite = process.env["PUBLIC_SITE_URL"]?.trim().replace(/\/$/, "");
+    const requestOrigin = new URL(request.url).origin;
+    const origin = configuredSite || (requestOrigin.includes("localhost") ? requestOrigin : "https://code-quest.io");
     const paymentAmount = String(product.amountKurus);
     const noInstallment = "0";
     const maxInstallment = "0";

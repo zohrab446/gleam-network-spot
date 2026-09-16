@@ -174,7 +174,8 @@ function RewardsPage() {
           <Button
             className="mt-4 font-bold"
             disabled={loginClaimed || dailyLogin.isPending}
-            onClick={() =>
+            onClick={() => {
+              if (dailyLogin.isPending) return;
               dailyLogin.mutate(undefined, {
                 onSuccess: (result) => {
                   playSound("success");
@@ -182,8 +183,8 @@ function RewardsPage() {
                   toast.success(`${result.day}. gün: +${result.energy} enerji, +${result.coins} coin!`);
                 },
                 onError: (error) => toast.error(energyErrorMessage(error)),
-              })
-            }
+              });
+            }}
           >
             {loginClaimed ? "Bugünün ödülü alındı ✅" : "Günlük ödülü al"}
           </Button>
@@ -337,15 +338,16 @@ function RewardsPage() {
                 <Button
                   className="font-bold"
                   disabled={code.trim().length < 4 || applyReferral.isPending}
-                  onClick={() =>
+                  onClick={() => {
+                    if (applyReferral.isPending) return;
                     applyReferral.mutate(code.trim(), {
                       onSuccess: () => {
                         setCode("");
                         toast.success("Davet kodu uygulandı! 5 ders bitince ödül gelecek.");
                       },
                       onError: (error) => toast.error(energyErrorMessage(error)),
-                    })
-                  }
+                    });
+                  }}
                 >
                   Uygula
                 </Button>
@@ -380,12 +382,13 @@ function RewardsPage() {
                       variant={claimed ? "ghost" : "default"}
                       className="font-bold"
                       disabled={claimed || claimBadge.isPending}
-                      onClick={() =>
+                      onClick={() => {
+                        if (claimBadge.isPending) return;
                         claimBadge.mutate(badge.badge_id, {
                           onSuccess: (result) => toast.success(`Rozet ödülü: +${result.energy} enerji!`),
                           onError: (error) => toast.error(energyErrorMessage(error)),
-                        })
-                      }
+                        });
+                      }}
                     >
                       {claimed ? "Alındı" : "Al"}
                     </Button>
@@ -424,12 +427,13 @@ function RewardsPage() {
                     variant={claimed ? "ghost" : "default"}
                     className="font-bold"
                     disabled={claimed || !eligible || claimMilestone.isPending}
-                    onClick={() =>
+                    onClick={() => {
+                      if (claimMilestone.isPending) return;
                       claimMilestone.mutate(milestone.id, {
                         onSuccess: (result) => toast.success(`+${result.energy} enerji kazandın!`),
                         onError: (error) => toast.error(energyErrorMessage(error)),
-                      })
-                    }
+                      });
+                    }}
                   >
                     {claimed ? "Alındı" : eligible ? "Al" : "Kilitli"}
                   </Button>

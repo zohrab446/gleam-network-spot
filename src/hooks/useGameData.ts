@@ -2,19 +2,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { LESSONS, MAX_LEVEL, type Lesson } from "@/data/lessons";
-import {
-  BADGES,
-  coinRewardFor,
-  currentMonthStart,
-  currentWeekStart,
-  earnedBadgeIds,
-  nextStreak,
-  streakMultiplier,
-  xpRewardFor,
-} from "@/lib/gamification";
-import { isProActive } from "@/lib/energy";
+import { BADGES } from "@/lib/gamification";
 import { useServerFn } from "@tanstack/react-start";
-import { getLeaderboard } from "@/lib/game.functions";
+import {
+  completeLesson,
+  getLeaderboard,
+  saveUsername,
+  skipLevel,
+  touchStreak,
+} from "@/lib/game.functions";
+import { unwrapAction } from "@/lib/action-result";
+import { validateUsername } from "@/lib/validation";
 import { reportBotIncident } from "@/lib/antibot.functions";
 import { BOT_PREFIX, verifyHumanActivity } from "@/lib/antibot";
 
@@ -170,13 +168,46 @@ export function useLeaderboard(scope: "all" | "weekly" | "monthly") {
   });
 }
 
+/** Yalnızca serbest profil alanları istemciden güncellenebilir (mass assignment koruması). */
+const EDITABLE_PROFILE_FIELDS = [
+  "avatar_shape",
+  "avatar_color",
+  "sound_enabled",
+  "theme",
+  "language",
+  "onboarded",
+] as const;
+
+export type EditableProfile = Partial<Pick<Profile, (typeof EDITABLE_PROFILE_FIELDS)[number]>>;
+
 export function useUpdateProfile() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (patch: Partial<Profile>) => {
-      const { error } = await supabase.from("profiles").update(patch).eq("id", user!.id);
+    mutationFn: async (patch: EditableProfile) => {
+      const safe: Record<string, unknown> = {};
+      for (const field of EDITABLE_PROFILE_FIELDS) {
+        if (field in patch) safe[field] = (patch as Record<string, unknown>)[field];
+      }
+      if (Object.keys(safe).length === 0) return;
+      const { error } = await supabase.from("profiles").update(safe).eq("id", user!.id);
       if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+  });
+}
+
+/** Kullanıcı adı sunucuda katı regex ile doğrulanır. */
+export function useSaveUsername() {
+  const queryClient = useQueryClient();
+  const save = useServerFn(saveUsername);
+  return useMutation({
+    mutationFn: async ({ username, onboarded }: { username: string; onboarded?: boolean }) => {
+      const check = validateUsername(username);
+      if (!check.ok) throw new Error(check.message);
+      return unwrapAction(await save({ data: { username: check.value, onboarded: onboarded ?? false } }));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -185,29 +216,16 @@ export function useUpdateProfile() {
   });
 }
 
-/** Günlük seriyi kontrol eder ve gerekiyorsa günceller. */
+/** Günlük seriyi kontrol eder ve gerekiyorsa günceller (sunucu tarafında). */
 export function useTouchStreak(profile: Profile | null | undefined) {
   const queryClient = useQueryClient();
+  const touch = useServerFn(touchStreak);
   return useMutation({
     mutationFn: async () => {
       if (!profile) return;
       const today = new Date().toISOString().slice(0, 10);
       if (profile.last_active_date === today) return;
-      const { streak } = nextStreak(profile.last_active_date, profile.streak);
-      const week = currentWeekStart();
-      const month = currentMonthStart();
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          streak,
-          longest_streak: Math.max(profile.longest_streak, streak),
-          last_active_date: today,
-          last_login_at: new Date().toISOString(),
-          ...(profile.week_start !== week ? { week_start: week, weekly_xp: 0 } : {}),
-          ...(profile.month_start !== month ? { month_start: month, monthly_xp: 0 } : {}),
-        })
-        .eq("id", profile.id);
-      if (error) throw error;
+      unwrapAction(await touch({}));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -226,23 +244,21 @@ export type CompletionReward = {
 };
 
 export function useCompleteLesson() {
-  const { user } = useAuth();
   const queryClient = useQueryClient();
   const reportBot = useServerFn(reportBotIncident);
+  const complete = useServerFn(completeLesson);
 
   return useMutation({
     mutationFn: async ({
       lesson,
       code,
       seconds,
-      profile,
-      progress,
     }: {
       lesson: Lesson;
       code: string;
       seconds: number;
-      profile: Profile;
-      progress: Progress[];
+      profile?: Profile;
+      progress?: Progress[];
     }): Promise<CompletionReward> => {
       const verdict = verifyHumanActivity(seconds);
       if (!verdict.ok) {
@@ -252,74 +268,27 @@ export function useCompleteLesson() {
         throw new Error(`${BOT_PREFIX}${verdict.reason}`);
       }
 
-      const alreadyCompleted = progress.some((p) => p.lesson_id === lesson.id);
-      const pro = isProActive(profile);
-      // XP çarpanı herkeste eşit (7 günde 2x seri). Pro yalnızca coin'de 2x kazanır.
-      const multiplier = streakMultiplier(profile.streak);
-      const xp = alreadyCompleted ? 0 : Math.round(xpRewardFor(lesson.level) * multiplier);
-      const coins = alreadyCompleted ? 0 : coinRewardFor(lesson.level) * (pro ? 2 : 1);
-
-      if (!alreadyCompleted) {
-        const { error } = await supabase.from("lesson_progress").insert({
-          user_id: user!.id,
-          lesson_id: lesson.id,
-          level: lesson.level,
-          language: lesson.language,
-          xp_earned: xp,
-          coins_earned: coins,
-          duration_seconds: seconds,
-          code,
-        });
-        if (error) throw error;
-      }
-
-      const completedLevels = [...new Set([...progress.map((p) => p.level), lesson.level])];
-      const newLevel = Math.min(MAX_LEVEL, Math.max(profile.level, completedLevels.length + 1));
-      const week = currentWeekStart();
-      const month = currentMonthStart();
-      const weeklyBase = profile.week_start === week ? profile.weekly_xp : 0;
-      const monthlyBase = profile.month_start === month ? profile.monthly_xp : 0;
-
-      const languageCounts = new Map<string, number>();
-      [...progress.map((p) => p.language), lesson.language].forEach((lang) =>
-        languageCounts.set(lang, (languageCounts.get(lang) ?? 0) + 1),
+      // XP, coin, seviye ve rozetler tamamen sunucuda hesaplanır.
+      const result = unwrapAction(
+        await complete({
+          data: {
+            lessonId: lesson.id,
+            level: lesson.level,
+            language: lesson.language,
+            code: code.slice(0, 20000),
+            seconds,
+          },
+        }),
       );
-      const favorite = [...languageCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? lesson.language;
 
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          xp: profile.xp + xp,
-          coins: profile.coins + coins,
-          weekly_xp: weeklyBase + xp,
-          week_start: week,
-          monthly_xp: monthlyBase + xp,
-          month_start: month,
-          level: newLevel,
-          favorite_language: favorite,
-          last_active_date: new Date().toISOString().slice(0, 10),
-        })
-        .eq("id", profile.id);
-      if (profileError) throw profileError;
-
-      const durations = [...progress.map((p) => p.duration_seconds ?? 99999), seconds];
-      const owned = (await supabase.from("user_badges").select("badge_id")).data ?? [];
-      const earned = earnedBadgeIds({
-        xp: profile.xp + xp,
-        level: newLevel,
-        streak: profile.streak,
-        completedLevels,
-        languagesCompleted: [...languageCounts.keys()],
-        fastestSeconds: Math.min(...durations),
-      });
-      const newBadges = earned.filter((id) => !owned.some((o) => o.badge_id === id));
-      if (newBadges.length > 0) {
-        await supabase
-          .from("user_badges")
-          .insert(newBadges.map((badge_id) => ({ user_id: user!.id, badge_id })));
-      }
-
-      return { xp, coins, multiplier, newLevel, newBadges, alreadyCompleted };
+      return {
+        xp: result.xp,
+        coins: result.coins,
+        multiplier: result.multiplier,
+        newLevel: result.new_level,
+        newBadges: result.new_badges ?? [],
+        alreadyCompleted: result.already_completed,
+      };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -332,27 +301,14 @@ export function useCompleteLesson() {
 
 /** Seviye atlama: XP/coin vermeden dersi tamamlanmış sayar, böylece sonraki ders açılır. */
 export function useSkipLevel() {
-  const { user } = useAuth();
   const queryClient = useQueryClient();
+  const skip = useServerFn(skipLevel);
 
   return useMutation({
-    mutationFn: async ({ lesson, profile }: { lesson: Lesson; profile: Profile }) => {
-      const { error } = await supabase.from("lesson_progress").insert({
-        user_id: user!.id,
-        lesson_id: lesson.id,
-        level: lesson.level,
-        language: lesson.language,
-        xp_earned: 0,
-        coins_earned: 0,
-        duration_seconds: 0,
-        code: null,
-      });
-      if (error && error.code !== "23505") throw error;
-
-      const nextLevel = Math.min(MAX_LEVEL, Math.max(profile.level, lesson.level + 1));
-      if (nextLevel !== profile.level) {
-        await supabase.from("profiles").update({ level: nextLevel }).eq("id", profile.id);
-      }
+    mutationFn: async ({ lesson }: { lesson: Lesson; profile?: Profile }) => {
+      unwrapAction(
+        await skip({ data: { lessonId: lesson.id, level: lesson.level, language: lesson.language } }),
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });

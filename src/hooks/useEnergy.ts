@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/auth";
 import type { Profile } from "@/hooks/useGameData";
 import { useServerFn } from "@tanstack/react-start";
 import { runGameAction } from "@/lib/game.functions";
+import { unwrapAction } from "@/lib/action-result";
 
 function invalidate(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -22,7 +23,7 @@ export function useEnergySync() {
     refetchInterval: 60_000,
     refetchOnWindowFocus: true,
     queryFn: async (): Promise<Profile | null> => {
-      const data = await runAction({ data: { action: "sync" } });
+      const data = unwrapAction(await runAction({ data: { action: "sync" } }));
       const profile = (Array.isArray(data) ? data[0] : data) as Profile | null;
       if (profile) queryClient.setQueryData(["profile", user?.id], profile);
       return profile;
@@ -44,7 +45,9 @@ export function useSpendEnergy() {
       reason: "challenge_fail" | "skip_level";
       level?: number;
     }): Promise<Profile | null> => {
-      const data = await runAction({ data: { action: "spend", amount, reason, ...(level ? { level } : {}) } });
+      const data = unwrapAction(
+        await runAction({ data: { action: "spend", amount, reason, ...(level ? { level } : {}) } }),
+      );
       return (Array.isArray(data) ? data[0] : data) as Profile | null;
     },
     onSuccess: (profile) => {
@@ -58,10 +61,12 @@ export function useClaimDailyLogin() {
   const queryClient = useQueryClient();
   const runAction = useServerFn(runGameAction);
   return useMutation({
-    mutationFn: async (): Promise<{ day: number; energy: number; coins: number }> => {
-      const data = await runAction({ data: { action: "daily" } });
-      return data as unknown as { day: number; energy: number; coins: number };
-    },
+    mutationFn: async (): Promise<{ day: number; energy: number; coins: number }> =>
+      unwrapAction(await runAction({ data: { action: "daily" } })) as {
+        day: number;
+        energy: number;
+        coins: number;
+      },
     onSuccess: () => invalidate(queryClient),
   });
 }
@@ -70,10 +75,8 @@ export function useSpinWheel() {
   const queryClient = useQueryClient();
   const runAction = useServerFn(runGameAction);
   return useMutation({
-    mutationFn: async (): Promise<{ energy: number }> => {
-      const data = await runAction({ data: { action: "spin" } });
-      return data as unknown as { energy: number };
-    },
+    mutationFn: async (): Promise<{ energy: number }> =>
+      unwrapAction(await runAction({ data: { action: "spin" } })) as { energy: number },
     onSuccess: () => invalidate(queryClient),
   });
 }
@@ -82,10 +85,11 @@ export function useWatchAd() {
   const queryClient = useQueryClient();
   const runAction = useServerFn(runGameAction);
   return useMutation({
-    mutationFn: async (): Promise<{ energy: number; watched_today: number }> => {
-      const data = await runAction({ data: { action: "ad" } });
-      return data as unknown as { energy: number; watched_today: number };
-    },
+    mutationFn: async (): Promise<{ energy: number; watched_today: number }> =>
+      unwrapAction(await runAction({ data: { action: "ad" } })) as {
+        energy: number;
+        watched_today: number;
+      },
     onSuccess: () => invalidate(queryClient),
   });
 }
@@ -94,10 +98,8 @@ export function useClaimBadgeEnergy() {
   const queryClient = useQueryClient();
   const runAction = useServerFn(runGameAction);
   return useMutation({
-    mutationFn: async (badgeId: string): Promise<{ energy: number }> => {
-      const data = await runAction({ data: { action: "badge", id: badgeId } });
-      return data as unknown as { energy: number };
-    },
+    mutationFn: async (badgeId: string): Promise<{ energy: number }> =>
+      unwrapAction(await runAction({ data: { action: "badge", id: badgeId } })) as { energy: number },
     onSuccess: () => invalidate(queryClient),
   });
 }
@@ -106,10 +108,8 @@ export function useClaimMilestone() {
   const queryClient = useQueryClient();
   const runAction = useServerFn(runGameAction);
   return useMutation({
-    mutationFn: async (id: string): Promise<{ energy: number }> => {
-      const data = await runAction({ data: { action: "milestone", id } });
-      return data as unknown as { energy: number };
-    },
+    mutationFn: async (id: string): Promise<{ energy: number }> =>
+      unwrapAction(await runAction({ data: { action: "milestone", id } })) as { energy: number },
     onSuccess: () => invalidate(queryClient),
   });
 }
@@ -119,7 +119,7 @@ export function useApplyReferral() {
   const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async (code: string) => {
-      await runAction({ data: { action: "referral-apply", code } });
+      unwrapAction(await runAction({ data: { action: "referral-apply", code } }));
     },
     onSuccess: () => invalidate(queryClient),
   });
@@ -130,10 +130,11 @@ export function useReferralCheck() {
   const queryClient = useQueryClient();
   const runAction = useServerFn(runGameAction);
   return useMutation({
-    mutationFn: async (): Promise<{ rewarded: boolean; energy?: number }> => {
-      const data = await runAction({ data: { action: "referral-check" } });
-      return data as unknown as { rewarded: boolean; energy?: number };
-    },
+    mutationFn: async (): Promise<{ rewarded: boolean; energy?: number }> =>
+      unwrapAction(await runAction({ data: { action: "referral-check" } })) as {
+        rewarded: boolean;
+        energy?: number;
+      },
     onSuccess: () => invalidate(queryClient),
   });
 }
@@ -143,7 +144,7 @@ export function useStartProTrial() {
   const runAction = useServerFn(runGameAction);
   return useMutation({
     mutationFn: async (): Promise<Profile | null> => {
-      const data = await runAction({ data: { action: "trial" } });
+      const data = unwrapAction(await runAction({ data: { action: "trial" } }));
       return (Array.isArray(data) ? data[0] : data) as Profile | null;
     },
     onSuccess: () => invalidate(queryClient),

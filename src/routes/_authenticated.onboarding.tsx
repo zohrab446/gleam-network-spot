@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { AVATAR_COLORS, AVATAR_SHAPES, SHAPE_GLYPH, avatarHex } from "@/lib/gamification";
-import { useProfile, useUpdateProfile } from "@/hooks/useGameData";
+import { useProfile, useSaveUsername, useUpdateProfile } from "@/hooks/useGameData";
+import { validateUsername } from "@/lib/validation";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ function Onboarding() {
   const navigate = useNavigate();
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
+  const saveName = useSaveUsername();
   const [shape, setShape] = useState<string>("star");
   const [color, setColor] = useState<string>("indigo");
   const [username, setUsername] = useState("");
@@ -39,23 +41,30 @@ function Onboarding() {
     setUsername((profile.username ?? "").slice(0, 20));
   }, [profile]);
 
+  const busy = updateProfile.isPending || saveName.isPending;
+
   async function save() {
-    const name = username.trim();
-    if (name.length < 2) {
-      toast.error("Kullanıcı adı en az 2 karakter olmalı.");
+    if (busy) return;
+    const check = validateUsername(username);
+    if (!check.ok) {
+      toast.error(check.message);
       return;
     }
     try {
+      await saveName.mutateAsync({ username: check.value, onboarded: true });
       await updateProfile.mutateAsync({
-        username: name.slice(0, 20),
         avatar_shape: shape,
         avatar_color: color,
         onboarded: true,
       });
       playSound("success");
       navigate({ to: "/dashboard", replace: true });
-    } catch {
-      toast.error("Kaydedilemedi, tekrar dener misin?");
+    } catch (error) {
+      toast.error(
+        error instanceof Error && error.message.includes("Kullanıcı adı")
+          ? error.message
+          : "Kaydedilemedi, tekrar dener misin?",
+      );
     }
   }
 
@@ -131,7 +140,7 @@ function Onboarding() {
         </fieldset>
 
         <div className="mt-6 space-y-1.5">
-          <Label htmlFor="username">Kullanıcı adı (en fazla 20 karakter)</Label>
+          <Label htmlFor="username">Kullanıcı adı (3–20 karakter)</Label>
           <Input
             id="username"
             value={username}
@@ -139,16 +148,18 @@ function Onboarding() {
             onChange={(event) => setUsername(event.target.value.slice(0, 20))}
             placeholder="kodcu_ada"
           />
-          <p className="text-xs text-muted-foreground">{username.length}/20</p>
+          <p className="text-xs text-muted-foreground">
+            Harf, rakam, nokta ve alt çizgi kullanabilirsin. {username.length}/20
+          </p>
         </div>
 
         <Button
           className="mt-8 w-full font-bold"
           size="lg"
-          disabled={updateProfile.isPending}
+          disabled={busy}
           onClick={() => void save()}
         >
-          {updateProfile.isPending ? "Kaydediliyor..." : "Yolculuğa başla 🚀"}
+          {busy ? "Kaydediliyor..." : "Yolculuğa başla 🚀"}
         </Button>
       </div>
     </div>

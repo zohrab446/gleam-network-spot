@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      auth_login_attempts: {
+        Row: {
+          created_at: string
+          email: string
+          failed_count: number
+          last_failed_at: string | null
+          locked_until: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          failed_count?: number
+          last_failed_at?: string | null
+          locked_until?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          failed_count?: number
+          last_failed_at?: string | null
+          locked_until?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bot_incidents: {
         Row: {
           created_at: string
@@ -442,6 +469,30 @@ export type Database = {
           },
         ]
       }
+      reward_claims: {
+        Row: {
+          action_id: string
+          claim_date: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action_id: string
+          claim_date?: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action_id?: string
+          claim_date?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           badge_id: string
@@ -468,15 +519,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      energy_claim_badge:
-        | { Args: { p_badge_id: string }; Returns: Json }
-        | { Args: { p_badge_id: string; p_user: string }; Returns: Json }
-      energy_claim_daily_login:
-        | { Args: never; Returns: Json }
-        | { Args: { p_user: string }; Returns: Json }
-      energy_claim_milestone:
-        | { Args: { p_id: string }; Returns: Json }
-        | { Args: { p_id: string; p_user: string }; Returns: Json }
+      energy_claim_badge: {
+        Args: { p_badge_id: string; p_user: string }
+        Returns: Json
+      }
+      energy_claim_daily_login: { Args: { p_user: string }; Returns: Json }
+      energy_claim_milestone: {
+        Args: { p_id: string; p_user: string }
+        Returns: Json
+      }
       energy_grant: {
         Args: {
           p_amount: number
@@ -497,259 +548,133 @@ export type Database = {
         }
         Returns: undefined
       }
-      energy_spend:
-        | {
-            Args: { p_amount: number; p_meta?: Json; p_reason: string }
-            Returns: {
-              ads_day: string | null
-              ads_watched_today: number
-              avatar_color: string
-              avatar_shape: string
-              coins: number
-              completed_referrals: number
-              created_at: string
-              daily_login_streak: number
-              email: string | null
-              energy: number
-              energy_badges_claimed: string[]
-              energy_day: string
-              energy_updated_at: string
-              favorite_language: string | null
-              hint_credits: number
-              id: string
-              is_pro: boolean
-              language: string
-              last_active_date: string | null
-              last_ad_at: string | null
-              last_login_at: string
-              last_login_reward_date: string | null
-              last_spin_at: string | null
-              level: number
-              longest_streak: number
-              max_energy: number
-              milestones_claimed: string[]
-              month_start: string
-              monthly_xp: number
-              onboarded: boolean
-              pro_expires_at: string | null
-              pro_plan: string | null
-              pro_started_at: string | null
-              pro_trial_used: boolean
-              referral_code: string | null
-              referral_energy_earned: number
-              referral_rewarded: boolean
-              referred_by: string | null
-              sound_enabled: boolean
-              streak: number
-              theme: string
-              total_energy_gained: number
-              total_energy_spent: number
-              total_hints_used: number
-              updated_at: string
-              username: string | null
-              week_start: string
-              weekly_xp: number
-              xp: number
-            }
-            SetofOptions: {
-              from: "*"
-              to: "profiles"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
-        | {
-            Args: {
-              p_amount: number
-              p_meta?: Json
-              p_reason: string
-              p_user: string
-            }
-            Returns: {
-              ads_day: string | null
-              ads_watched_today: number
-              avatar_color: string
-              avatar_shape: string
-              coins: number
-              completed_referrals: number
-              created_at: string
-              daily_login_streak: number
-              email: string | null
-              energy: number
-              energy_badges_claimed: string[]
-              energy_day: string
-              energy_updated_at: string
-              favorite_language: string | null
-              hint_credits: number
-              id: string
-              is_pro: boolean
-              language: string
-              last_active_date: string | null
-              last_ad_at: string | null
-              last_login_at: string
-              last_login_reward_date: string | null
-              last_spin_at: string | null
-              level: number
-              longest_streak: number
-              max_energy: number
-              milestones_claimed: string[]
-              month_start: string
-              monthly_xp: number
-              onboarded: boolean
-              pro_expires_at: string | null
-              pro_plan: string | null
-              pro_started_at: string | null
-              pro_trial_used: boolean
-              referral_code: string | null
-              referral_energy_earned: number
-              referral_rewarded: boolean
-              referred_by: string | null
-              sound_enabled: boolean
-              streak: number
-              theme: string
-              total_energy_gained: number
-              total_energy_spent: number
-              total_hints_used: number
-              updated_at: string
-              username: string | null
-              week_start: string
-              weekly_xp: number
-              xp: number
-            }
-            SetofOptions: {
-              from: "*"
-              to: "profiles"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
-      energy_spin:
-        | { Args: never; Returns: Json }
-        | { Args: { p_user: string }; Returns: Json }
-      energy_sync:
-        | {
-            Args: never
-            Returns: {
-              ads_day: string | null
-              ads_watched_today: number
-              avatar_color: string
-              avatar_shape: string
-              coins: number
-              completed_referrals: number
-              created_at: string
-              daily_login_streak: number
-              email: string | null
-              energy: number
-              energy_badges_claimed: string[]
-              energy_day: string
-              energy_updated_at: string
-              favorite_language: string | null
-              hint_credits: number
-              id: string
-              is_pro: boolean
-              language: string
-              last_active_date: string | null
-              last_ad_at: string | null
-              last_login_at: string
-              last_login_reward_date: string | null
-              last_spin_at: string | null
-              level: number
-              longest_streak: number
-              max_energy: number
-              milestones_claimed: string[]
-              month_start: string
-              monthly_xp: number
-              onboarded: boolean
-              pro_expires_at: string | null
-              pro_plan: string | null
-              pro_started_at: string | null
-              pro_trial_used: boolean
-              referral_code: string | null
-              referral_energy_earned: number
-              referral_rewarded: boolean
-              referred_by: string | null
-              sound_enabled: boolean
-              streak: number
-              theme: string
-              total_energy_gained: number
-              total_energy_spent: number
-              total_hints_used: number
-              updated_at: string
-              username: string | null
-              week_start: string
-              weekly_xp: number
-              xp: number
-            }
-            SetofOptions: {
-              from: "*"
-              to: "profiles"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
-        | {
-            Args: { p_user: string }
-            Returns: {
-              ads_day: string | null
-              ads_watched_today: number
-              avatar_color: string
-              avatar_shape: string
-              coins: number
-              completed_referrals: number
-              created_at: string
-              daily_login_streak: number
-              email: string | null
-              energy: number
-              energy_badges_claimed: string[]
-              energy_day: string
-              energy_updated_at: string
-              favorite_language: string | null
-              hint_credits: number
-              id: string
-              is_pro: boolean
-              language: string
-              last_active_date: string | null
-              last_ad_at: string | null
-              last_login_at: string
-              last_login_reward_date: string | null
-              last_spin_at: string | null
-              level: number
-              longest_streak: number
-              max_energy: number
-              milestones_claimed: string[]
-              month_start: string
-              monthly_xp: number
-              onboarded: boolean
-              pro_expires_at: string | null
-              pro_plan: string | null
-              pro_started_at: string | null
-              pro_trial_used: boolean
-              referral_code: string | null
-              referral_energy_earned: number
-              referral_rewarded: boolean
-              referred_by: string | null
-              sound_enabled: boolean
-              streak: number
-              theme: string
-              total_energy_gained: number
-              total_energy_spent: number
-              total_hints_used: number
-              updated_at: string
-              username: string | null
-              week_start: string
-              weekly_xp: number
-              xp: number
-            }
-            SetofOptions: {
-              from: "*"
-              to: "profiles"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
-      energy_watch_ad:
-        | { Args: never; Returns: Json }
-        | { Args: { p_user: string }; Returns: Json }
+      energy_spend: {
+        Args: {
+          p_amount: number
+          p_meta?: Json
+          p_reason: string
+          p_user: string
+        }
+        Returns: {
+          ads_day: string | null
+          ads_watched_today: number
+          avatar_color: string
+          avatar_shape: string
+          coins: number
+          completed_referrals: number
+          created_at: string
+          daily_login_streak: number
+          email: string | null
+          energy: number
+          energy_badges_claimed: string[]
+          energy_day: string
+          energy_updated_at: string
+          favorite_language: string | null
+          hint_credits: number
+          id: string
+          is_pro: boolean
+          language: string
+          last_active_date: string | null
+          last_ad_at: string | null
+          last_login_at: string
+          last_login_reward_date: string | null
+          last_spin_at: string | null
+          level: number
+          longest_streak: number
+          max_energy: number
+          milestones_claimed: string[]
+          month_start: string
+          monthly_xp: number
+          onboarded: boolean
+          pro_expires_at: string | null
+          pro_plan: string | null
+          pro_started_at: string | null
+          pro_trial_used: boolean
+          referral_code: string | null
+          referral_energy_earned: number
+          referral_rewarded: boolean
+          referred_by: string | null
+          sound_enabled: boolean
+          streak: number
+          theme: string
+          total_energy_gained: number
+          total_energy_spent: number
+          total_hints_used: number
+          updated_at: string
+          username: string | null
+          week_start: string
+          weekly_xp: number
+          xp: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      energy_spin: { Args: { p_user: string }; Returns: Json }
+      energy_sync: {
+        Args: { p_user: string }
+        Returns: {
+          ads_day: string | null
+          ads_watched_today: number
+          avatar_color: string
+          avatar_shape: string
+          coins: number
+          completed_referrals: number
+          created_at: string
+          daily_login_streak: number
+          email: string | null
+          energy: number
+          energy_badges_claimed: string[]
+          energy_day: string
+          energy_updated_at: string
+          favorite_language: string | null
+          hint_credits: number
+          id: string
+          is_pro: boolean
+          language: string
+          last_active_date: string | null
+          last_ad_at: string | null
+          last_login_at: string
+          last_login_reward_date: string | null
+          last_spin_at: string | null
+          level: number
+          longest_streak: number
+          max_energy: number
+          milestones_claimed: string[]
+          month_start: string
+          monthly_xp: number
+          onboarded: boolean
+          pro_expires_at: string | null
+          pro_plan: string | null
+          pro_started_at: string | null
+          pro_trial_used: boolean
+          referral_code: string | null
+          referral_energy_earned: number
+          referral_rewarded: boolean
+          referred_by: string | null
+          sound_enabled: boolean
+          streak: number
+          theme: string
+          total_energy_gained: number
+          total_energy_spent: number
+          total_hints_used: number
+          updated_at: string
+          username: string | null
+          week_start: string
+          weekly_xp: number
+          xp: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      energy_watch_ad: { Args: { p_user: string }; Returns: Json }
       fulfill_paytr_order: {
         Args: {
           p_failure_code?: string
@@ -759,6 +684,87 @@ export type Database = {
           p_total_amount: number
         }
         Returns: Json
+      }
+      game_award_badges: { Args: { p_user: string }; Returns: string[] }
+      game_complete_lesson: {
+        Args: {
+          p_code: string
+          p_language: string
+          p_lesson_id: string
+          p_level: number
+          p_seconds: number
+          p_user: string
+        }
+        Returns: Json
+      }
+      game_skip_level: {
+        Args: {
+          p_language: string
+          p_lesson_id: string
+          p_level: number
+          p_user: string
+        }
+        Returns: Json
+      }
+      game_touch_streak: {
+        Args: { p_user: string }
+        Returns: {
+          ads_day: string | null
+          ads_watched_today: number
+          avatar_color: string
+          avatar_shape: string
+          coins: number
+          completed_referrals: number
+          created_at: string
+          daily_login_streak: number
+          email: string | null
+          energy: number
+          energy_badges_claimed: string[]
+          energy_day: string
+          energy_updated_at: string
+          favorite_language: string | null
+          hint_credits: number
+          id: string
+          is_pro: boolean
+          language: string
+          last_active_date: string | null
+          last_ad_at: string | null
+          last_login_at: string
+          last_login_reward_date: string | null
+          last_spin_at: string | null
+          level: number
+          longest_streak: number
+          max_energy: number
+          milestones_claimed: string[]
+          month_start: string
+          monthly_xp: number
+          onboarded: boolean
+          pro_expires_at: string | null
+          pro_plan: string | null
+          pro_started_at: string | null
+          pro_trial_used: boolean
+          referral_code: string | null
+          referral_energy_earned: number
+          referral_rewarded: boolean
+          referred_by: string | null
+          sound_enabled: boolean
+          streak: number
+          theme: string
+          total_energy_gained: number
+          total_energy_spent: number
+          total_hints_used: number
+          updated_at: string
+          username: string | null
+          week_start: string
+          weekly_xp: number
+          xp: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       gen_referral_code: { Args: never; Returns: string }
       get_leaderboard: {
@@ -779,143 +785,83 @@ export type Database = {
           xp: number
         }[]
       }
-      pro_start_trial:
-        | {
-            Args: never
-            Returns: {
-              ads_day: string | null
-              ads_watched_today: number
-              avatar_color: string
-              avatar_shape: string
-              coins: number
-              completed_referrals: number
-              created_at: string
-              daily_login_streak: number
-              email: string | null
-              energy: number
-              energy_badges_claimed: string[]
-              energy_day: string
-              energy_updated_at: string
-              favorite_language: string | null
-              hint_credits: number
-              id: string
-              is_pro: boolean
-              language: string
-              last_active_date: string | null
-              last_ad_at: string | null
-              last_login_at: string
-              last_login_reward_date: string | null
-              last_spin_at: string | null
-              level: number
-              longest_streak: number
-              max_energy: number
-              milestones_claimed: string[]
-              month_start: string
-              monthly_xp: number
-              onboarded: boolean
-              pro_expires_at: string | null
-              pro_plan: string | null
-              pro_started_at: string | null
-              pro_trial_used: boolean
-              referral_code: string | null
-              referral_energy_earned: number
-              referral_rewarded: boolean
-              referred_by: string | null
-              sound_enabled: boolean
-              streak: number
-              theme: string
-              total_energy_gained: number
-              total_energy_spent: number
-              total_hints_used: number
-              updated_at: string
-              username: string | null
-              week_start: string
-              weekly_xp: number
-              xp: number
-            }
-            SetofOptions: {
-              from: "*"
-              to: "profiles"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
-        | {
-            Args: { p_user: string }
-            Returns: {
-              ads_day: string | null
-              ads_watched_today: number
-              avatar_color: string
-              avatar_shape: string
-              coins: number
-              completed_referrals: number
-              created_at: string
-              daily_login_streak: number
-              email: string | null
-              energy: number
-              energy_badges_claimed: string[]
-              energy_day: string
-              energy_updated_at: string
-              favorite_language: string | null
-              hint_credits: number
-              id: string
-              is_pro: boolean
-              language: string
-              last_active_date: string | null
-              last_ad_at: string | null
-              last_login_at: string
-              last_login_reward_date: string | null
-              last_spin_at: string | null
-              level: number
-              longest_streak: number
-              max_energy: number
-              milestones_claimed: string[]
-              month_start: string
-              monthly_xp: number
-              onboarded: boolean
-              pro_expires_at: string | null
-              pro_plan: string | null
-              pro_started_at: string | null
-              pro_trial_used: boolean
-              referral_code: string | null
-              referral_energy_earned: number
-              referral_rewarded: boolean
-              referred_by: string | null
-              sound_enabled: boolean
-              streak: number
-              theme: string
-              total_energy_gained: number
-              total_energy_spent: number
-              total_hints_used: number
-              updated_at: string
-              username: string | null
-              week_start: string
-              weekly_xp: number
-              xp: number
-            }
-            SetofOptions: {
-              from: "*"
-              to: "profiles"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
+      pro_start_trial: {
+        Args: { p_user: string }
+        Returns: {
+          ads_day: string | null
+          ads_watched_today: number
+          avatar_color: string
+          avatar_shape: string
+          coins: number
+          completed_referrals: number
+          created_at: string
+          daily_login_streak: number
+          email: string | null
+          energy: number
+          energy_badges_claimed: string[]
+          energy_day: string
+          energy_updated_at: string
+          favorite_language: string | null
+          hint_credits: number
+          id: string
+          is_pro: boolean
+          language: string
+          last_active_date: string | null
+          last_ad_at: string | null
+          last_login_at: string
+          last_login_reward_date: string | null
+          last_spin_at: string | null
+          level: number
+          longest_streak: number
+          max_energy: number
+          milestones_claimed: string[]
+          month_start: string
+          monthly_xp: number
+          onboarded: boolean
+          pro_expires_at: string | null
+          pro_plan: string | null
+          pro_started_at: string | null
+          pro_trial_used: boolean
+          referral_code: string | null
+          referral_energy_earned: number
+          referral_rewarded: boolean
+          referred_by: string | null
+          sound_enabled: boolean
+          streak: number
+          theme: string
+          total_energy_gained: number
+          total_energy_spent: number
+          total_hints_used: number
+          updated_at: string
+          username: string | null
+          week_start: string
+          weekly_xp: number
+          xp: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       redeem_promo_code: {
         Args: { p_code: string; p_user: string }
         Returns: Json
       }
-      referral_apply:
-        | { Args: { p_code: string }; Returns: Json }
-        | { Args: { p_code: string; p_user: string }; Returns: Json }
-      referral_check:
-        | { Args: never; Returns: Json }
-        | { Args: { p_user: string }; Returns: Json }
-      unlock_lesson_hint:
-        | { Args: { p_hint_index: number; p_lesson_id: string }; Returns: Json }
-        | {
-            Args: { p_hint_index: number; p_lesson_id: string; p_user: string }
-            Returns: Json
-          }
+      referral_apply: {
+        Args: { p_code: string; p_user: string }
+        Returns: Json
+      }
+      referral_check: { Args: { p_user: string }; Returns: Json }
+      reward_claim_once: {
+        Args: { p_action: string; p_date: string; p_user: string }
+        Returns: undefined
+      }
+      unlock_lesson_hint: {
+        Args: { p_hint_index: number; p_lesson_id: string; p_user: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
+import { checkLoginGuard, clearLoginAttempts, recordLoginFailure } from "@/lib/authguard.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +27,11 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+function lockMessage(seconds: number) {
+  const minutes = Math.max(1, Math.ceil(seconds / 60));
+  return `Çok fazla hatalı giriş denemesi. Güvenlik için bu hesap ${minutes} dakika boyunca kilitli.`;
+}
+
 function AuthPage() {
   useThemeSync();
   const navigate = useNavigate();
@@ -33,6 +40,11 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [humanCheck, setHumanCheck] = useState("");
+  const checkGuard = useServerFn(checkLoginGuard);
+  const recordFailure = useServerFn(recordLoginFailure);
+  const clearAttempts = useServerFn(clearLoginAttempts);
 
   useEffect(() => {
     if (!loading && session) navigate({ to: "/dashboard", replace: true });
@@ -59,6 +71,7 @@ function AuthPage() {
 
   async function withEmail(event: React.FormEvent) {
     event.preventDefault();
+    if (busy) return;
     setBusy(true);
     try {
       if (mode === "signup") {
@@ -73,11 +86,34 @@ function AuthPage() {
           return;
         }
         navigate({ to: "/dashboard", replace: true });
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        navigate({ to: "/dashboard", replace: true });
+        return;
       }
+
+      if (needsVerification && humanCheck.trim() !== "7") {
+        toast.error("Güvenlik sorusunu doğru yanıtla.");
+        return;
+      }
+
+      const guard = await checkGuard({ data: { email } });
+      if (guard.locked) {
+        setNeedsVerification(true);
+        toast.error(lockMessage(guard.retryAfter));
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        const state = await recordFailure({ data: { email } });
+        setNeedsVerification(state.requireVerification);
+        setHumanCheck("");
+        toast.error(
+          state.locked ? lockMessage(state.retryAfter) : "E-posta veya şifre hatalı.",
+        );
+        return;
+      }
+
+      void clearAttempts({ data: { email } }).catch(() => undefined);
+      navigate({ to: "/dashboard", replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Bir şeyler ters gitti.";
       toast.error(
@@ -146,6 +182,19 @@ function AuthPage() {
                 placeholder="En az 6 karakter"
               />
             </div>
+            {mode === "signin" && needsVerification ? (
+              <div className="space-y-1.5 rounded-xl border border-border bg-secondary/50 p-3">
+                <Label htmlFor="human-check">Güvenlik kontrolü: 3 + 4 kaçtır?</Label>
+                <Input
+                  id="human-check"
+                  inputMode="numeric"
+                  required
+                  value={humanCheck}
+                  onChange={(event) => setHumanCheck(event.target.value)}
+                  placeholder="Yanıt"
+                />
+              </div>
+            ) : null}
             <Button type="submit" className="w-full font-bold" disabled={busy}>
               {busy ? "Bekle..." : mode === "signin" ? "Giriş yap" : "Hesap oluştur"}
             </Button>

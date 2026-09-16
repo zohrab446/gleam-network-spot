@@ -14,6 +14,8 @@ import {
 import { isProActive } from "@/lib/energy";
 import { useServerFn } from "@tanstack/react-start";
 import { getLeaderboard } from "@/lib/game.functions";
+import { reportBotIncident } from "@/lib/antibot.functions";
+import { BOT_PREFIX, verifyHumanActivity } from "@/lib/antibot";
 
 export type Profile = {
   id: string;

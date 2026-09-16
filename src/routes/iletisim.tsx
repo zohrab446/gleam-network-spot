@@ -29,7 +29,7 @@ const CONTACT = {
   company: "NHR Yazılım",
   website: "https://www.nhryazilim.com",
   websiteLabel: "www.nhryazilim.com",
-  email: "info@nhryazilim.com",
+  email: "nhrcoding@nhrcoding.com",
   phone: "+90 533 466 80 11",
   phoneHref: "tel:+905334668011",
   address: "Çankaya / Ankara, Türkiye",

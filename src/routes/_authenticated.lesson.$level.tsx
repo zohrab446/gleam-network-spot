@@ -273,8 +273,8 @@ function LessonPage() {
           if (result.rewarded) toast.success("Davet ödülü: +5 enerji ⚡");
         },
       });
-    } catch {
-      toast.error("Gönderilemedi, tekrar dener misin?");
+    } catch (error) {
+      toast.error(isBotBlocked(error) ? BOT_MESSAGE : "Gönderilemedi, tekrar dener misin?");
     } finally {
       setBusy(false);
     }

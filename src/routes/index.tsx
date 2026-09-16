@@ -32,7 +32,7 @@ function Landing() {
         <div className="bg-brand-gradient px-4 py-2.5 text-center text-sm font-bold text-primary-foreground">
           <span className="inline-flex items-center gap-2">
             <Gift className="h-4 w-4" />
-            Her ayın 1'i: 5 aylık Claude Pro hediye! Şimdi katıl, çekilişi kaçırma.
+            Her ay, ayın 1'inde: 5 aylık Claude Pro hediye! Şimdi katıl, çekilişi kaçırma.
             <Sparkle className="h-4 w-4" />
           </span>
         </div>

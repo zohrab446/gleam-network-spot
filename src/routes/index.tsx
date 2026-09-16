@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Coins, Flame, Gift, MessageCircle, Sparkle, Trophy, Zap } from "lucide-react";
+import { Coins, Flame, MessageCircle, Sparkle, Trophy, Zap } from "lucide-react";
 import { CATEGORIES, LANGUAGE_META, MAX_LEVEL } from "@/data/lessons";
 import { Button } from "@/components/ui/button";
 import { useThemeSync } from "@/components/AppShell";
@@ -28,15 +28,6 @@ function Landing() {
   useThemeSync();
   return (
     <div className="min-h-screen bg-background">
-      <Link to="/auth" className="block">
-        <div className="bg-brand-gradient px-4 py-2.5 text-center text-sm font-bold text-primary-foreground">
-          <span className="inline-flex items-center gap-2">
-            <Gift className="h-4 w-4" />
-            Her ay, ayın 1'inde: 5 aylık Claude Pro hediye! Şimdi katıl, çekilişi kaçırma.
-            <Sparkle className="h-4 w-4" />
-          </span>
-        </div>
-      </Link>
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5">
         <span className="flex items-center gap-2 font-display text-xl font-extrabold">
           <span className="bg-brand-gradient flex h-9 w-9 items-center justify-center rounded-xl text-primary-foreground">

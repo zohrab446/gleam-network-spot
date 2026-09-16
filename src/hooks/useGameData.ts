@@ -190,7 +190,7 @@ export function useUpdateProfile() {
         if (field in patch) safe[field] = (patch as Record<string, unknown>)[field];
       }
       if (Object.keys(safe).length === 0) return;
-      const { error } = await supabase.from("profiles").update(safe).eq("id", user!.id);
+      const { error } = await supabase.from("profiles").update(safe as EditableProfile).eq("id", user!.id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -269,7 +269,7 @@ export function useCompleteLesson() {
       }
 
       // XP, coin, seviye ve rozetler tamamen sunucuda hesaplanır.
-      const result = unwrapAction(
+      const result = unwrapAction<CompletionResult>(
         await complete({
           data: {
             lessonId: lesson.id,

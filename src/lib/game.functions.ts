@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { parseUsername } from "@/lib/validation";
+import type { Json } from "@/integrations/supabase/types";
 
 /** Şema/union detayları dışarıya sızmasın: tüm doğrulama hataları tek tip. */
 const GENERIC_ERROR = "Geçersiz istek";
@@ -41,7 +42,7 @@ const PUBLIC_CODES = [
   "BOT_BLOCKED",
 ] as const;
 
-export type ActionResult<T = unknown> = { ok: true; data: T } | { ok: false; code: string };
+export type ActionResult<T = Json> = { ok: true; data: T } | { ok: false; code: string };
 
 function publicCode(error: unknown): string {
   const raw = error instanceof Error ? error.message : "";
@@ -64,7 +65,7 @@ function validate<T extends z.ZodTypeAny>(schema: T, input: unknown): z.infer<T>
 export const runGameAction = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => validate(actionSchema, input))
-  .handler(async ({ data, context }): Promise<ActionResult> => {
+  .handler(async ({ data, context }): Promise<ActionResult<Json>> => {
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const user = context.userId;
@@ -107,7 +108,7 @@ export const runGameAction = createServerFn({ method: "POST" })
           break;
       }
       if (response.error) throw new Error(response.error.message);
-      return { ok: true, data: response.data };
+      return { ok: true, data: (response.data ?? null) as Json };
     } catch (error) {
       return fail(error, "game-action");
     }
@@ -192,14 +193,14 @@ export const skipLevel = createServerFn({ method: "POST" })
 
 export const touchStreak = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<ActionResult> => {
+  .handler(async ({ context }): Promise<ActionResult<Json>> => {
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { data: result, error } = await supabaseAdmin.rpc("game_touch_streak", {
+      const { error } = await supabaseAdmin.rpc("game_touch_streak", {
         p_user: context.userId,
       });
       if (error) throw new Error(error.message);
-      return { ok: true, data: result };
+      return { ok: true, data: null };
     } catch (error) {
       return fail(error, "touch-streak");
     }

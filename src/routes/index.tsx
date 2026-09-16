@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Coins, Flame, MessageCircle, Sparkle, Trophy, Zap } from "lucide-react";
+import { Coins, Flame, Gift, MessageCircle, Sparkle, Trophy, Zap } from "lucide-react";
 import { CATEGORIES, LANGUAGE_META, MAX_LEVEL } from "@/data/lessons";
 import { Button } from "@/components/ui/button";
 import { useThemeSync } from "@/components/AppShell";

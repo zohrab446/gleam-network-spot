@@ -60,6 +60,7 @@ import { useEnergySync, useReferralCheck, useSpendEnergy } from "@/hooks/useEner
 import { EnergyEmptyModal } from "@/components/EnergyEmptyModal";
 import { EnergyPips } from "@/components/EnergyMeter";
 import { unlockLessonHint } from "@/lib/hints.functions";
+import { BOT_MESSAGE, isBotBlocked } from "@/lib/antibot";
 import {
   DIFFICULTY_LABEL,
   SKIP_COST,

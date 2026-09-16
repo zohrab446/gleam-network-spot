@@ -5,6 +5,7 @@ import { LESSONS, MAX_LEVEL, type Lesson } from "@/data/lessons";
 import {
   BADGES,
   coinRewardFor,
+  currentMonthStart,
   currentWeekStart,
   earnedBadgeIds,
   nextStreak,
@@ -27,6 +28,8 @@ export type Profile = {
   xp: number;
   weekly_xp: number;
   week_start: string;
+  monthly_xp: number;
+  month_start: string;
   coins: number;
   streak: number;
   longest_streak: number;
@@ -141,6 +144,7 @@ export type LeaderboardRow = {
   level: number;
   xp: number;
   weekly_xp: number;
+  monthly_xp: number;
   coins: number;
   streak: number;
   longest_streak: number;
@@ -148,7 +152,7 @@ export type LeaderboardRow = {
   rank_position: number;
 };
 
-export function useLeaderboard(scope: "all" | "weekly") {
+export function useLeaderboard(scope: "all" | "weekly" | "monthly") {
   const { user } = useAuth();
   const loadLeaderboard = useServerFn(getLeaderboard);
   return useQuery({
@@ -191,6 +195,7 @@ export function useTouchStreak(profile: Profile | null | undefined) {
       if (profile.last_active_date === today) return;
       const { streak } = nextStreak(profile.last_active_date, profile.streak);
       const week = currentWeekStart();
+      const month = currentMonthStart();
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -199,6 +204,7 @@ export function useTouchStreak(profile: Profile | null | undefined) {
           last_active_date: today,
           last_login_at: new Date().toISOString(),
           ...(profile.week_start !== week ? { week_start: week, weekly_xp: 0 } : {}),
+          ...(profile.month_start !== month ? { month_start: month, monthly_xp: 0 } : {}),
         })
         .eq("id", profile.id);
       if (error) throw error;
@@ -270,7 +276,9 @@ export function useCompleteLesson() {
       const completedLevels = [...new Set([...progress.map((p) => p.level), lesson.level])];
       const newLevel = Math.min(MAX_LEVEL, Math.max(profile.level, completedLevels.length + 1));
       const week = currentWeekStart();
+      const month = currentMonthStart();
       const weeklyBase = profile.week_start === week ? profile.weekly_xp : 0;
+      const monthlyBase = profile.month_start === month ? profile.monthly_xp : 0;
 
       const languageCounts = new Map<string, number>();
       [...progress.map((p) => p.language), lesson.language].forEach((lang) =>
@@ -285,6 +293,8 @@ export function useCompleteLesson() {
           coins: profile.coins + coins,
           weekly_xp: weeklyBase + xp,
           week_start: week,
+          monthly_xp: monthlyBase + xp,
+          month_start: month,
           level: newLevel,
           favorite_language: favorite,
           last_active_date: new Date().toISOString().slice(0, 10),

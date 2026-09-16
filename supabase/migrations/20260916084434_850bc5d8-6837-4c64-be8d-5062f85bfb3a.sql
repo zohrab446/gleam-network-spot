@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.antibot_report(text, jsonb);

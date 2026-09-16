@@ -14,6 +14,8 @@ import {
 import { isProActive } from "@/lib/energy";
 import { useServerFn } from "@tanstack/react-start";
 import { getLeaderboard } from "@/lib/game.functions";
+import { reportBotIncident } from "@/lib/antibot.functions";
+import { BOT_PREFIX, verifyHumanActivity } from "@/lib/antibot";
 
 export type Profile = {
   id: string;
@@ -220,6 +222,7 @@ export type CompletionReward = {
 export function useCompleteLesson() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const reportBot = useServerFn(reportBotIncident);
 
   return useMutation({
     mutationFn: async ({
@@ -235,6 +238,14 @@ export function useCompleteLesson() {
       profile: Profile;
       progress: Progress[];
     }): Promise<CompletionReward> => {
+      const verdict = verifyHumanActivity(seconds);
+      if (!verdict.ok) {
+        void reportBot({ data: { kind: verdict.reason, detail: { lesson_id: lesson.id, seconds } } }).catch(
+          () => undefined,
+        );
+        throw new Error(`${BOT_PREFIX}${verdict.reason}`);
+      }
+
       const alreadyCompleted = progress.some((p) => p.lesson_id === lesson.id);
       const pro = isProActive(profile);
       // XP çarpanı herkeste eşit (7 günde 2x seri). Pro yalnızca coin'de 2x kazanır.

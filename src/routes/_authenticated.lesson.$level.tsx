@@ -60,6 +60,7 @@ import { useEnergySync, useReferralCheck, useSpendEnergy } from "@/hooks/useEner
 import { EnergyEmptyModal } from "@/components/EnergyEmptyModal";
 import { EnergyPips } from "@/components/EnergyMeter";
 import { unlockLessonHint } from "@/lib/hints.functions";
+import { BOT_MESSAGE, isBotBlocked } from "@/lib/antibot";
 import {
   DIFFICULTY_LABEL,
   SKIP_COST,
@@ -273,8 +274,8 @@ function LessonPage() {
           if (result.rewarded) toast.success("Davet ödülü: +5 enerji ⚡");
         },
       });
-    } catch {
-      toast.error("Gönderilemedi, tekrar dener misin?");
+    } catch (error) {
+      toast.error(isBotBlocked(error) ? BOT_MESSAGE : "Gönderilemedi, tekrar dener misin?");
     } finally {
       setBusy(false);
     }

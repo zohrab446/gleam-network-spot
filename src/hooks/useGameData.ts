@@ -235,6 +235,14 @@ export function useCompleteLesson() {
       profile: Profile;
       progress: Progress[];
     }): Promise<CompletionReward> => {
+      const verdict = verifyHumanActivity(seconds);
+      if (!verdict.ok) {
+        void reportBot({ data: { kind: verdict.reason, detail: { lesson_id: lesson.id, seconds } } }).catch(
+          () => undefined,
+        );
+        throw new Error(`${BOT_PREFIX}${verdict.reason}`);
+      }
+
       const alreadyCompleted = progress.some((p) => p.lesson_id === lesson.id);
       const pro = isProActive(profile);
       // XP çarpanı herkeste eşit (7 günde 2x seri). Pro yalnızca coin'de 2x kazanır.

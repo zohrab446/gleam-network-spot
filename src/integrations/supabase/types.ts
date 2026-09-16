@@ -241,6 +241,8 @@ export type Database = {
           longest_streak: number
           max_energy: number
           milestones_claimed: string[]
+          month_start: string
+          monthly_xp: number
           onboarded: boolean
           pro_expires_at: string | null
           pro_plan: string | null
@@ -290,6 +292,8 @@ export type Database = {
           longest_streak?: number
           max_energy?: number
           milestones_claimed?: string[]
+          month_start?: string
+          monthly_xp?: number
           onboarded?: boolean
           pro_expires_at?: string | null
           pro_plan?: string | null
@@ -339,6 +343,8 @@ export type Database = {
           longest_streak?: number
           max_energy?: number
           milestones_claimed?: string[]
+          month_start?: string
+          monthly_xp?: number
           onboarded?: boolean
           pro_expires_at?: string | null
           pro_plan?: string | null
@@ -522,6 +528,8 @@ export type Database = {
               longest_streak: number
               max_energy: number
               milestones_claimed: string[]
+              month_start: string
+              monthly_xp: number
               onboarded: boolean
               pro_expires_at: string | null
               pro_plan: string | null
@@ -585,6 +593,8 @@ export type Database = {
               longest_streak: number
               max_energy: number
               milestones_claimed: string[]
+              month_start: string
+              monthly_xp: number
               onboarded: boolean
               pro_expires_at: string | null
               pro_plan: string | null
@@ -647,6 +657,8 @@ export type Database = {
               longest_streak: number
               max_energy: number
               milestones_claimed: string[]
+              month_start: string
+              monthly_xp: number
               onboarded: boolean
               pro_expires_at: string | null
               pro_plan: string | null
@@ -705,6 +717,8 @@ export type Database = {
               longest_streak: number
               max_energy: number
               milestones_claimed: string[]
+              month_start: string
+              monthly_xp: number
               onboarded: boolean
               pro_expires_at: string | null
               pro_plan: string | null
@@ -756,6 +770,7 @@ export type Database = {
           is_pro: boolean
           level: number
           longest_streak: number
+          monthly_xp: number
           rank_position: number
           streak: number
           user_id: string
@@ -795,6 +810,8 @@ export type Database = {
               longest_streak: number
               max_energy: number
               milestones_claimed: string[]
+              month_start: string
+              monthly_xp: number
               onboarded: boolean
               pro_expires_at: string | null
               pro_plan: string | null
@@ -853,6 +870,8 @@ export type Database = {
               longest_streak: number
               max_energy: number
               milestones_claimed: string[]
+              month_start: string
+              monthly_xp: number
               onboarded: boolean
               pro_expires_at: string | null
               pro_plan: string | null

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Share2, Trophy } from "lucide-react";
+import { Gift, Share2, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { useLeaderboard, useProfile } from "@/hooks/useGameData";
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authenticated/leaderboard")({
   head: () => ({
     meta: [
       { title: "Liderlik Tablosu — CodeQuest" },
-      { name: "description", content: "Haftalık ve tüm zamanların en iyi 50 CodeQuest oyuncusunu gör." },
+      { name: "description", content: "Aylık ve tüm zamanların en iyi 50 CodeQuest oyuncusunu gör." },
       { property: "og:title", content: "Liderlik Tablosu — CodeQuest" },
       { property: "og:description", content: "Sıralamada nerede olduğunu gör ve arkadaşlarını geç." },
     ],
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/leaderboard")({
 });
 
 function Leaderboard() {
-  const [scope, setScope] = useState<"weekly" | "all">("all");
+  const [scope, setScope] = useState<"monthly" | "all">("monthly");
   const { user } = useAuth();
   const { data: profile } = useProfile();
   const { data: rows = [], isLoading } = useLeaderboard(scope);
@@ -59,7 +59,7 @@ function Leaderboard() {
         <div className="inline-flex rounded-xl bg-secondary p-1" role="tablist" aria-label="Zaman aralığı">
           {(
             [
-              { id: "weekly", label: "Bu hafta" },
+              { id: "monthly", label: "Bu ay" },
               { id: "all", label: "Tüm zamanlar" },
             ] as const
           ).map((tab) => (
@@ -78,6 +78,14 @@ function Leaderboard() {
           ))}
         </div>
 
+        <div className="card-surface flex items-center gap-3 border-accent/40 bg-accent-soft p-4 text-sm font-semibold">
+          <Gift className="h-5 w-5 shrink-0 text-accent" />
+          <p>
+            Her ayın 15'inde <span className="font-bold">"Bu ay"</span> sıralamasının 1. sırasındaki oyuncuya
+            <span className="font-bold"> 5 aylık Claude Pro</span> hediye ediyoruz. Zirveye oyna!
+          </p>
+        </div>
+
         {myRow && (
           <div className="card-surface flex items-center gap-3 border-primary p-4">
             <span className="font-display text-xl font-extrabold text-primary">#{myRow.rank_position}</span>
@@ -89,7 +97,7 @@ function Leaderboard() {
               </p>
             </div>
             <span className="font-display font-extrabold text-primary">
-              {scope === "weekly" ? myRow.weekly_xp : myRow.xp} XP
+              {scope === "monthly" ? myRow.monthly_xp : myRow.xp} XP
             </span>
           </div>
         )}
@@ -120,7 +128,7 @@ function Leaderboard() {
                   </p>
                 </div>
                 <span className="font-display font-extrabold text-primary">
-                  {scope === "weekly" ? row.weekly_xp : row.xp} XP
+                  {scope === "monthly" ? row.monthly_xp : row.xp} XP
                 </span>
               </li>
             ))}

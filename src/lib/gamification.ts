@@ -122,6 +122,11 @@ export function nextStreak(lastActiveDate: string | null, streak: number): { str
   return { streak: lastActiveDate === yesterday ? streak + 1 : 1, today };
 }
 
+export function currentMonthStart(): string {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
+}
+
 export function currentWeekStart(): string {
   const now = new Date();
   const day = (now.getUTCDay() + 6) % 7; // Pazartesi = 0

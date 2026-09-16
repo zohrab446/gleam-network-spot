@@ -39,7 +39,7 @@ export const runGameAction = createServerFn({ method: "POST" })
 
 export const getLeaderboard = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ scope: z.enum(["all", "weekly"]) }).parse(input))
+  .inputValidator((input) => z.object({ scope: z.enum(["all", "weekly", "monthly"]) }).parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const response = await supabaseAdmin.rpc("get_leaderboard", { p_scope: data.scope, p_limit: 50 });

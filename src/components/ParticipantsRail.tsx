@@ -8,14 +8,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 export function ParticipantsRail() {
-  const [scope, setScope] = useState<"weekly" | "all">("weekly");
+  const [scope, setScope] = useState<"monthly" | "all">("monthly");
   const { user } = useAuth();
   const { data: rows = [], isLoading } = useLeaderboard(scope);
 
   const myIndex = rows.findIndex((row) => row.user_id === user?.id);
   const me = myIndex >= 0 ? rows[myIndex] : undefined;
   const ahead = myIndex > 0 ? rows[myIndex - 1] : undefined;
-  const xpOf = (row: { xp: number; weekly_xp: number }) => (scope === "weekly" ? row.weekly_xp : row.xp);
+  const xpOf = (row: { xp: number; monthly_xp: number }) => (scope === "monthly" ? row.monthly_xp : row.xp);
   const gap = me && ahead ? Math.max(xpOf(ahead) - xpOf(me), 0) : null;
 
   return (
@@ -35,7 +35,7 @@ export function ParticipantsRail() {
         <div className="mt-3 inline-flex rounded-xl bg-secondary p-1" role="tablist" aria-label="Yarışma aralığı">
           {(
             [
-              { id: "weekly", label: "Bu hafta" },
+              { id: "monthly", label: "Bu ay" },
               { id: "all", label: "Tüm zaman" },
             ] as const
           ).map((tab) => (

@@ -12,13 +12,13 @@ export const Route = createFileRoute("/iletisim")({
       {
         name: "description",
         content:
-          "CodeQuest / NHR Yazılım iletişim bilgileri: Çankaya/Ankara, +90 533 466 80 11, info@nhryazilim.com. Hafta içi 09:00–18:00 destek.",
-      },
-      { property: "og:title", content: "İletişim — CodeQuest (NHR Yazılım)" },
-      {
-        property: "og:description",
-        content:
-          "NHR Yazılım iletişim: Çankaya/Ankara, +90 533 466 80 11, info@nhryazilim.com.",
+          "CodeQuest / NHR Yazılım iletişim bilgileri: Çankaya/Ankara, +90 533 466 80 11, nhrcoding@nhrcoding.com. Hafta içi 09:00–18:00 destek.",
+        },
+        { property: "og:title", content: "İletişim — CodeQuest (NHR Yazılım)" },
+        {
+          property: "og:description",
+          content:
+            "NHR Yazılım iletişim: Çankaya/Ankara, +90 533 466 80 11, nhrcoding@nhrcoding.com.",
       },
     ],
   }),

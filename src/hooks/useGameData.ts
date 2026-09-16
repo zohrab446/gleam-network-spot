@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/auth";
 import { LESSONS, MAX_LEVEL, type Lesson } from "@/data/lessons";
 import { BADGES } from "@/lib/gamification";
 import { useServerFn } from "@tanstack/react-start";
+import type { CompletionResult } from "@/lib/game.functions";
 import {
   completeLesson,
   getLeaderboard,

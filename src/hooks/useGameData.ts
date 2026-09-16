@@ -222,6 +222,7 @@ export type CompletionReward = {
 export function useCompleteLesson() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const reportBot = useServerFn(reportBotIncident);
 
   return useMutation({
     mutationFn: async ({

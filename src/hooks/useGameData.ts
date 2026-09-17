@@ -16,6 +16,7 @@ import { unwrapAction } from "@/lib/action-result";
 import { validateUsername } from "@/lib/validation";
 import { reportBotIncident } from "@/lib/antibot.functions";
 import { BOT_PREFIX, verifyHumanActivity } from "@/lib/antibot";
+import { translate } from "@/lib/i18n";
 
 export type Profile = {
   id: string;
@@ -94,7 +95,7 @@ export function useProfile() {
       if (data) return data as Profile;
       // Profil tetikleyici gecikirse burada oluştur.
       const fallbackName =
-        (user!.user_metadata?.["full_name"] as string | undefined) ?? user!.email?.split("@")[0] ?? "Kodcu";
+        (user!.user_metadata?.["full_name"] as string | undefined) ?? user!.email?.split("@")[0] ?? translate("Kodcu", "Coder");
       const { data: created, error: insertError } = await supabase
         .from("profiles")
         .insert({ id: user!.id, email: user!.email ?? null, username: fallbackName })
@@ -213,10 +214,10 @@ export function useSaveUsername() {
       } catch (error) {
         const code = error instanceof Error ? error.message : "";
         if (code === "USERNAME_TAKEN") {
-          throw new Error("Kullanıcı adı başkası tarafından alınmış, başka bir ad dener misin?");
+          throw new Error(translate("Kullanıcı adı başkası tarafından alınmış, başka bir ad dener misin?", "That username is already taken, want to try another one?"));
         }
         if (code === "USERNAME_REJECTED") {
-          throw new Error("Kullanıcı adı kaydedilemedi, farklı bir ad dener misin?");
+          throw new Error(translate("Kullanıcı adı kaydedilemedi, farklı bir ad dener misin?", "Couldn't save the username, want to try a different one?"));
         }
         throw error;
       }

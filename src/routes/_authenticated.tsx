@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -8,6 +9,7 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AuthenticatedLayout() {
+  const t = useT();
   const { session, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -20,7 +22,7 @@ function AuthenticatedLayout() {
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <span className="h-10 w-10 animate-spin rounded-full border-4 border-primary-soft border-t-primary" />
-          <p className="text-sm font-semibold text-muted-foreground">Yükleniyor...</p>
+          <p className="text-sm font-semibold text-muted-foreground">{t("Yükleniyor...", "Loading...")}</p>
         </div>
       </div>
     );

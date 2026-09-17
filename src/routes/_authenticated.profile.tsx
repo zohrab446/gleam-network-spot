@@ -15,11 +15,18 @@ import { useSettings } from "@/store/settings";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 
-const PLAN_LABELS: Record<string, string> = {
+const PLAN_LABELS_TR: Record<string, string> = {
   trial: "Pro deneme (7 gün)",
   monthly: "Pro · 1 aylık",
   quarterly: "Pro · 3 aylık",
   yearly: "Pro · 1 yıllık",
+};
+
+const PLAN_LABELS_EN: Record<string, string> = {
+  trial: "Pro trial (7 days)",
+  monthly: "Pro · monthly",
+  quarterly: "Pro · quarterly",
+  yearly: "Pro · yearly",
 };
 
 
@@ -56,13 +63,14 @@ function ProfilePage() {
 
   const owned = new Set(badges.map((b) => b.badge_id));
   const favorite = (profile.favorite_language ?? "html") as LessonLanguage;
+  const PLAN_LABELS = settings.language === "en" ? PLAN_LABELS_EN : PLAN_LABELS_TR;
 
   async function saveAvatar(patch: { avatar_shape?: string; avatar_color?: string }) {
     try {
       await updateProfile.mutateAsync(patch);
-      toast.success("Avatarın güncellendi!");
+      toast.success(t("Avatarın güncellendi!", "Your avatar was updated!"));
     } catch {
-      toast.error("Güncellenemedi.");
+      toast.error(t("Güncellenemedi.", "Could not update."));
     }
   }
 
@@ -73,14 +81,17 @@ function ProfilePage() {
           <div className="flex flex-wrap items-center gap-4">
             <PlayerAvatar shape={profile.avatar_shape} color={profile.avatar_color} size="lg" />
             <div className="min-w-0">
-              <h1 className="truncate text-2xl">{profile.username ?? "Kodcu"}</h1>
+              <h1 className="truncate text-2xl">{profile.username ?? t("Kodcu", "Coder")}</h1>
               <p className="truncate text-sm text-muted-foreground">{profile.email}</p>
               {isProActive(profile) && (
                 <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary">
                   <Crown className="h-3.5 w-3.5" />
                   {PLAN_LABELS[profile.pro_plan ?? ""] ?? "Pro"}
                   {profile.pro_expires_at
-                    ? ` · ${new Date(profile.pro_expires_at).toLocaleDateString("tr-TR")} tarihine kadar`
+                    ? t(
+                        ` · ${new Date(profile.pro_expires_at).toLocaleDateString("tr-TR")} tarihine kadar`,
+                        ` · until ${new Date(profile.pro_expires_at).toLocaleDateString("en-US")}`,
+                      )
                     : ""}
                 </p>
               )}
@@ -89,21 +100,21 @@ function ProfilePage() {
 
 
           <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
-            <Stat label="Seviye" value={`${profile.level} / ${MAX_LEVEL}`} />
-            <Stat label="Toplam XP" value={profile.xp} />
-            <Stat label="Coin" value={profile.coins} />
-            <Stat label="Seri" value={`${profile.streak} gün`} />
-            <Stat label="En uzun seri" value={`${profile.longest_streak} gün`} />
-            <Stat label="Bitirilen ders" value={progress.length} />
-            <Stat label="Favori dil" value={LANGUAGE_META[favorite]?.label ?? "—"} />
-            <Stat label="Rozet" value={`${owned.size} / ${BADGES.length}`} />
-            <Stat label="İpucu hakkı" value={isProActive(profile) ? "Sınırsız" : profile.hint_credits} />
+            <Stat label={t("Seviye", "Level")} value={`${profile.level} / ${MAX_LEVEL}`} />
+            <Stat label={t("Toplam XP", "Total XP")} value={profile.xp} />
+            <Stat label={t("Coin", "Coins")} value={profile.coins} />
+            <Stat label={t("Seri", "Streak")} value={t(`${profile.streak} gün`, `${profile.streak} days`)} />
+            <Stat label={t("En uzun seri", "Longest streak")} value={t(`${profile.longest_streak} gün`, `${profile.longest_streak} days`)} />
+            <Stat label={t("Bitirilen ders", "Lessons finished")} value={progress.length} />
+            <Stat label={t("Favori dil", "Favorite language")} value={LANGUAGE_META[favorite]?.label ?? "—"} />
+            <Stat label={t("Rozet", "Badges")} value={`${owned.size} / ${BADGES.length}`} />
+            <Stat label={t("İpucu hakkı", "Hint credits")} value={isProActive(profile) ? t("Sınırsız", "Unlimited") : profile.hint_credits} />
 
           </dl>
         </section>
 
         <section className="card-surface p-6">
-          <h2 className="text-xl">Rozetler</h2>
+          <h2 className="text-xl">{t("Rozetler", "Badges")}</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {BADGES.map((badge) => {
               const has = owned.has(badge.id);
@@ -127,16 +138,19 @@ function ProfilePage() {
         </section>
 
         <section className="card-surface p-6">
-          <h2 className="text-xl">Avatarını değiştir</h2>
+          <h2 className="text-xl">{t("Avatarını değiştir", "Change your avatar")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Coinlerinle ileride yeni temalar da açacaksın. Şimdilik şekil ve renk senin elinde.
+            {t(
+              "Coinlerinle ileride yeni temalar da açacaksın. Şimdilik şekil ve renk senin elinde.",
+              "You'll unlock new themes with your coins later. For now, shape and color are up to you.",
+            )}
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             {AVATAR_SHAPES.map((shape) => (
               <button
                 key={shape}
                 type="button"
-                aria-label={`Şekil: ${shape}`}
+                aria-label={t(`Şekil: ${shape}`, `Shape: ${shape}`)}
                 aria-pressed={profile.avatar_shape === shape}
                 onClick={() => void saveAvatar({ avatar_shape: shape })}
                 className={cn(
@@ -153,7 +167,7 @@ function ProfilePage() {
               <button
                 key={color.id}
                 type="button"
-                aria-label={`Renk: ${color.label}`}
+                aria-label={t(`Renk: ${color.label}`, `Color: ${color.label}`)}
                 aria-pressed={profile.avatar_color === color.id}
                 onClick={() => void saveAvatar({ avatar_color: color.id })}
                 className={cn(
@@ -167,10 +181,10 @@ function ProfilePage() {
         </section>
 
         <section className="card-surface p-6">
-          <h2 className="text-xl">Ayarlar</h2>
+          <h2 className="text-xl">{t("Ayarlar", "Settings")}</h2>
           <div className="mt-4 space-y-4">
             <div className="flex items-center justify-between gap-4">
-              <Label htmlFor="sound">Ses efektleri</Label>
+              <Label htmlFor="sound">{t("Ses efektleri", "Sound effects")}</Label>
               <Switch
                 id="sound"
                 checked={settings.sound}
@@ -181,7 +195,7 @@ function ProfilePage() {
               />
             </div>
             <div className="flex items-center justify-between gap-4">
-              <Label htmlFor="theme">Karanlık tema</Label>
+              <Label htmlFor="theme">{t("Karanlık tema", "Dark theme")}</Label>
               <Switch
                 id="theme"
                 checked={settings.theme === "dark"}

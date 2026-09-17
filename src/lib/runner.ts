@@ -1,5 +1,6 @@
 import type { Lesson, LessonCheck, TrackId } from "@/data/types";
 import { editableFile } from "@/data/lessons";
+import { translate } from "@/lib/i18n";
 
 export type Files = Record<string, string>;
 
@@ -66,13 +67,19 @@ export function checkConnections(lesson: Lesson, files: Files): ConnectionStatus
 }
 
 export function connectionMessage(status: ConnectionStatus): string {
-  if (status.ok) return "Bağlantılar Aktif (HTML ↔ CSS ↔ JS)";
+  if (status.ok) return translate("Bağlantılar Aktif (HTML ↔ CSS ↔ JS)", "Connections Active (HTML ↔ CSS ↔ JS)");
   const first = status.missing[0]!;
   if (first === "style.css")
-    return "Bağlantı Eksik: style.css dosyası HTML içinde <link> etiketiyle bağlanmamış!";
+    return translate(
+      "Bağlantı Eksik: style.css dosyası HTML içinde <link> etiketiyle bağlanmamış!",
+      "Missing connection: style.css is not linked in the HTML with a <link> tag!",
+    );
   if (first === "script.js")
-    return "Bağlantı Eksik: script.js dosyası HTML içinde <script src=\"...\"> etiketiyle bağlanmamış!";
-  return `Bağlantı Eksik: ${first} HTML'e bağlı değil!`;
+    return translate(
+      "Bağlantı Eksik: script.js dosyası HTML içinde <script src=\"...\"> etiketiyle bağlanmamış!",
+      "Missing connection: script.js is not linked in the HTML with a <script src=\"...\"> tag!",
+    );
+  return translate(`Bağlantı Eksik: ${first} HTML'e bağlı değil!`, `Missing connection: ${first} is not linked to the HTML!`);
 }
 
 // ---------------------------------------------------------------------------
@@ -151,7 +158,7 @@ function runWebDocument(html: string, opts: { waitMs: number; waitFor?: string; 
         error = w?.__error ?? null;
         doc = iframe.contentDocument;
       } catch {
-        error = "Kod çalıştırılamadı.";
+        error = translate("Kod çalıştırılamadı.", "The code could not be run.");
       }
       resolve({ logs, error, doc, win, dispose: () => iframe.remove() });
     };
@@ -195,7 +202,7 @@ async function runWeb(lesson: Lesson, files: Files): Promise<{ run: RunResult; w
   const html = buildWebDocument(lesson, files);
   const web = await runWebDocument(html, webWaitOptions(lesson.language));
   const logs = [...web.logs];
-  if (lesson.language === "html" || lesson.language === "css") logs.unshift("Önizleme hazır.");
+  if (lesson.language === "html" || lesson.language === "css") logs.unshift(translate("Önizleme hazır.", "Preview ready."));
   return { run: { logs, error: web.error, previewHtml: html, connection }, web };
 }
 
@@ -219,7 +226,7 @@ async function runRemoteLesson(lesson: Lesson, files: Files, runner: Runner): Pr
   if (!runner.remote) {
     return {
       logs: [],
-      error: "Uzak derleyici yapılandırılmamış.",
+      error: translate("Uzak derleyici yapılandırılmamış.", "The remote compiler is not configured."),
       previewHtml: null,
       connection: { ok: true, missing: [], applicable: false },
     };

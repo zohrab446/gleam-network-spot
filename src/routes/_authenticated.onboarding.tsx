@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useThemeSync } from "@/components/AppShell";
 import { playSound } from "@/store/settings";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
 });
 
 function Onboarding() {
+  const t = useT();
   useThemeSync();
   const navigate = useNavigate();
   const { data: profile, isLoading } = useProfile();
@@ -63,7 +65,7 @@ function Onboarding() {
       toast.error(
         error instanceof Error && error.message.includes("Kullanıcı adı")
           ? error.message
-          : "Kaydedilemedi, tekrar dener misin?",
+          : t("Kaydedilemedi, tekrar dener misin?", "Couldn't save, want to try again?"),
       );
     }
   }
@@ -79,27 +81,27 @@ function Onboarding() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="card-surface pop-in w-full max-w-xl p-6 sm:p-8">
-        <h1 className="text-2xl">Kendine bir avatar seç ⚡</h1>
+        <h1 className="text-2xl">{t("Kendine bir avatar seç ⚡", "Pick your avatar ⚡")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Liderlik tablosunda ve profilinde bu avatar görünecek.
+          {t("Liderlik tablosunda ve profilinde bu avatar görünecek.", "This avatar will show on the leaderboard and your profile.")}
         </p>
 
         <div className="mt-6 flex items-center gap-4">
           <PlayerAvatar shape={shape} color={color} size="lg" />
           <div>
-            <p className="font-display text-lg font-bold">{username.trim() || "Kodcu"}</p>
-            <p className="text-sm text-muted-foreground">Seviye 1 · 0 XP</p>
+            <p className="font-display text-lg font-bold">{username.trim() || t("Kodcu", "Coder")}</p>
+            <p className="text-sm text-muted-foreground">{t("Seviye", "Level")} 1 · 0 XP</p>
           </div>
         </div>
 
         <fieldset className="mt-8">
-          <legend className="text-sm font-bold uppercase tracking-wide text-muted-foreground">Şekil</legend>
+          <legend className="text-sm font-bold uppercase tracking-wide text-muted-foreground">{t("Şekil", "Shape")}</legend>
           <div className="mt-3 flex flex-wrap gap-3">
             {AVATAR_SHAPES.map((option) => (
               <button
                 key={option}
                 type="button"
-                aria-label={`Şekil: ${option}`}
+                aria-label={t(`Şekil: ${option}`, `Shape: ${option}`)}
                 aria-pressed={shape === option}
                 onClick={() => {
                   setShape(option);
@@ -117,13 +119,13 @@ function Onboarding() {
         </fieldset>
 
         <fieldset className="mt-6">
-          <legend className="text-sm font-bold uppercase tracking-wide text-muted-foreground">Renk</legend>
+          <legend className="text-sm font-bold uppercase tracking-wide text-muted-foreground">{t("Renk", "Color")}</legend>
           <div className="mt-3 flex flex-wrap gap-3">
             {AVATAR_COLORS.map((option) => (
               <button
                 key={option.id}
                 type="button"
-                aria-label={`Renk: ${option.label}`}
+                aria-label={t(`Renk: ${option.label}`, `Color: ${option.label}`)}
                 aria-pressed={color === option.id}
                 onClick={() => {
                   setColor(option.id);
@@ -140,7 +142,7 @@ function Onboarding() {
         </fieldset>
 
         <div className="mt-6 space-y-1.5">
-          <Label htmlFor="username">Kullanıcı adı (3–20 karakter)</Label>
+          <Label htmlFor="username">{t("Kullanıcı adı (3–20 karakter)", "Username (3–20 characters)")}</Label>
           <Input
             id="username"
             value={username}
@@ -149,7 +151,7 @@ function Onboarding() {
             placeholder="kodcu_ada"
           />
           <p className="text-xs text-muted-foreground">
-            Harf, rakam, nokta ve alt çizgi kullanabilirsin. {username.length}/20
+            {t("Harf, rakam, nokta ve alt çizgi kullanabilirsin.", "You can use letters, numbers, dots and underscores.")} {username.length}/20
           </p>
         </div>
 
@@ -159,7 +161,7 @@ function Onboarding() {
           disabled={busy}
           onClick={() => void save()}
         >
-          {busy ? "Kaydediliyor..." : "Yolculuğa başla 🚀"}
+          {busy ? t("Kaydediliyor...", "Saving...") : t("Yolculuğa başla 🚀", "Start the journey 🚀")}
         </Button>
       </div>
     </div>

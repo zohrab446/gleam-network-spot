@@ -33,7 +33,7 @@ export const createPaytrCheckout = createServerFn({ method: "POST" })
     const noInstallment = "0";
     const maxInstallment = "0";
     const currency = "TL";
-    const testMode = "1"; // Geçici test modu — Canlı Mod "Test işlem" adımı için
+    const testMode = "0"; // Canlı mod
     const hashStr = `${merchantId}${userIp}${merchantOid}${email}${paymentAmount}${userBasket}${noInstallment}${maxInstallment}${currency}${testMode}`;
     const paytrToken = createHmac("sha256", merchantKey).update(`${hashStr}${merchantSalt}`).digest("base64");
 

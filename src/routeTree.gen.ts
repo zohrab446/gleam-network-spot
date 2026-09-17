@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IletisimRouteImport } from './routes/iletisim'
 import { Route as MesafeliSatisRouteImport } from './routes/mesafeli-satis'
+import { Route as SifreSifirlaRouteImport } from './routes/sifre-sifirla'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated.leaderboard'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
@@ -48,6 +49,11 @@ const IletisimRoute = IletisimRouteImport.update({
 const MesafeliSatisRoute = MesafeliSatisRouteImport.update({
   id: '/mesafeli-satis',
   path: '/mesafeli-satis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SifreSifirlaRoute = SifreSifirlaRouteImport.update({
+  id: '/sifre-sifirla',
+  path: '/sifre-sifirla',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/iletisim': typeof IletisimRoute
   '/mesafeli-satis': typeof MesafeliSatisRoute
+  '/sifre-sifirla': typeof SifreSifirlaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/iletisim': typeof IletisimRoute
   '/mesafeli-satis': typeof MesafeliSatisRoute
+  '/sifre-sifirla': typeof SifreSifirlaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/iletisim': typeof IletisimRoute
   '/mesafeli-satis': typeof MesafeliSatisRoute
+  '/sifre-sifirla': typeof SifreSifirlaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/iletisim'
     | '/mesafeli-satis'
+    | '/sifre-sifirla'
     | '/dashboard'
     | '/leaderboard'
     | '/onboarding'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/iletisim'
     | '/mesafeli-satis'
+    | '/sifre-sifirla'
     | '/dashboard'
     | '/leaderboard'
     | '/onboarding'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/iletisim'
     | '/mesafeli-satis'
+    | '/sifre-sifirla'
     | '/_authenticated/dashboard'
     | '/_authenticated/leaderboard'
     | '/_authenticated/onboarding'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   IletisimRoute: typeof IletisimRoute
   MesafeliSatisRoute: typeof MesafeliSatisRoute
+  SifreSifirlaRoute: typeof SifreSifirlaRoute
   ApiTestEndpointRoute: typeof ApiTestEndpointRoute
   ApiPublicPaytrCallbackRoute: typeof ApiPublicPaytrCallbackRoute
 }
@@ -263,6 +276,13 @@ declare module '@tanstack/react-router' {
       path: '/mesafeli-satis'
       fullPath: '/mesafeli-satis'
       preLoaderRoute: typeof MesafeliSatisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sifre-sifirla': {
+      id: '/sifre-sifirla'
+      path: '/sifre-sifirla'
+      fullPath: '/sifre-sifirla'
+      preLoaderRoute: typeof SifreSifirlaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/dashboard': {
@@ -379,6 +399,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   IletisimRoute: IletisimRoute,
   MesafeliSatisRoute: MesafeliSatisRoute,
+  SifreSifirlaRoute: SifreSifirlaRoute,
   ApiTestEndpointRoute: ApiTestEndpointRoute,
   ApiPublicPaytrCallbackRoute: ApiPublicPaytrCallbackRoute,
 }

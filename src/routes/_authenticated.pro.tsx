@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { PaytrCheckoutDialog } from "@/components/PaytrCheckoutDialog";
 import { PRO_PRODUCTS } from "@/lib/store";
 import { PromoCodeCard } from "@/components/PromoCodeCard";
+import { useT, useLanguage, localeCode } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/pro")({
   head: () => ({
@@ -32,6 +33,8 @@ export const Route = createFileRoute("/_authenticated/pro")({
 
 function ProPage() {
   useEnergySync();
+  const t = useT();
+  const lang = useLanguage();
   const { data: profile, isLoading } = useProfile();
   const startTrial = useStartProTrial();
 
@@ -53,19 +56,22 @@ function ProPage() {
             <p className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-bold">
               <Crown className="h-3.5 w-3.5" /> CodeQuest Pro
             </p>
-            <h1 className="mt-3 text-3xl">Enerji derdi olmadan öğren</h1>
+            <h1 className="mt-3 text-3xl">{t("Enerji derdi olmadan öğren", "Learn without energy worries")}</h1>
             <p className="mt-2 max-w-xl text-sm opacity-90">
-              Sınırsız enerji, yanlış cevapta kayıp yok, reklamsız deneyim ve 2x coin.
+              {t(
+                "Sınırsız enerji, yanlış cevapta kayıp yok, reklamsız deneyim ve 2x coin.",
+                "Unlimited energy, no loss on wrong answers, ad-free experience, and 2x coins.",
+              )}
             </p>
           </div>
           <div className="p-6">
             {pro ? (
               <div className="rounded-2xl bg-success-soft p-4">
-                <p className="font-bold text-success">Pro üyeliğin aktif 👑</p>
+                <p className="font-bold text-success">{t("Pro üyeliğin aktif 👑", "Your Pro membership is active 👑")}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Plan: {profile.pro_plan === "trial" ? "7 gün ücretsiz deneme" : (profile.pro_plan ?? "Pro")}
+                  {t("Plan", "Plan")}: {profile.pro_plan === "trial" ? t("7 gün ücretsiz deneme", "7-day free trial") : (profile.pro_plan ?? "Pro")}
                   {profile.pro_expires_at
-                    ? ` · Bitiş: ${new Date(profile.pro_expires_at).toLocaleDateString("tr-TR")}`
+                    ? ` · ${t("Bitiş", "Ends")}: ${new Date(profile.pro_expires_at).toLocaleDateString(localeCode(lang))}`
                     : ""}
                 </p>
               </div>
@@ -78,14 +84,14 @@ function ProPage() {
                   startTrial.mutate(undefined, {
                     onSuccess: () => {
                       void celebrate();
-                      toast.success("7 gün Pro deneme başladı! Enerjin sınırsız 👑");
+                      toast.success(t("7 gün Pro deneme başladı! Enerjin sınırsız 👑", "7-day Pro trial started! Your energy is unlimited 👑"));
                     },
                     onError: (error) => toast.error(energyErrorMessage(error)),
                   })
                 }
               >
                 <Sparkles className="mr-1 h-4 w-4" />
-                {profile.pro_trial_used ? "Deneme kullanıldı" : "7 gün ücretsiz dene"}
+                {profile.pro_trial_used ? t("Deneme kullanıldı", "Trial used") : t("7 gün ücretsiz dene", "Try 7 days free")}
               </Button>
             )}
           </div>
@@ -93,9 +99,9 @@ function ProPage() {
 
         <section className="card-surface p-5" aria-labelledby="plans-heading">
           <h2 id="plans-heading" className="text-lg">
-            Planlar
+            {t("Planlar", "Plans")}
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">Ücretli planlarda kart ödemen PayTR güvencesiyle alınır.</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("Ücretli planlarda kart ödemen PayTR güvencesiyle alınır.", "Card payments on paid plans are secured by PayTR.")}</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {PRO_PLANS.map((plan) => (
               <div
@@ -117,13 +123,13 @@ function ProPage() {
                       startTrial.mutate(undefined, {
                         onSuccess: () => {
                           void celebrate();
-                          toast.success("7 gün Pro deneme başladı 👑");
+                          toast.success(t("7 gün Pro deneme başladı 👑", "7-day Pro trial started 👑"));
                         },
                         onError: (error) => toast.error(energyErrorMessage(error)),
                       })
                     }
                   >
-                    {pro ? "Aktif" : profile.pro_trial_used ? "Kullanıldı" : "Başlat"}
+                    {pro ? t("Aktif", "Active") : profile.pro_trial_used ? t("Kullanıldı", "Used") : t("Başlat", "Start")}
                   </Button>
                 ) : <PaytrCheckoutDialog product={PRO_PRODUCTS.find((item) => item.id === `pro-${plan.id}`)!} />}
               </div>
@@ -135,14 +141,14 @@ function ProPage() {
 
         <section className="card-surface p-5" aria-labelledby="perks-heading">
           <h2 id="perks-heading" className="text-lg">
-            Normal vs Pro
+            {t("Normal vs Pro", "Free vs Pro")}
           </h2>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                  <th className="py-2">Özellik</th>
-                  <th className="py-2">Normal</th>
+                  <th className="py-2">{t("Özellik", "Feature")}</th>
+                  <th className="py-2">{t("Normal", "Free")}</th>
                   <th className="py-2">Pro</th>
                 </tr>
               </thead>
@@ -158,7 +164,11 @@ function ProPage() {
             </table>
           </div>
           <ul className="mt-4 space-y-1.5 text-sm">
-            {["Premium dersler", "Asistan yanıt önceliği", "Reklamsız arayüz"].map((item) => (
+            {[
+              t("Premium dersler", "Premium lessons"),
+              t("Asistan yanıt önceliği", "Priority assistant replies"),
+              t("Reklamsız arayüz", "Ad-free interface"),
+            ].map((item) => (
               <li key={item} className="flex items-center gap-2">
                 <Check className="h-4 w-4 text-success" /> {item}
               </li>
@@ -167,7 +177,7 @@ function ProPage() {
         </section>
 
         <Button asChild variant="ghost" className="font-bold">
-          <Link to="/rewards">Enerji kazanma yollarına bak</Link>
+          <Link to="/rewards">{t("Enerji kazanma yollarına bak", "See ways to earn energy")}</Link>
         </Button>
       </div>
     </AppShell>

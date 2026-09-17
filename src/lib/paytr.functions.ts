@@ -33,7 +33,7 @@ export const createPaytrCheckout = createServerFn({ method: "POST" })
     const noInstallment = "0";
     const maxInstallment = "0";
     const currency = "TL";
-    const testMode = "0";
+    const testMode = "1"; // Geçici test modu — Canlı Mod "Test işlem" adımı için
     const hashStr = `${merchantId}${userIp}${merchantOid}${email}${paymentAmount}${userBasket}${noInstallment}${maxInstallment}${currency}${testMode}`;
     const paytrToken = createHmac("sha256", merchantKey).update(`${hashStr}${merchantSalt}`).digest("base64");
 
@@ -81,5 +81,5 @@ export const createPaytrCheckout = createServerFn({ method: "POST" })
       console.error("PayTR token error", result.reason ?? response.status);
       throw new Error("Ödeme ekranı açılamadı.");
     }
-    return { token: result.token, merchantOid, testMode: false };
+    return { token: result.token, merchantOid, testMode: true };
   });

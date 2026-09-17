@@ -15,22 +15,24 @@ import { AuthProvider } from "../lib/auth";
 import { Toaster } from "../components/ui/sonner";
 import { initAntiBot } from "../lib/antibot";
 import { PromoBanner } from "@/components/PromoBanner";
+import { useT } from "@/lib/i18n";
 
 function NotFoundComponent() {
+  const t = useT();
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Sayfa bulunamadı</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">{t("Sayfa bulunamadı", "Page not found")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Aradığın sayfa yok ya da taşınmış olabilir.
+          {t("Aradığın sayfa yok ya da taşınmış olabilir.", "The page you're looking for doesn't exist or may have moved.")}
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Ana sayfaya dön
+            {t("Ana sayfaya dön", "Back to home")}
           </Link>
         </div>
       </div>
@@ -40,6 +42,7 @@ function NotFoundComponent() {
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
+  const t = useT();
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
@@ -48,9 +51,12 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Bu sayfa yüklenemedi</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("Bu sayfa yüklenemedi", "This page failed to load")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Bir şeyler ters gitti. Sayfayı yenilemeyi ya da ana sayfaya dönmeyi deneyebilirsin.
+          {t(
+            "Bir şeyler ters gitti. Sayfayı yenilemeyi ya da ana sayfaya dönmeyi deneyebilirsin.",
+            "Something went wrong. You can try refreshing the page or going back home.",
+          )}
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -60,13 +66,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Tekrar dene
+            {t("Tekrar dene", "Try again")}
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Ana sayfa
+            {t("Ana sayfa", "Home")}
           </a>
         </div>
       </div>

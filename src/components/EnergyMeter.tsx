@@ -5,6 +5,7 @@ import type { Profile } from "@/hooks/useGameData";
 import { MAX_ENERGY, formatCountdown, fullRefillAt, isProActive, nextRefillAt } from "@/lib/energy";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 /** Saniyede bir yenilenen sayaç metni. */
 function useTicker(intervalMs = 30_000) {
@@ -18,6 +19,7 @@ function useTicker(intervalMs = 30_000) {
 export function EnergyPips({ profile, size = "md" }: { profile: Profile; size?: "sm" | "md" }) {
   const pro = isProActive(profile);
   const max = profile.max_energy ?? MAX_ENERGY;
+  const t = useT();
   if (pro) {
     return (
       <span className="inline-flex items-center gap-1 font-bold text-primary">
@@ -27,7 +29,7 @@ export function EnergyPips({ profile, size = "md" }: { profile: Profile; size?: 
     );
   }
   return (
-    <span className="inline-flex items-center gap-1" aria-label={`${profile.energy} enerji`}>
+    <span className="inline-flex items-center gap-1" aria-label={t(`${profile.energy} enerji`, `${profile.energy} energy`)}>
       {Array.from({ length: max }).map((_, i) => (
         <span
           key={i}
@@ -48,6 +50,7 @@ export function EnergyPips({ profile, size = "md" }: { profile: Profile; size?: 
 /** Üst çubuktaki küçük enerji göstergesi. */
 export function EnergyChip({ profile }: { profile: Profile | null | undefined }) {
   useTicker();
+  const t = useT();
   if (!profile) return null;
   const pro = isProActive(profile);
   return (
@@ -57,8 +60,8 @@ export function EnergyChip({ profile }: { profile: Profile | null | undefined })
         "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-bold",
         pro ? "bg-primary-soft text-primary" : profile.energy === 0 ? "bg-destructive/10 text-destructive" : "bg-secondary",
       )}
-      title={pro ? "Pro: sınırsız enerji" : `Sonraki enerji: ${formatCountdown(nextRefillAt(profile))}`}
-      aria-label="Enerji durumu ve ödüller"
+      title={pro ? t("Pro: sınırsız enerji", "Pro: unlimited energy") : t(`Sonraki enerji: ${formatCountdown(nextRefillAt(profile))}`, `Next energy: ${formatCountdown(nextRefillAt(profile))}`)}
+      aria-label={t("Enerji durumu ve ödüller", "Energy status and rewards")}
     >
       <EnergyPips profile={profile} size="sm" />
     </Link>
@@ -68,6 +71,7 @@ export function EnergyChip({ profile }: { profile: Profile | null | undefined })
 /** Panodaki büyük enerji kartı. */
 export function EnergyCard({ profile }: { profile: Profile }) {
   useTicker();
+  const t = useT();
   const pro = isProActive(profile);
   const max = profile.max_energy ?? MAX_ENERGY;
   const pct = pro ? 100 : Math.min(100, Math.round((profile.energy / max) * 100));
@@ -77,7 +81,7 @@ export function EnergyCard({ profile }: { profile: Profile }) {
       <div className="flex items-center gap-2">
         <Battery className="h-5 w-5 text-success" />
         <h2 id="energy-heading" className="text-lg">
-          Enerji durumu
+          {t("Enerji durumu", "Energy status")}
         </h2>
         {pro && (
           <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-xs font-bold text-primary">
@@ -96,36 +100,36 @@ export function EnergyCard({ profile }: { profile: Profile }) {
       <div className="mt-3 flex items-center justify-between gap-3">
         <EnergyPips profile={profile} />
         {!pro && profile.energy === 0 && (
-          <span className="text-sm font-bold text-destructive">Enerji bitti 😴</span>
+          <span className="text-sm font-bold text-destructive">{t("Enerji bitti 😴", "Energy is out 😴")}</span>
         )}
         {!pro && profile.energy === 1 && (
-          <span className="text-sm font-bold text-destructive">Dikkat! Sadece 1 yanlış hakkın var</span>
+          <span className="text-sm font-bold text-destructive">{t("Dikkat! Sadece 1 yanlış hakkın var", "Careful! You only have 1 mistake left")}</span>
         )}
       </div>
 
       {!pro && (
         <p className="mt-3 text-sm text-muted-foreground">
-          Sonraki enerji: <strong>{formatCountdown(nextRefillAt(profile))}</strong> · Tam dolum:{" "}
+          {t("Sonraki enerji", "Next energy")}: <strong>{formatCountdown(nextRefillAt(profile))}</strong> · {t("Tam dolum", "Full refill")}:{" "}
           <strong>{formatCountdown(fullRefillAt(profile))}</strong>
         </p>
       )}
-      {pro && <p className="mt-3 text-sm text-muted-foreground">Pro üyeliğinde enerji tükenmez, sınırsız dene.</p>}
+      {pro && <p className="mt-3 text-sm text-muted-foreground">{t("Pro üyeliğinde enerji tükenmez, sınırsız dene.", "Pro membership never runs out of energy, enjoy it unlimited.")}</p>}
 
       <div className="mt-4 flex flex-wrap gap-2">
         <Button asChild variant="secondary" size="sm" className="font-bold">
           <Link to="/rewards">
-            <Gift className="mr-1 h-4 w-4" /> Enerji kazan
+            <Gift className="mr-1 h-4 w-4" /> {t("Enerji kazan", "Earn energy")}
           </Link>
         </Button>
         <Button asChild variant="secondary" size="sm" className="font-bold">
           <Link to="/rewards" hash="davet">
-            <Users className="mr-1 h-4 w-4" /> Arkadaş davet
+            <Users className="mr-1 h-4 w-4" /> {t("Arkadaş davet", "Invite a friend")}
           </Link>
         </Button>
         {!pro && (
           <Button asChild size="sm" className="font-bold">
             <Link to="/pro">
-              <Crown className="mr-1 h-4 w-4" /> Pro'ya yükselt
+              <Crown className="mr-1 h-4 w-4" /> {t("Pro'ya yükselt", "Upgrade to Pro")}
             </Link>
           </Button>
         )}

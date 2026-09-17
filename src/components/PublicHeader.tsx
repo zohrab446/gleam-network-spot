@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n";
 
 export function PublicHeader() {
+  const t = useT();
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-card/85 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4">
@@ -12,7 +14,7 @@ export function PublicHeader() {
           Code<span className="text-gradient-brand">Quest</span>
         </Link>
         <Button asChild variant="ghost" size="sm">
-          <Link to="/auth">Giriş yap</Link>
+          <Link to="/auth">{t("Giriş yap", "Sign in")}</Link>
         </Button>
       </div>
     </header>

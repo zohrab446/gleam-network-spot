@@ -1,3 +1,5 @@
+import { translate } from "@/lib/i18n";
+
 /**
  * CodeQuest enerji sistemi kuralları (istemci tarafı yardımcıları).
  * Gerçek enerji hesapları veritabanındaki güvenli fonksiyonlarda yapılır;
@@ -21,9 +23,9 @@ export function difficultyOf(level: number): Difficulty {
 }
 
 export const DIFFICULTY_LABEL: Record<Difficulty, string> = {
-  beginner: "⭐ Kolay",
-  intermediate: "⭐⭐ Orta",
-  advanced: "⭐⭐⭐ Zor",
+  beginner: translate("⭐ Kolay", "⭐ Easy"),
+  intermediate: translate("⭐⭐ Orta", "⭐⭐ Medium"),
+  advanced: translate("⭐⭐⭐ Zor", "⭐⭐⭐ Hard"),
 };
 
 const BASE_PENALTY: Record<Difficulty, number> = {
@@ -71,14 +73,14 @@ export function fullRefillAt(profile: {
 }
 
 export function formatCountdown(target: number | null): string {
-  if (target === null) return "dolu";
+  if (target === null) return translate("dolu", "full");
   const ms = target - Date.now();
-  if (ms <= 0) return "birazdan";
+  if (ms <= 0) return translate("birazdan", "soon");
   const totalMinutes = Math.ceil(ms / 60_000);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  if (hours === 0) return `${minutes} dk`;
-  return `${hours} saat ${minutes} dk`;
+  if (hours === 0) return translate(`${minutes} dk`, `${minutes} min`);
+  return translate(`${hours} saat ${minutes} dk`, `${hours}h ${minutes}m`);
 }
 
 export const DAILY_LOGIN_REWARDS = [2, 2, 2, 3, 3, 3, 5];
@@ -99,10 +101,10 @@ export type MilestoneDef = {
 };
 
 export const MILESTONES: MilestoneDef[] = [
-  { id: "levels-50", title: "50 ders", description: "50 dersi tamamla", energy: 10 },
-  { id: "levels-100", title: "100 ders", description: "100 dersi tamamla", energy: 15 },
-  { id: "xp-500000", title: "500.000 XP", description: "Toplam 500.000 XP topla", energy: 20 },
-  { id: "streak-30", title: "30 gün seri", description: "30 gün üst üste çalış", energy: 25 },
+  { id: "levels-50", title: translate("50 ders", "50 lessons"), description: translate("50 dersi tamamla", "Complete 50 lessons"), energy: 10 },
+  { id: "levels-100", title: translate("100 ders", "100 lessons"), description: translate("100 dersi tamamla", "Complete 100 lessons"), energy: 15 },
+  { id: "xp-500000", title: translate("500.000 XP", "500,000 XP"), description: translate("Toplam 500.000 XP topla", "Earn a total of 500,000 XP"), energy: 20 },
+  { id: "streak-30", title: translate("30 gün seri", "30-day streak"), description: translate("30 gün üst üste çalış", "Study 30 days in a row"), energy: 25 },
 ];
 
 export function badgeEnergyReward(badgeId: string): number {
@@ -123,39 +125,39 @@ export type ProPlan = {
 };
 
 export const PRO_PLANS: ProPlan[] = [
-  { id: "trial", label: "7 gün deneme", price: "Ücretsiz", note: "Kart gerekmez", highlight: true },
-  { id: "monthly", label: "1 ay", price: "₺149", note: "$4.99" },
-  { id: "quarterly", label: "3 ay", price: "₺399", note: "%25 indirim" },
-  { id: "yearly", label: "1 yıl", price: "₺1.099", note: "%40 indirim" },
+  { id: "trial", label: translate("7 gün deneme", "7-day trial"), price: translate("Ücretsiz", "Free"), note: translate("Kart gerekmez", "No card needed"), highlight: true },
+  { id: "monthly", label: translate("1 ay", "1 month"), price: "₺149", note: "$4.99" },
+  { id: "quarterly", label: translate("3 ay", "3 months"), price: "₺399", note: translate("%25 indirim", "25% off") },
+  { id: "yearly", label: translate("1 yıl", "1 year"), price: "₺1.099", note: translate("%40 indirim", "40% off") },
 ];
 
 export const PRO_PERKS: { feature: string; free: string; pro: string }[] = [
-  { feature: "Enerji kapasitesi", free: "Maksimum 5", pro: "Sınırsız" },
-  { feature: "Enerji dolum hızı", free: "90 dk'da +1", pro: "Bekleme yok" },
-  { feature: "Tam dolum süresi", free: "7,5 saat", pro: "Anında sınırsız" },
-  { feature: "Yanlış cevap bedeli", free: "-1 enerji", pro: "0 (can gitmez)" },
-  { feature: "Seviye atlama", free: "-2 enerji", pro: "Sınırsız" },
-  { feature: "Reklamsız deneyim", free: "❌", pro: "✅" },
-  { feature: "Günlük bonus coin", free: "+50", pro: "+150" },
-  { feature: "XP çarpanı", free: "1x", pro: "1x (eşit)" },
-  { feature: "Coin çarpanı", free: "1x", pro: "2x" },
-  { feature: "Seri çarpanı", free: "7 günde 2x", pro: "7 günde 2x (eşit)" },
-  { feature: "Asistan önceliği", free: "❌", pro: "✅" },
+  { feature: translate("Enerji kapasitesi", "Energy capacity"), free: translate("Maksimum 5", "Max 5"), pro: translate("Sınırsız", "Unlimited") },
+  { feature: translate("Enerji dolum hızı", "Energy refill speed"), free: translate("90 dk'da +1", "+1 every 90 min"), pro: translate("Bekleme yok", "No wait") },
+  { feature: translate("Tam dolum süresi", "Full refill time"), free: translate("7,5 saat", "7.5 hours"), pro: translate("Anında sınırsız", "Instantly unlimited") },
+  { feature: translate("Yanlış cevap bedeli", "Wrong answer cost"), free: translate("-1 enerji", "-1 energy"), pro: translate("0 (can gitmez)", "0 (no loss)") },
+  { feature: translate("Seviye atlama", "Skipping a level"), free: translate("-2 enerji", "-2 energy"), pro: translate("Sınırsız", "Unlimited") },
+  { feature: translate("Reklamsız deneyim", "Ad-free experience"), free: "❌", pro: "✅" },
+  { feature: translate("Günlük bonus coin", "Daily bonus coins"), free: "+50", pro: "+150" },
+  { feature: translate("XP çarpanı", "XP multiplier"), free: "1x", pro: translate("1x (eşit)", "1x (same)") },
+  { feature: translate("Coin çarpanı", "Coin multiplier"), free: "1x", pro: "2x" },
+  { feature: translate("Seri çarpanı", "Streak multiplier"), free: translate("7 günde 2x", "2x every 7 days"), pro: translate("7 günde 2x (eşit)", "2x every 7 days (same)") },
+  { feature: translate("Asistan önceliği", "Assistant priority"), free: "❌", pro: "✅" },
 ];
 
 /** Enerji hata kodlarını Türkçe mesaja çevirir. */
 export function energyErrorMessage(error: unknown): string {
   const raw = (error as { message?: string } | null)?.message ?? "";
-  if (raw.includes("SPIN_COOLDOWN")) return "Çarkı bugün çevirdin. 24 saat sonra tekrar dene.";
-  if (raw.includes("AD_LIMIT")) return "Bugünün reklam hakkını doldurdun (2/2).";
-  if (raw.includes("AD_COOLDOWN")) return "Yeni reklam için biraz beklemen gerekiyor.";
-  if (raw.includes("ALREADY_CLAIMED")) return "Bu ödülü zaten aldın.";
-  if (raw.includes("BADGE_NOT_EARNED")) return "Bu rozeti henüz kazanmadın.";
-  if (raw.includes("NOT_ELIGIBLE")) return "Bu ödül için koşulu henüz tamamlamadın.";
-  if (raw.includes("ALREADY_REFERRED")) return "Zaten bir davet kodu kullandın.";
-  if (raw.includes("SELF_REFERRAL")) return "Kendi kodunu kullanamazsın 🙂";
-  if (raw.includes("INVALID_CODE")) return "Bu davet kodu bulunamadı.";
-  if (raw.includes("TRIAL_USED")) return "Ücretsiz denemeyi daha önce kullandın.";
-  if (raw.includes("ALREADY_PRO")) return "Pro üyeliğin şu an aktif.";
-  return "İşlem tamamlanamadı, tekrar dener misin?";
+  if (raw.includes("SPIN_COOLDOWN")) return translate("Çarkı bugün çevirdin. 24 saat sonra tekrar dene.", "You already spun the wheel today. Try again in 24 hours.");
+  if (raw.includes("AD_LIMIT")) return translate("Bugünün reklam hakkını doldurdun (2/2).", "You've used today's ad limit (2/2).");
+  if (raw.includes("AD_COOLDOWN")) return translate("Yeni reklam için biraz beklemen gerekiyor.", "You need to wait a bit before watching another ad.");
+  if (raw.includes("ALREADY_CLAIMED")) return translate("Bu ödülü zaten aldın.", "You've already claimed this reward.");
+  if (raw.includes("BADGE_NOT_EARNED")) return translate("Bu rozeti henüz kazanmadın.", "You haven't earned this badge yet.");
+  if (raw.includes("NOT_ELIGIBLE")) return translate("Bu ödül için koşulu henüz tamamlamadın.", "You haven't met the requirement for this reward yet.");
+  if (raw.includes("ALREADY_REFERRED")) return translate("Zaten bir davet kodu kullandın.", "You've already used a referral code.");
+  if (raw.includes("SELF_REFERRAL")) return translate("Kendi kodunu kullanamazsın 🙂", "You can't use your own code 🙂");
+  if (raw.includes("INVALID_CODE")) return translate("Bu davet kodu bulunamadı.", "This referral code was not found.");
+  if (raw.includes("TRIAL_USED")) return translate("Ücretsiz denemeyi daha önce kullandın.", "You've already used the free trial.");
+  if (raw.includes("ALREADY_PRO")) return translate("Pro üyeliğin şu an aktif.", "Your Pro membership is currently active.");
+  return translate("İşlem tamamlanamadı, tekrar dener misin?", "The action couldn't be completed, want to try again?");
 }

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useThemeSync } from "@/components/AppShell";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/sifre-sifirla")({
   ssr: false,
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/sifre-sifirla")({
 
 function ResetPasswordPage() {
   useThemeSync();
+  const t = useT();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,9 +67,9 @@ function ResetPasswordPage() {
       });
       if (error) throw error;
       setSent(true);
-      toast.success("Sıfırlama bağlantısı e-postana gönderildi.");
+      toast.success(t("Sıfırlama bağlantısı e-postana gönderildi.", "A reset link has been sent to your email."));
     } catch {
-      toast.error("Bağlantı gönderilemedi, birkaç dakika sonra tekrar dener misin?");
+      toast.error(t("Bağlantı gönderilemedi, birkaç dakika sonra tekrar dener misin?", "Couldn't send the link, could you try again in a few minutes?"));
     } finally {
       setBusy(false);
     }
@@ -77,21 +79,21 @@ function ResetPasswordPage() {
     event.preventDefault();
     if (busy) return;
     if (password.length < 6) {
-      toast.error("Şifre en az 6 karakter olmalı.");
+      toast.error(t("Şifre en az 6 karakter olmalı.", "Password must be at least 6 characters."));
       return;
     }
     if (password !== confirm) {
-      toast.error("Şifreler aynı değil.");
+      toast.error(t("Şifreler aynı değil.", "Passwords don't match."));
       return;
     }
     setBusy(true);
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      toast.success("Şifren güncellendi!");
+      toast.success(t("Şifren güncellendi!", "Your password has been updated!"));
       navigate({ to: "/dashboard", replace: true });
     } catch {
-      toast.error("Şifre güncellenemedi. Bağlantının süresi geçmiş olabilir, yeni bağlantı isteyebilirsin.");
+      toast.error(t("Şifre güncellenemedi. Bağlantının süresi geçmiş olabilir, yeni bağlantı isteyebilirsin.", "Couldn't update the password. The link may have expired, you can request a new one."));
     } finally {
       setBusy(false);
     }
@@ -110,13 +112,13 @@ function ResetPasswordPage() {
         <div className="card-surface pop-in p-6">
           {recovery ? (
             <>
-              <h1 className="text-2xl">Yeni şifre belirle 🔐</h1>
+              <h1 className="text-2xl">{t("Yeni şifre belirle 🔐", "Set a new password 🔐")}</h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                En az 6 karakterli yeni bir şifre seç ve kaldığın yerden devam et.
+                {t("En az 6 karakterli yeni bir şifre seç ve kaldığın yerden devam et.", "Choose a new password with at least 6 characters and pick up where you left off.")}
               </p>
               <form className="mt-6 space-y-4" onSubmit={savePassword}>
                 <div className="space-y-1.5">
-                  <Label htmlFor="new-password">Yeni şifre</Label>
+                  <Label htmlFor="new-password">{t("Yeni şifre", "New password")}</Label>
                   <Input
                     id="new-password"
                     type="password"
@@ -125,11 +127,11 @@ function ResetPasswordPage() {
                     autoComplete="new-password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    placeholder="En az 6 karakter"
+                    placeholder={t("En az 6 karakter", "At least 6 characters")}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="confirm-password">Yeni şifre (tekrar)</Label>
+                  <Label htmlFor="confirm-password">{t("Yeni şifre (tekrar)", "New password (again)")}</Label>
                   <Input
                     id="confirm-password"
                     type="password"
@@ -138,23 +140,23 @@ function ResetPasswordPage() {
                     autoComplete="new-password"
                     value={confirm}
                     onChange={(event) => setConfirm(event.target.value)}
-                    placeholder="Şifreyi tekrar yaz"
+                    placeholder={t("Şifreyi tekrar yaz", "Re-enter the password")}
                   />
                 </div>
                 <Button type="submit" className="w-full font-bold" disabled={busy}>
-                  {busy ? "Kaydediliyor..." : "Şifremi güncelle"}
+                  {busy ? t("Kaydediliyor...", "Saving...") : t("Şifremi güncelle", "Update my password")}
                 </Button>
               </form>
             </>
           ) : (
             <>
-              <h1 className="text-2xl">Şifremi unuttum</h1>
+              <h1 className="text-2xl">{t("Şifremi unuttum", "Forgot my password")}</h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Hesabının e-posta adresini yaz; sıfırlama bağlantısını sana gönderelim.
+                {t("Hesabının e-posta adresini yaz; sıfırlama bağlantısını sana gönderelim.", "Enter your account's email address and we'll send you a reset link.")}
               </p>
               <form className="mt-6 space-y-4" onSubmit={sendLink}>
                 <div className="space-y-1.5">
-                  <Label htmlFor="reset-email">E-posta</Label>
+                  <Label htmlFor="reset-email">{t("E-posta", "Email")}</Label>
                   <Input
                     id="reset-email"
                     type="email"
@@ -162,24 +164,26 @@ function ResetPasswordPage() {
                     autoComplete="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    placeholder="sen@ornek.com"
+                    placeholder={t("sen@ornek.com", "you@example.com")}
                   />
                 </div>
                 <Button type="submit" className="w-full font-bold" disabled={busy}>
-                  {busy ? "Gönderiliyor..." : "Sıfırlama bağlantısı gönder"}
+                  {busy ? t("Gönderiliyor...", "Sending...") : t("Sıfırlama bağlantısı gönder", "Send reset link")}
                 </Button>
               </form>
               {sent ? (
                 <p className="mt-4 rounded-xl border border-border bg-secondary/50 p-3 text-sm text-muted-foreground">
-                  E-postandaki bağlantıya tıkladığında bu sayfa yeni şifre formuna dönecek. Bağlantı gelmediyse spam
-                  klasörüne de bak.
+                  {t(
+                    "E-postandaki bağlantıya tıkladığında bu sayfa yeni şifre formuna dönecek. Bağlantı gelmediyse spam klasörüne de bak.",
+                    "When you click the link in your email, this page will turn into the new password form. If the email hasn't arrived, check your spam folder too.",
+                  )}
                 </p>
               ) : null}
             </>
           )}
 
           <Link to="/auth" className="mt-5 block text-center text-sm font-bold text-primary hover:underline">
-            Giriş ekranına dön
+            {t("Giriş ekranına dön", "Back to sign in")}
           </Link>
         </div>
       </div>

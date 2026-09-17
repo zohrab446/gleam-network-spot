@@ -5,6 +5,7 @@ import type { Profile } from "@/hooks/useGameData";
 import { useServerFn } from "@tanstack/react-start";
 import { runGameAction } from "@/lib/game.functions";
 import { unwrapAction } from "@/lib/action-result";
+import { translate } from "@/lib/i18n";
 
 function invalidate(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -178,15 +179,15 @@ export function useEnergyHistory(limit = 20) {
 }
 
 export const ENERGY_TYPE_LABEL: Record<string, string> = {
-  challenge_fail: "Yanlış cevap",
-  skip_level: "Seviye atlama",
-  daily_login: "Günlük giriş",
-  daily_reset: "Günlük dolum",
-  time_refill: "Zaman dolumu",
-  spin_wheel: "Şans çarkı",
-  video_ad: "Reklam ödülü",
-  badge_reward: "Rozet ödülü",
-  milestone: "Kilometre taşı",
-  referral_bonus: "Davet ödülü",
-  referral_milestone: "Davet bonusu",
+  challenge_fail: translate("Yanlış cevap", "Wrong answer"),
+  skip_level: translate("Seviye atlama", "Skip level"),
+  daily_login: translate("Günlük giriş", "Daily login"),
+  daily_reset: translate("Günlük dolum", "Daily refill"),
+  time_refill: translate("Zaman dolumu", "Time refill"),
+  spin_wheel: translate("Şans çarkı", "Lucky wheel"),
+  video_ad: translate("Reklam ödülü", "Ad reward"),
+  badge_reward: translate("Rozet ödülü", "Badge reward"),
+  milestone: translate("Kilometre taşı", "Milestone"),
+  referral_bonus: translate("Davet ödülü", "Referral reward"),
+  referral_milestone: translate("Davet bonusu", "Referral bonus"),
 };

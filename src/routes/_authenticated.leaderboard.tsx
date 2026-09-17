@@ -9,6 +9,7 @@ import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/leaderboard")({
   head: () => ({
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/_authenticated/leaderboard")({
 });
 
 function Leaderboard() {
+  const t = useT();
   const [scope, setScope] = useState<"monthly" | "all">("monthly");
   const { user } = useAuth();
   const { data: profile } = useProfile();
@@ -31,16 +33,19 @@ function Leaderboard() {
   const myRow = rows.find((row) => row.user_id === user?.id);
 
   async function share() {
-    const text = `CodeQuest'te ${profile?.level ?? 1}. seviyedeyim ve ${profile?.xp ?? 0} XP topladım! 🚀`;
+    const text = t(
+      `CodeQuest'te ${profile?.level ?? 1}. seviyedeyim ve ${profile?.xp ?? 0} XP topladım! 🚀`,
+      `I'm at level ${profile?.level ?? 1} on CodeQuest with ${profile?.xp ?? 0} XP! 🚀`,
+    );
     try {
       if (navigator.share) {
         await navigator.share({ title: "CodeQuest", text });
         return;
       }
       await navigator.clipboard.writeText(text);
-      toast.success("Skorun kopyalandı, paylaşabilirsin!");
+      toast.success(t("Skorun kopyalandı, paylaşabilirsin!", "Your score was copied, share away!"));
     } catch {
-      toast.error("Paylaşım şu an mümkün değil.");
+      toast.error(t("Paylaşım şu an mümkün değil.", "Sharing isn't available right now."));
     }
   }
 
@@ -49,18 +54,18 @@ function Leaderboard() {
       <div className="mx-auto max-w-3xl space-y-5">
         <header className="flex flex-wrap items-center gap-3">
           <h1 className="flex items-center gap-2 text-2xl">
-            <Trophy className="h-6 w-6 text-accent" /> Liderlik Tablosu
+            <Trophy className="h-6 w-6 text-accent" /> {t("Liderlik Tablosu", "Leaderboard")}
           </h1>
           <Button variant="ghost" className="ml-auto font-bold" onClick={() => void share()}>
-            <Share2 className="mr-1 h-4 w-4" /> Skorumu paylaş
+            <Share2 className="mr-1 h-4 w-4" /> {t("Skorumu paylaş", "Share my score")}
           </Button>
         </header>
 
-        <div className="inline-flex rounded-xl bg-secondary p-1" role="tablist" aria-label="Zaman aralığı">
+        <div className="inline-flex rounded-xl bg-secondary p-1" role="tablist" aria-label={t("Zaman aralığı", "Time range")}>
           {(
             [
-              { id: "monthly", label: "Bu ay" },
-              { id: "all", label: "Tüm zamanlar" },
+              { id: "monthly", label: t("Bu ay", "This month") },
+              { id: "all", label: t("Tüm zamanlar", "All time") },
             ] as const
           ).map((tab) => (
             <button
@@ -81,8 +86,17 @@ function Leaderboard() {
         <div className="card-surface flex items-center gap-3 border-accent/40 bg-accent-soft p-4 text-sm font-semibold">
           <Gift className="h-5 w-5 shrink-0 text-accent" />
           <p>
-            Her ayın 15'inde <span className="font-bold">"Bu ay"</span> sıralamasının 1. sırasındaki oyuncuya
-            <span className="font-bold"> 5 aylık Claude Pro</span> hediye ediyoruz. Zirveye oyna!
+            {t(
+              "Her ayın 15'inde ",
+              "On the 15th of every month, ",
+            )}
+            <span className="font-bold">{t('"Bu ay"', '"This month"')}</span>
+            {t(
+              " sıralamasının 1. sırasındaki oyuncuya",
+              " leaderboard's #1 player receives",
+            )}
+            <span className="font-bold"> {t("5 aylık Claude Pro", "5 months of Claude Pro")}</span>
+            {t(" hediye ediyoruz. Zirveye oyna!", " as a gift. Play for the top!")}
           </p>
         </div>
 
@@ -91,9 +105,9 @@ function Leaderboard() {
             <span className="font-display text-xl font-extrabold text-primary">#{myRow.rank_position}</span>
             <PlayerAvatar shape={myRow.avatar_shape} color={myRow.avatar_color} />
             <div className="min-w-0 flex-1">
-              <p className="truncate font-bold">{myRow.username} (sen)</p>
+              <p className="truncate font-bold">{myRow.username} ({t("sen", "you")})</p>
               <p className="text-sm text-muted-foreground">
-                Seviye {myRow.level} · 🪙 {myRow.coins} coin · 🔥 {myRow.streak} gün
+                {t("Seviye", "Level")} {myRow.level} · 🪙 {myRow.coins} {t("coin", "coins")} · 🔥 {myRow.streak} {t("gün", "days")}
               </p>
             </div>
             <span className="font-display font-extrabold text-primary">
@@ -124,7 +138,7 @@ function Leaderboard() {
                     {row.is_pro && " 👑"}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Seviye {row.level} · 🪙 {row.coins} coin · 🔥 {row.streak} gün
+                    {t("Seviye", "Level")} {row.level} · 🪙 {row.coins} {t("coin", "coins")} · 🔥 {row.streak} {t("gün", "days")}
                   </p>
                 </div>
                 <span className="font-display font-extrabold text-primary">
@@ -134,7 +148,7 @@ function Leaderboard() {
             ))}
           {!isLoading && rows.length === 0 && (
             <li className="card-surface p-6 text-center text-muted-foreground">
-              Henüz sıralama yok. İlk dersi bitirip zirveye çık!
+              {t("Henüz sıralama yok. İlk dersi bitirip zirveye çık!", "No rankings yet. Finish your first lesson and climb to the top!")}
             </li>
           )}
         </ol>

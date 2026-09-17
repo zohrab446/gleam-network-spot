@@ -7,19 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { redeemPromoCode } from "@/lib/promo.functions";
 import { celebrate } from "@/lib/celebrate";
+import { translate, useT } from "@/lib/i18n";
 
 const ERRORS: Record<string, string> = {
-  invalid: "Böyle bir promosyon kodu yok.",
-  inactive: "Bu kod artık geçerli değil.",
-  exhausted: "Bu kodun kullanım hakkı doldu.",
-  already_used: "Bu kodu daha önce kullandın.",
-  no_profile: "Profilin bulunamadı, sayfayı yenile.",
+  invalid: translate("Böyle bir promosyon kodu yok.", "No such promo code exists."),
+  inactive: translate("Bu kod artık geçerli değil.", "This code is no longer valid."),
+  exhausted: translate("Bu kodun kullanım hakkı doldu.", "This code has run out of uses."),
+  already_used: translate("Bu kodu daha önce kullandın.", "You've already used this code."),
+  no_profile: translate("Profilin bulunamadı, sayfayı yenile.", "Your profile could not be found, please refresh the page."),
 };
 
 const PLAN_LABELS: Record<string, string> = {
-  monthly: "1 aylık Pro",
-  quarterly: "3 aylık Pro",
-  yearly: "1 yıllık Pro",
+  monthly: translate("1 aylık Pro", "1-month Pro"),
+  quarterly: translate("3 aylık Pro", "3-month Pro"),
+  yearly: translate("1 yıllık Pro", "1-year Pro"),
 };
 
 export function PromoCodeCard() {
@@ -27,6 +28,7 @@ export function PromoCodeCard() {
   const queryClient = useQueryClient();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const t = useT();
 
   async function submit() {
     const value = code.trim();
@@ -35,16 +37,16 @@ export function PromoCodeCard() {
     try {
       const result = await redeem({ data: { code: value } });
       if (!result.ok) {
-        toast.error(ERRORS[result.error ?? ""] ?? "Kod kullanılamadı.");
+        toast.error(ERRORS[result.error ?? ""] ?? t("Kod kullanılamadı.", "This code could not be used."));
         return;
       }
       setCode("");
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
       void celebrate();
-      toast.success(`${PLAN_LABELS[result.pro_plan ?? ""] ?? "Pro"} hesabına eklendi 👑`);
+      toast.success(`${PLAN_LABELS[result.pro_plan ?? ""] ?? "Pro"} ${t("hesabına eklendi 👑", "added to your account 👑")}`);
     } catch {
-      toast.error("Kod kontrol edilemedi, tekrar dener misin?");
+      toast.error(t("Kod kontrol edilemedi, tekrar dener misin?", "The code could not be verified, would you try again?"));
     } finally {
       setLoading(false);
     }
@@ -53,10 +55,10 @@ export function PromoCodeCard() {
   return (
     <section className="card-surface p-5" aria-labelledby="promo-heading">
       <h2 id="promo-heading" className="flex items-center gap-2 text-lg">
-        <Gift className="h-5 w-5 text-primary" /> Promosyon kodu
+        <Gift className="h-5 w-5 text-primary" /> {t("Promosyon kodu", "Promo code")}
       </h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Elindeki kodu gir, Pro üyeliğin anında aktifleşsin.
+        {t("Elindeki kodu gir, Pro üyeliğin anında aktifleşsin.", "Enter your code and your Pro membership activates instantly.")}
       </p>
       <form
         className="mt-4 flex flex-col gap-2 sm:flex-row"
@@ -68,14 +70,14 @@ export function PromoCodeCard() {
         <Input
           value={code}
           onChange={(event) => setCode(event.target.value.toUpperCase())}
-          placeholder="KODUNUZ"
-          aria-label="Promosyon kodu"
+          placeholder={t("KODUNUZ", "YOUR CODE")}
+          aria-label={t("Promosyon kodu", "Promo code")}
           maxLength={40}
           className="font-bold tracking-wider"
         />
         <Button type="submit" className="font-bold" disabled={loading || !code.trim()}>
           {loading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}
-          Kodu kullan
+          {t("Kodu kullan", "Use code")}
         </Button>
       </form>
     </section>

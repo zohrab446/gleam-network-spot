@@ -17,6 +17,8 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useT, useLanguage } from "@/lib/i18n";
+import { localizeLesson } from "@/data/i18n";
 import { useServerFn } from "@tanstack/react-start";
 import {
   LANGUAGE_META,
@@ -90,7 +92,13 @@ const remoteRunner = {
 function LessonPage() {
   const { level } = useParams({ from: "/_authenticated/lesson/$level" });
   const navigate = useNavigate();
-  const lesson = getLesson(Number(level));
+  const t = useT();
+  const language = useLanguage();
+  const rawLesson = getLesson(Number(level));
+  const lesson = useMemo(
+    () => (rawLesson ? localizeLesson(rawLesson, language) : undefined),
+    [rawLesson, language],
+  );
   const { data: profile } = useProfile();
   const { data: progress = [] } = useProgress();
   const completeLesson = useCompleteLesson();

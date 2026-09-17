@@ -4,6 +4,7 @@ import { useThemeSync } from "@/components/AppShell";
 import { PublicHeader } from "@/components/PublicHeader";
 import { PublicFooter } from "@/components/PublicFooter";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/iletisim")({
   head: () => ({
@@ -33,11 +34,11 @@ const CONTACT = {
   phone: "+90 533 466 80 11",
   phoneHref: "tel:+905334668011",
   address: "Çankaya / Ankara, Türkiye",
-  supportHours: "Hafta içi 09:00 - 18:00",
 };
 
 function ContactPage() {
   useThemeSync();
+  const t = useT();
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <PublicHeader />
@@ -45,38 +46,40 @@ function ContactPage() {
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12">
         <div className="pop-in">
           <span className="inline-flex items-center gap-2 rounded-full bg-accent-soft px-3 py-1 text-sm font-bold text-accent">
-            İletişim
+            {t("İletişim", "Contact")}
           </span>
           <h1 className="mt-4 text-3xl sm:text-4xl">
-            Bize <span className="text-gradient-brand">ulaşın</span>
+            {t("Bize", "Get in")} <span className="text-gradient-brand">{t("ulaşın", "touch")}</span>
           </h1>
           <p className="mt-3 max-w-xl text-muted-foreground">
-            CodeQuest ürünleriyle ilgili sorularınız, satın alma desteği ve iş birlikleri için aşağıdaki
-            kanallardan bize ulaşabilirsiniz.
+            {t(
+              "CodeQuest ürünleriyle ilgili sorularınız, satın alma desteği ve iş birlikleri için aşağıdaki kanallardan bize ulaşabilirsiniz.",
+              "For questions about CodeQuest products, purchase support, and partnerships, you can reach us through the channels below.",
+            )}
           </p>
         </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           <ContactCard
             icon={<Mail className="h-5 w-5 text-primary" />}
-            label="E-posta"
+            label={t("E-posta", "Email")}
             value={CONTACT.email}
             href={`mailto:${CONTACT.email}`}
           />
           <ContactCard
             icon={<Phone className="h-5 w-5 text-primary" />}
-            label="Telefon"
+            label={t("Telefon", "Phone")}
             value={CONTACT.phone}
             href={CONTACT.phoneHref}
           />
           <ContactCard
             icon={<MapPin className="h-5 w-5 text-primary" />}
-            label="Adres"
-            value={CONTACT.address}
+            label={t("Adres", "Address")}
+            value={t(CONTACT.address, "Çankaya / Ankara, Turkey")}
           />
           <ContactCard
             icon={<Globe className="h-5 w-5 text-primary" />}
-            label="Web Sitesi"
+            label={t("Web Sitesi", "Website")}
             value={CONTACT.websiteLabel}
             href={CONTACT.website}
           />
@@ -85,22 +88,22 @@ function ContactPage() {
         <div className="card-surface mt-6 flex items-start gap-3 p-5">
           <Clock className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
           <div>
-            <p className="text-sm font-bold text-foreground">Destek Saatleri</p>
-            <p className="mt-1 text-sm text-muted-foreground">{CONTACT.supportHours}</p>
+            <p className="text-sm font-bold text-foreground">{t("Destek Saatleri", "Support Hours")}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("Hafta içi 09:00 - 18:00", "Weekdays 09:00 - 18:00")}</p>
           </div>
         </div>
 
         <div className="card-surface mt-6 p-6">
-          <h2 className="text-lg font-bold">Firma Bilgileri</h2>
+          <h2 className="text-lg font-bold">{t("Firma Bilgileri", "Company Information")}</h2>
           <dl className="mt-3 grid gap-2 text-sm">
-            <Row label="Firma / Marka" value={CONTACT.company} />
-            <Row label="Web Sitesi" value={CONTACT.websiteLabel} />
-            <Row label="E-posta" value={CONTACT.email} />
-            <Row label="Telefon" value={CONTACT.phone} />
-            <Row label="Adres" value={CONTACT.address} />
+            <Row label={t("Firma / Marka", "Company / Brand")} value={CONTACT.company} />
+            <Row label={t("Web Sitesi", "Website")} value={CONTACT.websiteLabel} />
+            <Row label={t("E-posta", "Email")} value={CONTACT.email} />
+            <Row label={t("Telefon", "Phone")} value={CONTACT.phone} />
+            <Row label={t("Adres", "Address")} value={t(CONTACT.address, "Çankaya / Ankara, Turkey")} />
           </dl>
           <Button asChild className="mt-5 font-bold">
-            <Link to="/auth">CodeQuest'e başla</Link>
+            <Link to="/auth">{t("CodeQuest'e başla", "Get started with CodeQuest")}</Link>
           </Button>
         </div>
       </main>

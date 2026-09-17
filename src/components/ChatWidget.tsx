@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MessageCircle, Send, X } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { sendChatMessage } from "@/lib/chat.functions";
@@ -10,16 +10,23 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { playSound } from "@/store/settings";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
-const GREETING: ChatMessage = {
-  role: "assistant",
-  content:
-    "Selam! 👋 Ben CodeQuest asistanınım. Takıldığın yeri anlat — cevabı doğrudan vermem ama doğru soruyu sormana yardım ederim.",
-};
+function greeting(t: (tr: string, en: string) => string): ChatMessage {
+  return {
+    role: "assistant",
+    content: t(
+      "Selam! 👋 Ben CodeQuest asistanınım. Takıldığın yeri anlat — cevabı doğrudan vermem ama doğru soruyu sormana yardım ederim.",
+      "Hi! 👋 I\u2019m the CodeQuest assistant. Tell me where you\u2019re stuck \u2014 I won\u2019t give the answer directly but I\u2019ll help you ask the right question.",
+    ),
+  };
+}
 
 export function ChatWidget({ lessonTitle }: { lessonTitle?: string }) {
+  const t = useT();
+  const GREETING = useMemo(() => greeting(t), [t]);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");

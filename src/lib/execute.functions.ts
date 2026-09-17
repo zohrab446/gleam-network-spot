@@ -2,12 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const PISTON_URL = "https://emkc.org/api/v2/piston/execute";
+const WANDBOX_URL = "https://wandbox.org/api/compile.json";
 
-const RUNTIMES: Record<"cpp" | "java", { language: string; version: string; file: string }> = {
-  cpp: { language: "c++", version: "10.2.0", file: "main.cpp" },
-  java: { language: "java", version: "15.0.2", file: "Main.java" },
+const RUNTIMES: Record<"cpp" | "java", { compiler: string; file: string; options?: string }> = {
+  cpp: { compiler: "gcc-head", file: "main.cpp", options: "warning,gnu++2b" },
+  java: { compiler: "openjdk-jdk-21+35", file: "Main.java" },
 };
+
+/** Java'da wandbox ana dosyayı prog.java olarak yazar; sınıf adı uyuşmazlığını launcher ile çözüyoruz. */
+const JAVA_LAUNCHER = "public class prog { public static void main(String[] a) throws Exception { Main.main(a); } }";
 
 export type RemoteRunResult = {
   stdout: string;
@@ -16,7 +19,15 @@ export type RemoteRunResult = {
   ok: boolean;
 };
 
-/** C++ ve Java kodunu ücretsiz Piston derleyicisinde çalıştırır. */
+type WandboxResponse = {
+  status?: string;
+  compiler_error?: string;
+  compiler_output?: string;
+  program_output?: string;
+  program_error?: string;
+};
+
+/** C++ ve Java kodunu ücretsiz uzak derleyicide çalıştırır. */
 export const executeRemote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) =>
@@ -30,30 +41,41 @@ export const executeRemote = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }): Promise<RemoteRunResult> => {
     const runtime = RUNTIMES[data.language];
-    // Ana dosya ilk sırada olmalı
-    const files = [...data.files].sort((a, b) =>
-      a.name === runtime.file ? -1 : b.name === runtime.file ? 1 : 0,
-    );
+    const mainFile = data.files.find((f) => f.name === runtime.file) ?? data.files[0]!;
+    const extras = data.files.filter((f) => f !== mainFile);
+
+    let body: Record<string, unknown>;
+    if (data.language === "java") {
+      const codes = [{ file: runtime.file, code: mainFile.content }, ...extras.map((f) => ({ file: f.name, code: f.content }))];
+      body = {
+        compiler: runtime.compiler,
+        code: JAVA_LAUNCHER,
+        codes,
+        stdin: data.stdin ?? "",
+        "compiler-option-raw": codes.map((c) => c.file).join("\n"),
+      };
+    } else {
+      body = {
+        compiler: runtime.compiler,
+        code: mainFile.content,
+        codes: extras.map((f) => ({ file: f.name, code: f.content })),
+        stdin: data.stdin ?? "",
+        options: runtime.options,
+      };
+    }
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 20_000);
+    const timer = setTimeout(() => controller.abort(), 25_000);
     try {
-      const res = await fetch(PISTON_URL, {
+      const res = await fetch(WANDBOX_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
-        body: JSON.stringify({
-          language: runtime.language,
-          version: runtime.version,
-          files,
-          stdin: data.stdin ?? "",
-          compile_timeout: 10_000,
-          run_timeout: 5_000,
-        }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) {
         const text = await res.text().catch(() => "");
-        console.error("[piston] http", res.status, text.slice(0, 300));
+        console.error("[wandbox] http", res.status, text.slice(0, 300));
         return {
           stdout: "",
           stderr: "",
@@ -64,19 +86,18 @@ export const executeRemote = createServerFn({ method: "POST" })
           ok: false,
         };
       }
-      const json = (await res.json()) as {
-        compile?: { stdout?: string; stderr?: string; code?: number | null };
-        run?: { stdout?: string; stderr?: string; code?: number | null };
-      };
-      const compileError = json.compile && json.compile.code !== 0 ? (json.compile.stderr || json.compile.stdout || "") : "";
+      const json = (await res.json()) as WandboxResponse;
+      const rawCompileError = json.compiler_error || "";
+      const compileError = normalizeJavaPaths(rawCompileError.trim() && json.status !== "0" ? rawCompileError : "");
+      const exitOk = json.status === "0";
       return {
-        stdout: json.run?.stdout ?? "",
-        stderr: json.run?.stderr ?? "",
+        stdout: json.program_output ?? "",
+        stderr: normalizeJavaPaths(json.program_error ?? ""),
         compileError,
-        ok: !compileError && (json.run?.code ?? 0) === 0,
+        ok: !compileError && exitOk,
       };
     } catch (err) {
-      console.error("[piston] error", err);
+      console.error("[wandbox] error", err);
       return {
         stdout: "",
         stderr: "",
@@ -87,3 +108,8 @@ export const executeRemote = createServerFn({ method: "POST" })
       clearTimeout(timer);
     }
   });
+
+/** Derleyici mesajlarındaki geçici dosya yollarını temizler. */
+function normalizeJavaPaths(text: string): string {
+  return text.replace(/\/[^\s:]*\/(prog|Main)\.(java|cpp)/g, "$1.$2").replace(/\bprog\.java\b/g, "Main.java");
+}

@@ -224,6 +224,15 @@ export const saveUsername = createServerFn({ method: "POST" })
       return { ok: true, data: { username: data.username } };
     } catch (error) {
       console.error("[save-username]", error);
+      const message = error instanceof Error ? error.message : "";
+      // Benzersiz kullanıcı adı ihlali: aynı ad başka bir hesapta kullanılıyor.
+      if (
+        message.includes("USERNAME_TAKEN") ||
+        message.includes("profiles_username_unique_lower") ||
+        message.includes("duplicate key")
+      ) {
+        return { ok: false, code: "USERNAME_TAKEN" };
+      }
       return { ok: false, code: "USERNAME_REJECTED" };
     }
   });

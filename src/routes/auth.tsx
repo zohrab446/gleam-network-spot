@@ -200,9 +200,18 @@ function AuthPage() {
             </Button>
           </form>
 
+          {mode === "signin" ? (
+            <Link
+              to="/sifre-sifirla"
+              className="mt-4 block text-center text-sm font-bold text-primary hover:underline"
+            >
+              Şifremi unuttum
+            </Link>
+          ) : null}
+
           <button
             type="button"
-            className="mt-5 w-full text-sm font-bold text-primary hover:underline"
+            className="mt-3 w-full text-sm font-bold text-primary hover:underline"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
           >
             {mode === "signin" ? "Hesabın yok mu? Kayıt ol" : "Zaten hesabın var mı? Giriş yap"}

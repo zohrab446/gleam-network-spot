@@ -370,12 +370,11 @@ function RewardsPage() {
           ) : (
             <ul className="mt-4 space-y-2">
               {badges.map((badge) => {
-                const def = BADGES.find((b) => b.id === badge.badge_id);
                 const claimed = profile.energy_badges_claimed.includes(badge.badge_id);
                 return (
                   <li key={badge.badge_id} className="flex items-center gap-3 rounded-xl border border-border p-3">
-                    <span className="text-xl">{def?.emoji ?? "🏅"}</span>
-                    <span className="min-w-0 flex-1 text-sm font-bold">{def?.title ?? badge.badge_id}</span>
+                    <span className="text-xl">🏅</span>
+                    <span className="min-w-0 flex-1 text-sm font-bold">{badgeTitle(badge.badge_id)}</span>
                     <span className="text-sm font-bold text-success">
                       +{badgeEnergyReward(badge.badge_id)} ⚡
                     </span>

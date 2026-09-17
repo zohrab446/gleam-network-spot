@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSettings } from "@/store/settings";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 const PLAN_LABELS: Record<string, string> = {
   trial: "Pro deneme (7 gün)",
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/_authenticated/profile")({
 });
 
 function ProfilePage() {
+  const t = useT();
   const { data: profile, isLoading } = useProfile();
   const { data: progress = [] } = useProgress();
   const { data: badges = [] } = useBadges();

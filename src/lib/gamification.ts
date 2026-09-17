@@ -1,4 +1,5 @@
 import { MAX_LEVEL, TRACKS } from "@/data/types";
+import { translate } from "@/lib/i18n";
 
 export const AVATAR_SHAPES = ["star", "circle", "square", "triangle"] as const;
 export type AvatarShape = (typeof AVATAR_SHAPES)[number];
@@ -82,6 +83,40 @@ export const BADGES: BadgeDef[] = [
   { id: "java-master", emoji: "☕", title: "Java Baristası", description: "Tüm Java derslerini bitir" },
   { id: "grandmaster", emoji: "👑", title: "Büyük Usta", description: "320 seviyenin tamamını bitir" },
 ];
+
+export const BADGE_EN: Record<string, { title: string; description: string }> = {
+  "first-step": { title: "First Step", description: "Complete your first lesson" },
+  "week-warrior": { title: "Week Warrior", description: "Study 7 days in a row" },
+  "century": { title: "Century", description: "Earn 100 XP" },
+  "speedrunner": { title: "Speedrunner", description: "Finish a lesson in 2 minutes" },
+  "level-10": { title: "Level 10", description: "Complete 10 lessons" },
+  "level-50": { title: "Level 50", description: "Complete 50 lessons" },
+  "level-100": { title: "Level 100", description: "Complete 100 lessons" },
+  "consistent-coder": { title: "Consistent Coder", description: "Keep a 30-day streak" },
+  "polyglot": { title: "Polyglot", description: "Finish lessons in 4 different tracks" },
+  "html-master": { title: "HTML Master", description: "Finish all HTML lessons" },
+  "css-master": { title: "CSS Artist", description: "Finish all CSS lessons" },
+  "javascript-master": { title: "JavaScript Wizard", description: "Finish all JavaScript lessons" },
+  "react-master": { title: "React Architect", description: "Finish all React lessons" },
+  "python-master": { title: "Python Tamer", description: "Finish all Python lessons" },
+  "cpp-master": { title: "C++ Engineer", description: "Finish all C++ lessons" },
+  "java-master": { title: "Java Barista", description: "Finish all Java lessons" },
+  "grandmaster": { title: "Grandmaster", description: "Complete all 320 levels" },
+};
+
+/** Rozet başlığını mevcut arayüz diline göre döndürür. */
+export function badgeTitle(id: string): string {
+  const def = BADGES.find((b) => b.id === id);
+  if (!def) return id;
+  return translate(def.title, BADGE_EN[id]?.title ?? def.title);
+}
+
+/** Rozet açıklamasını mevcut arayüz diline göre döndürür. */
+export function badgeDescription(id: string): string {
+  const def = BADGES.find((b) => b.id === id);
+  if (!def) return "";
+  return translate(def.description, BADGE_EN[id]?.description ?? def.description);
+}
 
 export type BadgeContext = {
   xp: number;

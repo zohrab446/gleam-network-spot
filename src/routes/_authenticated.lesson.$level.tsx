@@ -225,7 +225,7 @@ function LessonPage() {
       setChecks(null);
       if (result.error) playSound("error");
     } catch {
-      toast.error("Kod çalıştırılamadı.");
+      toast.error(t("Kod çalıştırılamadı.", "Couldn't run the code."));
     } finally {
       setBusy(false);
     }

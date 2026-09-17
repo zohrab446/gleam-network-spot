@@ -225,7 +225,7 @@ function LessonPage() {
       setChecks(null);
       if (result.error) playSound("error");
     } catch {
-      toast.error("Kod çalıştırılamadı.");
+      toast.error(t("Kod çalıştırılamadı.", "Couldn't run the code."));
     } finally {
       setBusy(false);
     }
@@ -287,7 +287,7 @@ function LessonPage() {
     <aside className="card-surface flex max-h-[80vh] flex-col overflow-hidden lg:sticky lg:top-20">
       <div className="border-b border-border p-4">
         <label htmlFor="track-select" className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-          Teknoloji
+          {t("Teknoloji", "Technology")}
         </label>
         <select
           id="track-select"
@@ -314,9 +314,9 @@ function LessonPage() {
           ))}
         </select>
         <p className="mt-3 text-xs font-semibold text-muted-foreground">
-          {tp.done}/{tp.total} ders · %{tp.pct}
+          {t(`${tp.done}/${tp.total} ders · %${tp.pct}`, `${tp.done}/${tp.total} lessons · ${tp.pct}%`)}
         </p>
-        <Progress value={tp.pct} className="mt-2 h-2" aria-label={`${track.label} ilerlemesi`} />
+        <Progress value={tp.pct} className="mt-2 h-2" aria-label={t(`${track.label} ilerlemesi`, `${track.label} progress`)} />
       </div>
       <ul className="flex-1 overflow-y-auto p-2">
         {LESSONS.filter((l) => l.language === track.id).map((l) => {
@@ -366,20 +366,20 @@ function LessonPage() {
           className="rounded-lg px-2 py-1 text-xs font-bold text-primary-foreground"
           style={{ backgroundColor: `var(--color-${meta.colorVar})` }}
         >
-          {meta.label} · Seviye {lesson.level}
+          {meta.label} · {t("Seviye", "Level")} {lesson.level}
         </span>
         <h2 className="mt-3 text-2xl">{lesson.title}</h2>
       </div>
 
       <section>
-        <h3 className="text-base">📝 Açıklama</h3>
+        <h3 className="text-base">📝 {t("Açıklama", "Description")}</h3>
         <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
           {lesson.explanation}
         </p>
       </section>
 
       <section>
-        <h3 className="text-base">💡 Kod örneği</h3>
+        <h3 className="text-base">💡 {t("Kod örneği", "Code example")}</h3>
         <pre
           className="code-block mt-2 select-none overflow-x-auto text-xs"
           onCopy={(e) => e.preventDefault()}
@@ -389,18 +389,18 @@ function LessonPage() {
         >
           <code>{lesson.example}</code>
         </pre>
-        <p className="mt-1 text-[11px] text-muted-foreground">Örnek kod kopyalanamaz — kendin yazarak öğren.</p>
+        <p className="mt-1 text-[11px] text-muted-foreground">{t("Örnek kod kopyalanamaz \u2014 kendin yazarak öğren.", "The example code can not be copied \u2014 learn by typing it yourself.")}</p>
       </section>
 
       <section>
-        <h3 className="text-base">✅ Görev</h3>
+        <h3 className="text-base">✅ {t("Görev", "Task")}</h3>
         <p className="mt-2 rounded-2xl bg-primary-soft p-4 text-sm font-semibold text-primary">
           {lesson.challenge}
         </p>
       </section>
 
       <section>
-        <h3 className="text-base">İpuçları</h3>
+        <h3 className="text-base">{t("İpuçları", "Hints")}</h3>
         <div className="mt-2 space-y-2">
           {lesson.hints.map((hint, index) => {
             const open = openHints.includes(index);
@@ -414,8 +414,8 @@ function LessonPage() {
                   disabled={unlockingHint === index}
                   onClick={() => void handleHint(index)}
                 >
-                  <Lightbulb className="mr-1 h-4 w-4" /> İpucu {index + 1}
-                  {!open && !pro && <span className="ml-1 text-xs">· 1 hak</span>}
+                  <Lightbulb className="mr-1 h-4 w-4" /> {t("İpucu", "Hint")} {index + 1}
+                  {!open && !pro && <span className="ml-1 text-xs">· {t("1 hak", "1 credit")}</span>}
                 </Button>
                 {open && (
                   <p className="mt-2 rounded-xl bg-secondary p-3 text-sm text-muted-foreground">{hint}</p>
@@ -430,7 +430,7 @@ function LessonPage() {
 
   const editorPanel = (
     <div className="card-surface flex flex-col overflow-hidden">
-      <div className="flex flex-wrap items-center gap-1 border-b border-border p-2" role="tablist" aria-label="Dosyalar">
+      <div className="flex flex-wrap items-center gap-1 border-b border-border p-2" role="tablist" aria-label={t("Dosyalar", "Files")}>
         {lesson.files.map((f) => (
           <button
             key={f.name}
@@ -450,7 +450,7 @@ function LessonPage() {
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Yazı tipini küçült"
+            aria-label={t("Yazı tipini küçült", "Decrease font size")}
             onClick={() => settings.setFontSize(Math.max(11, settings.fontSize - 1))}
           >
             <Minus className="h-4 w-4" />
@@ -459,7 +459,7 @@ function LessonPage() {
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Yazı tipini büyült"
+            aria-label={t("Yazı tipini büyült", "Increase font size")}
             onClick={() => settings.setFontSize(Math.min(24, settings.fontSize + 1))}
           >
             <Plus className="h-4 w-4" />
@@ -467,7 +467,7 @@ function LessonPage() {
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Editör temasını değiştir"
+            aria-label={t("Editör temasını değiştir", "Toggle editor theme")}
             onClick={() => settings.setEditorTheme(settings.editorTheme === "dark" ? "light" : "dark")}
           >
             {settings.editorTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -513,21 +513,21 @@ function LessonPage() {
 
       <div className="flex flex-wrap gap-2 border-t border-border p-3">
         <Button variant="secondary" className="font-bold" disabled={busy} onClick={() => void handleRun()}>
-          <Play className="mr-1 h-4 w-4" /> Kodu çalıştır
+          <Play className="mr-1 h-4 w-4" /> {t("Kodu çalıştır", "Run code")}
         </Button>
         <Button className="font-bold" disabled={busy} onClick={() => void handleSubmit()}>
-          <Send className="mr-1 h-4 w-4" /> Gönder
+          <Send className="mr-1 h-4 w-4" /> {t("Gönder", "Submit")}
         </Button>
         <Button variant="ghost" className="font-bold" onClick={() => setFiles(filesToRecord(lesson))}>
-          Sıfırla
+          {t("Sıfırla", "Reset")}
         </Button>
       </div>
 
       <div className="border-t border-border p-3">
-        <h3 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">Çıktı & testler</h3>
+        <h3 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">{t("Çıktı & testler", "Output & tests")}</h3>
         {run?.previewHtml && (
           <iframe
-            title="Önizleme"
+            title={t("Önizleme", "Preview")}
             sandbox="allow-scripts"
             srcDoc={run.previewHtml}
             className="mt-2 h-48 w-full rounded-xl border border-border bg-white"
@@ -535,7 +535,7 @@ function LessonPage() {
         )}
         {run && !run.previewHtml && (
           <pre className="code-block mt-2 max-h-40 overflow-auto text-xs">
-            <code>{run.logs.join("\n") || "(çıktı yok)"}</code>
+            <code>{run.logs.join("\n") || t("(çıktı yok)", "(no output)")}</code>
           </pre>
         )}
         {run?.error && (
@@ -559,7 +559,7 @@ function LessonPage() {
         )}
         {!run && !checks && (
           <p className="mt-2 text-sm text-muted-foreground">
-            Kodunu çalıştır veya doğrudan gönder; sonuçlar burada görünecek.
+            {t("Kodunu çalıştır veya doğrudan gönder; sonuçlar burada görünecek.", "Run your code or submit it directly; results will show here.")}
           </p>
         )}
       </div>

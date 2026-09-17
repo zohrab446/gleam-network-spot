@@ -22,6 +22,8 @@ import { useClaimDailyLogin, useEnergySync } from "@/hooks/useEnergy";
 import { energyErrorMessage, isProActive } from "@/lib/energy";
 import { toast } from "sonner";
 import { Gift } from "lucide-react";
+import { useLanguage, useT } from "@/lib/i18n";
+import { trackTagline } from "@/data/i18n";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -39,6 +41,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
+  const t = useT();
+  const lang = useLanguage();
   const navigate = useNavigate();
   const { data: profile, isLoading } = useProfile();
   const { data: progress = [], isLoading: progressLoading } = useProgress();
@@ -88,14 +92,14 @@ function Dashboard() {
             <div className="bg-brand-gradient flex flex-wrap items-center gap-4 p-6 text-primary-foreground">
               <PlayerAvatar shape={profile.avatar_shape} color={profile.avatar_color} size="lg" />
               <div className="min-w-0">
-                <h1 className="truncate text-2xl">Merhaba, {profile.username ?? "Kodcu"}!</h1>
+                <h1 className="truncate text-2xl">{t("Merhaba", "Hello")}, {profile.username ?? t("Kodcu", "Coder")}!</h1>
                 <p className="text-sm opacity-90">
-                  {completed.size} ders tamamlandı · {MAX_LEVEL - completed.size} ders kaldı
+                  {completed.size} {t("ders tamamlandı", "lessons completed")} · {MAX_LEVEL - completed.size} {t("ders kaldı", "lessons left")}
                 </p>
               </div>
               <Button asChild size="lg" variant="secondary" className="ml-auto font-bold">
                 <Link to="/lesson/$level" params={{ level: String(continueLevel) }}>
-                  <Play className="mr-1 h-4 w-4" /> Devam et
+                  <Play className="mr-1 h-4 w-4" /> {t("Devam et", "Continue")}
                 </Link>
               </Button>
             </div>
@@ -104,18 +108,18 @@ function Dashboard() {
               <div className="flex items-end justify-between gap-4">
                 <div>
                   <p className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
-                    Şu anki seviye
+                    {t("Şu anki seviye", "Current level")}
                   </p>
                   <p className="font-display text-5xl font-extrabold text-gradient-brand">{profile.level}</p>
                 </div>
                 <p className="text-sm font-semibold text-muted-foreground">
-                  Sonraki seviyeye {Math.max(0, xpRewardFor(profile.level) - Math.round((pct / 100) * xpRewardFor(profile.level)))} XP
+                  {t("Sonraki seviyeye", "To next level")} {Math.max(0, xpRewardFor(profile.level) - Math.round((pct / 100) * xpRewardFor(profile.level)))} XP
                 </p>
               </div>
-              <Progress value={pct} className="mt-3 h-3" aria-label="Seviye ilerlemesi" />
+              <Progress value={pct} className="mt-3 h-3" aria-label={t("Seviye ilerlemesi", "Level progress")} />
               {multiplier > 1 && (
                 <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-success-soft px-3 py-1 text-sm font-bold text-success">
-                  🔥 7+ gün seri: XP'ler 2 katı!
+                  {t("🔥 7+ gün seri: XP'ler 2 katı!", "🔥 7+ day streak: XP is 2x!")}
                 </p>
               )}
             </div>
@@ -127,9 +131,9 @@ function Dashboard() {
             <section className="card-surface flex flex-wrap items-center gap-3 p-5">
               <Gift className="h-6 w-6 text-accent" />
               <div className="min-w-0 flex-1">
-                <p className="font-display text-base font-extrabold">Günlük ödülün hazır!</p>
+                <p className="font-display text-base font-extrabold">{t("Günlük ödülün hazır!", "Your daily reward is ready!")}</p>
                 <p className="text-sm text-muted-foreground">
-                  Enerji + {isProActive(profile) ? "150" : "50"} coin seni bekliyor.
+                  {t("Enerji +", "Energy +")} {isProActive(profile) ? "150" : "50"} {t("coin seni bekliyor.", "coins are waiting for you.")}
                 </p>
               </div>
               <Button
@@ -138,25 +142,25 @@ function Dashboard() {
                 onClick={() =>
                   dailyLogin.mutate(undefined, {
                     onSuccess: (result) =>
-                      toast.success(`${result.day}. gün: +${result.energy} enerji, +${result.coins} coin!`),
+                      toast.success(t(`${result.day}. gün: +${result.energy} enerji, +${result.coins} coin!`, `Day ${result.day}: +${result.energy} energy, +${result.coins} coins!`)),
                     onError: (error) => toast.error(energyErrorMessage(error)),
                   })
                 }
               >
-                Ödülü al
+                {t("Ödülü al", "Claim reward")}
               </Button>
             </section>
           )}
 
           <section className="grid gap-4 sm:grid-cols-3">
-            <StatCard icon={<Flame className="h-5 w-5 text-streak" />} label="Günlük seri" value={`${profile.streak} gün`} />
-            <StatCard icon={<Coins className="h-5 w-5 text-coin" />} label="Coin" value={profile.coins} />
-            <StatCard icon={<Zap className="h-5 w-5 text-primary" />} label="Toplam XP" value={profile.xp} />
+            <StatCard icon={<Flame className="h-5 w-5 text-streak" />} label={t("Günlük seri", "Daily streak")} value={`${profile.streak} ${t("gün", "days")}`} />
+            <StatCard icon={<Coins className="h-5 w-5 text-coin" />} label={t("Coin", "Coins")} value={profile.coins} />
+            <StatCard icon={<Zap className="h-5 w-5 text-primary" />} label={t("Toplam XP", "Total XP")} value={profile.xp} />
           </section>
 
           <section aria-labelledby="lessons-heading" className="space-y-4">
             <h2 id="lessons-heading" className="text-xl">
-              Teknoloji yolları
+              {t("Teknoloji yolları", "Tech tracks")}
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               {TRACKS.map((track) => {
@@ -168,7 +172,7 @@ function Dashboard() {
                     to="/lesson/$level"
                     params={{ level: String(target) }}
                     className="card-surface flex flex-col gap-3 p-5 transition-transform hover:-translate-y-0.5"
-                    aria-label={`${track.label} yoluna devam et`}
+                    aria-label={t(`${track.label} yoluna devam et`, `Continue ${track.label} track`)}
                   >
                     <div className="flex items-center gap-3">
                       <span
@@ -179,13 +183,13 @@ function Dashboard() {
                       </span>
                       <div className="min-w-0">
                         <p className="font-display text-base font-extrabold">{track.label}</p>
-                        <p className="truncate text-xs text-muted-foreground">{track.tagline}</p>
+                        <p className="truncate text-xs text-muted-foreground">{trackTagline(track.id, lang, track.tagline)}</p>
                       </div>
                       <span className="ml-auto font-display text-lg font-extrabold text-primary">%{tp.pct}</span>
                     </div>
-                    <Progress value={tp.pct} className="h-2" aria-label={`${track.label} ilerlemesi`} />
+                    <Progress value={tp.pct} className="h-2" aria-label={t(`${track.label} ilerlemesi`, `${track.label} progress`)} />
                     <p className="text-xs font-semibold text-muted-foreground">
-                      {tp.done}/{tp.total} ders · Seviye {track.from}–{track.to}
+                      {tp.done}/{tp.total} {t("ders", "lessons")} · {t("Seviye", "Level")} {track.from}–{track.to}
                     </p>
                   </Link>
                 );
@@ -197,7 +201,7 @@ function Dashboard() {
         <aside className="space-y-4">
           <section className="card-surface p-5">
             <h2 className="flex items-center gap-2 text-lg">
-              <Trophy className="h-5 w-5 text-accent" /> İlk 3
+              <Trophy className="h-5 w-5 text-accent" /> {t("İlk 3", "Top 3")}
             </h2>
             <ol className="mt-4 space-y-3">
               {leaders.slice(0, 3).map((row, index) => (
@@ -211,18 +215,21 @@ function Dashboard() {
                 </li>
               ))}
               {leaders.length === 0 && (
-                <li className="text-sm text-muted-foreground">Henüz kimse XP kazanmadı. İlk sen ol!</li>
+                <li className="text-sm text-muted-foreground">{t("Henüz kimse XP kazanmadı. İlk sen ol!", "No one has earned XP yet. Be the first!")}</li>
               )}
             </ol>
             <Button asChild variant="ghost" className="mt-4 w-full font-bold">
-              <Link to="/leaderboard">Tüm tabloyu gör</Link>
+              <Link to="/leaderboard">{t("Tüm tabloyu gör", "See full leaderboard")}</Link>
             </Button>
           </section>
 
           <section className="card-surface p-5">
-            <h2 className="text-lg">Günün ipucu 💡</h2>
+            <h2 className="text-lg">{t("Günün ipucu 💡", "Tip of the day 💡")}</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Takıldığında sağ alttaki asistanı aç. Sana cevabı vermez ama doğru soruyu sormanı sağlar.
+              {t(
+                "Takıldığında sağ alttaki asistanı aç. Sana cevabı vermez ama doğru soruyu sormanı sağlar.",
+                "When you get stuck, open the assistant in the bottom right. It won't give you the answer, but helps you ask the right question.",
+              )}
             </p>
           </section>
         </aside>
@@ -256,6 +263,7 @@ function LessonCard({
   done: boolean;
   locked: boolean;
 }) {
+  const t = useT();
   const content = (
     <div
       className={cn(
@@ -281,14 +289,14 @@ function LessonCard({
         <p className="font-display text-sm font-bold">
           {level}. {title}
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{locked ? "Önceki dersi bitir 🔒" : description}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">{locked ? t("Önceki dersi bitir 🔒", "Finish previous lesson 🔒") : description}</p>
       </div>
     </div>
   );
 
   if (locked) return <div aria-disabled="true">{content}</div>;
   return (
-    <Link to="/lesson/$level" params={{ level: String(level) }} aria-label={`Seviye ${level}: ${title}`}>
+    <Link to="/lesson/$level" params={{ level: String(level) }} aria-label={t(`Seviye ${level}: ${title}`, `Level ${level}: ${title}`)}>
       {content}
     </Link>
   );

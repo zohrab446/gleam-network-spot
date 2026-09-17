@@ -192,7 +192,7 @@ function ProfilePage() {
               />
             </div>
             <div className="flex items-center justify-between gap-4">
-              <span className="text-sm font-bold">Arayüz dili</span>
+              <span className="text-sm font-bold">{t("Dil", "Language")}</span>
               <div className="inline-flex rounded-xl bg-secondary p-1">
                 {(["tr", "en"] as const).map((lang) => (
                   <Button
@@ -211,8 +211,12 @@ function ProfilePage() {
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Ders içerikleri şimdilik Türkçe; İngilizce seçimi arayüz tercihi olarak kaydedilir.
+              {t(
+                "Arayüz ve tüm ders içerikleri seçtiğin dilde görünür.",
+                "The interface and all lesson content appear in the language you choose.",
+              )}
             </p>
+
           </div>
         </section>
       </div>

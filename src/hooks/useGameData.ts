@@ -208,7 +208,18 @@ export function useSaveUsername() {
     mutationFn: async ({ username, onboarded }: { username: string; onboarded?: boolean }) => {
       const check = validateUsername(username);
       if (!check.ok) throw new Error(check.message);
-      return unwrapAction(await save({ data: { username: check.value, onboarded: onboarded ?? false } }));
+      try {
+        return unwrapAction(await save({ data: { username: check.value, onboarded: onboarded ?? false } }));
+      } catch (error) {
+        const code = error instanceof Error ? error.message : "";
+        if (code === "USERNAME_TAKEN") {
+          throw new Error("Kullanıcı adı başkası tarafından alınmış, başka bir ad dener misin?");
+        }
+        if (code === "USERNAME_REJECTED") {
+          throw new Error("Kullanıcı adı kaydedilemedi, farklı bir ad dener misin?");
+        }
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });

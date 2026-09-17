@@ -27,8 +27,9 @@ import {
   energyErrorMessage,
   isProActive,
 } from "@/lib/energy";
-import { BADGES } from "@/lib/gamification";
+import { badgeTitle } from "@/lib/gamification";
 import { celebrate } from "@/lib/celebrate";
+import { useT } from "@/lib/i18n";
 import { playSound } from "@/store/settings";
 import { cn } from "@/lib/utils";
 import { PaytrCheckoutDialog } from "@/components/PaytrCheckoutDialog";
@@ -52,6 +53,7 @@ export const Route = createFileRoute("/_authenticated/rewards")({
 });
 
 function RewardsPage() {
+  const t = useT();
   useEnergySync();
   const { data: profile, isLoading } = useProfile();
   const { data: badges = [] } = useBadges();
@@ -77,7 +79,7 @@ function RewardsPage() {
       watchAd.mutate(undefined, {
         onSuccess: () => {
           playSound("success");
-          toast.success("Reklam tamamlandı: +1 enerji ⚡");
+          toast.success(t("Reklam tamamlandı: +1 enerji ⚡", "Ad completed: +1 energy ⚡"));
         },
         onError: (error) => toast.error(energyErrorMessage(error)),
       });
@@ -122,10 +124,10 @@ function RewardsPage() {
         if (result.energy > 0) {
           playSound("success");
           void celebrate();
-          toast.success(`Çarktan +${result.energy} enerji! ⚡`);
+          toast.success(t(`Çarktan +${result.energy} enerji! ⚡`, `+${result.energy} energy from the wheel! ⚡`));
         } else {
           playSound("error");
-          toast("Bu sefer boş çıktı, yarın tekrar dene 🍎");
+          toast(t("Bu sefer boş çıktı, yarın tekrar dene 🍎", "No luck this time, try again tomorrow 🍎"));
         }
       },
       onError: (error) => toast.error(energyErrorMessage(error)),
@@ -136,9 +138,9 @@ function RewardsPage() {
     <AppShell>
       <div className="space-y-6">
         <header>
-          <h1 className="text-2xl">Enerji & Ödüller</h1>
+          <h1 className="text-2xl">{t("Enerji & Ödüller", "Energy & Rewards")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Enerjini doldur, seriyi koru, arkadaşlarını davet et.
+            {t("Enerjini doldur, seriyi koru, arkadaşlarını davet et.", "Refill your energy, keep your streak, invite your friends.")}
           </p>
         </header>
 
@@ -147,7 +149,7 @@ function RewardsPage() {
         {/* Günlük giriş */}
         <section className="card-surface p-5" aria-labelledby="daily-heading">
           <h2 id="daily-heading" className="flex items-center gap-2 text-lg">
-            <Gift className="h-5 w-5 text-accent" /> Günlük giriş ödülü
+            <Gift className="h-5 w-5 text-accent" /> {t("Günlük giriş ödülü", "Daily login reward")}
           </h2>
           <div className="mt-4 grid grid-cols-7 gap-2">
             {DAILY_LOGIN_REWARDS.map((amount, index) => {
@@ -164,7 +166,7 @@ function RewardsPage() {
                     !done && !current && "border-border",
                   )}
                 >
-                  <p className="text-xs font-bold text-muted-foreground">{day}. gün</p>
+                  <p className="text-xs font-bold text-muted-foreground">{t(`${day}. gün`, `Day ${day}`)}</p>
                   <p className="font-display text-sm font-extrabold">+{amount}</p>
                   {done && <Check className="mx-auto h-3.5 w-3.5 text-success" />}
                 </div>
@@ -180,23 +182,23 @@ function RewardsPage() {
                 onSuccess: (result) => {
                   playSound("success");
                   void celebrate();
-                  toast.success(`${result.day}. gün: +${result.energy} enerji, +${result.coins} coin!`);
+                  toast.success(t(`${result.day}. gün: +${result.energy} enerji, +${result.coins} coin!`, `Day ${result.day}: +${result.energy} energy, +${result.coins} coins!`));
                 },
                 onError: (error) => toast.error(energyErrorMessage(error)),
               });
             }}
           >
-            {loginClaimed ? "Bugünün ödülü alındı ✅" : "Günlük ödülü al"}
+            {loginClaimed ? t("Bugünün ödülü alındı ✅", "Today's reward claimed ✅") : t("Günlük ödülü al", "Claim daily reward")}
           </Button>
           <p className="mt-2 text-xs text-muted-foreground">
-            Günlük bonus coin: {pro ? "+150 (Pro)" : "+50"}
+            {t("Günlük bonus coin", "Daily bonus coins")}: {pro ? "+150 (Pro)" : "+50"}
           </p>
         </section>
 
         {/* Şans çarkı */}
         <section className="card-surface p-5" aria-labelledby="spin-heading">
           <h2 id="spin-heading" className="flex items-center gap-2 text-lg">
-            🎡 Şans çarkı
+            🎡 {t("Şans çarkı", "Lucky wheel")}
           </h2>
           <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-center">
             <div className="relative h-40 w-40 shrink-0">
@@ -226,11 +228,11 @@ function RewardsPage() {
             </div>
             <div className="min-w-0 flex-1 text-center sm:text-left">
               <p className="text-sm text-muted-foreground">
-                Günde bir kez çevir, 0 ile 5 arasında enerji kazan. %10 şansla +5 enerji!
+                {t("Günde bir kez çevir, 0 ile 5 arasında enerji kazan. %10 şansla +5 enerji!", "Spin once a day to win 0 to 5 energy. 10% chance for +5 energy!")}
               </p>
               {spinResult !== null && (
                 <p className="mt-2 font-display text-xl font-extrabold text-primary">
-                  {spinResult > 0 ? `+${spinResult} enerji 🎉` : "Boş 🍎"}
+                  {spinResult > 0 ? t(`+${spinResult} enerji 🎉`, `+${spinResult} energy 🎉`) : t("Boş 🍎", "Empty 🍎")}
                 </p>
               )}
               <Button
@@ -238,7 +240,7 @@ function RewardsPage() {
                 disabled={!spinReady || spin.isPending}
                 onClick={handleSpin}
               >
-                {spinReady ? "Çarkı döndür 🎲" : "Yarın tekrar dene"}
+                {spinReady ? t("Çarkı döndür 🎲", "Spin the wheel 🎲") : t("Yarın tekrar dene", "Try again tomorrow")}
               </Button>
             </div>
           </div>
@@ -247,11 +249,11 @@ function RewardsPage() {
         {/* Reklam */}
         <section id="reklam" className="card-surface p-5" aria-labelledby="ad-heading">
           <h2 id="ad-heading" className="flex items-center gap-2 text-lg">
-            <Video className="h-5 w-5 text-primary" /> Reklam izle
+            <Video className="h-5 w-5 text-primary" /> {t("Reklam izle", "Watch ad")}
           </h2>
           {pro ? (
             <p className="mt-2 text-sm text-muted-foreground">
-              Pro üyeliğin reklamsız ve enerjin sınırsız — buna ihtiyacın yok 👑
+              {t("Pro üyeliğin reklamsız ve enerjin sınırsız — buna ihtiyacın yok 👑", "Your Pro membership is ad-free with unlimited energy — you don't need this 👑")}
             </p>
           ) : (
             <>

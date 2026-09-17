@@ -119,7 +119,7 @@ function Dashboard() {
               <Progress value={pct} className="mt-3 h-3" aria-label={t("Seviye ilerlemesi", "Level progress")} />
               {multiplier > 1 && (
                 <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-success-soft px-3 py-1 text-sm font-bold text-success">
-                  t("🔥 7+ gün seri: XP'ler 2 katı!", "🔥 7+ day streak: XP is 2x!")
+                  {t("🔥 7+ gün seri: XP'ler 2 katı!", "🔥 7+ day streak: XP is 2x!")}
                 </p>
               )}
             </div>

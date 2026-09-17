@@ -56,9 +56,12 @@ function withSecurityHeaders(response: Response): Response {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const preflight = handlePreflight(request);
+      if (preflight) return preflight;
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return withSecurityHeaders(await normalizeCatastrophicSsrResponse(response));
+      const normalized = withSecurityHeaders(await normalizeCatastrophicSsrResponse(response));
+      return applyCorsPolicy(request, hardenCookies(normalized));
     } catch (error) {
       console.error(error);
       return new Response(renderErrorPage(), {

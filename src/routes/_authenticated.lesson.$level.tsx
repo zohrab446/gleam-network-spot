@@ -287,7 +287,7 @@ function LessonPage() {
     <aside className="card-surface flex max-h-[80vh] flex-col overflow-hidden lg:sticky lg:top-20">
       <div className="border-b border-border p-4">
         <label htmlFor="track-select" className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-          Teknoloji
+          {t("Teknoloji", "Technology")}
         </label>
         <select
           id="track-select"
@@ -314,9 +314,9 @@ function LessonPage() {
           ))}
         </select>
         <p className="mt-3 text-xs font-semibold text-muted-foreground">
-          {tp.done}/{tp.total} ders · %{tp.pct}
+          {t(`${tp.done}/${tp.total} ders · %${tp.pct}`, `${tp.done}/${tp.total} lessons · ${tp.pct}%`)}
         </p>
-        <Progress value={tp.pct} className="mt-2 h-2" aria-label={`${track.label} ilerlemesi`} />
+        <Progress value={tp.pct} className="mt-2 h-2" aria-label={t(`${track.label} ilerlemesi`, `${track.label} progress`)} />
       </div>
       <ul className="flex-1 overflow-y-auto p-2">
         {LESSONS.filter((l) => l.language === track.id).map((l) => {
@@ -366,20 +366,20 @@ function LessonPage() {
           className="rounded-lg px-2 py-1 text-xs font-bold text-primary-foreground"
           style={{ backgroundColor: `var(--color-${meta.colorVar})` }}
         >
-          {meta.label} · Seviye {lesson.level}
+          {meta.label} · {t("Seviye", "Level")} {lesson.level}
         </span>
         <h2 className="mt-3 text-2xl">{lesson.title}</h2>
       </div>
 
       <section>
-        <h3 className="text-base">📝 Açıklama</h3>
+        <h3 className="text-base">📝 {t("Açıklama", "Description")}</h3>
         <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
           {lesson.explanation}
         </p>
       </section>
 
       <section>
-        <h3 className="text-base">💡 Kod örneği</h3>
+        <h3 className="text-base">💡 {t("Kod örneği", "Code example")}</h3>
         <pre
           className="code-block mt-2 select-none overflow-x-auto text-xs"
           onCopy={(e) => e.preventDefault()}
@@ -389,18 +389,18 @@ function LessonPage() {
         >
           <code>{lesson.example}</code>
         </pre>
-        <p className="mt-1 text-[11px] text-muted-foreground">Örnek kod kopyalanamaz — kendin yazarak öğren.</p>
+        <p className="mt-1 text-[11px] text-muted-foreground">{t("Örnek kod kopyalanamaz \u2014 kendin yazarak öğren.", "The example code can not be copied \u2014 learn by typing it yourself.")}</p>
       </section>
 
       <section>
-        <h3 className="text-base">✅ Görev</h3>
+        <h3 className="text-base">✅ {t("Görev", "Task")}</h3>
         <p className="mt-2 rounded-2xl bg-primary-soft p-4 text-sm font-semibold text-primary">
           {lesson.challenge}
         </p>
       </section>
 
       <section>
-        <h3 className="text-base">İpuçları</h3>
+        <h3 className="text-base">{t("İpuçları", "Hints")}</h3>
         <div className="mt-2 space-y-2">
           {lesson.hints.map((hint, index) => {
             const open = openHints.includes(index);
@@ -414,8 +414,8 @@ function LessonPage() {
                   disabled={unlockingHint === index}
                   onClick={() => void handleHint(index)}
                 >
-                  <Lightbulb className="mr-1 h-4 w-4" /> İpucu {index + 1}
-                  {!open && !pro && <span className="ml-1 text-xs">· 1 hak</span>}
+                  <Lightbulb className="mr-1 h-4 w-4" /> {t("İpucu", "Hint")} {index + 1}
+                  {!open && !pro && <span className="ml-1 text-xs">· {t("1 hak", "1 credit")}</span>}
                 </Button>
                 {open && (
                   <p className="mt-2 rounded-xl bg-secondary p-3 text-sm text-muted-foreground">{hint}</p>

@@ -34,6 +34,10 @@ import { playSound } from "@/store/settings";
 import { cn } from "@/lib/utils";
 import { PaytrCheckoutDialog } from "@/components/PaytrCheckoutDialog";
 import { ENERGY_PRODUCTS, HINT_PRODUCTS } from "@/lib/store";
+import { AdSlot } from "@/components/AdSlot";
+
+/** AdSense panelinden alınan ödül reklamı birimi kimliği (boşsa yer tutucu gösterilir). */
+const AD_SLOT_REWARD = "";
 
 export const Route = createFileRoute("/_authenticated/rewards")({
   head: () => ({
@@ -262,9 +266,24 @@ function RewardsPage() {
                 {AD_DAILY_LIMIT} kullanıldı).
               </p>
               {adSeconds !== null ? (
-                <div className="mt-4 rounded-2xl bg-foreground p-6 text-center">
-                  <p className="font-display text-4xl font-extrabold text-primary-foreground">{adSeconds}</p>
-                  <p className="mt-1 text-sm text-primary-foreground/80">Reklam oynuyor… ekranda kal</p>
+                <div className="mt-4 space-y-3">
+                  <AdSlot
+                    slot={AD_SLOT_REWARD}
+                    className="min-h-[250px] w-full overflow-hidden rounded-2xl bg-secondary"
+                    placeholder={
+                      <div className="flex min-h-[250px] items-center justify-center rounded-2xl bg-foreground p-6 text-center">
+                        <p className="text-sm text-primary-foreground/80">
+                          {t("Reklam alanı hazırlanıyor…", "Ad space loading…")}
+                        </p>
+                      </div>
+                    }
+                  />
+                  <div className="rounded-2xl bg-foreground p-4 text-center">
+                    <p className="font-display text-4xl font-extrabold text-primary-foreground">{adSeconds}</p>
+                    <p className="mt-1 text-sm text-primary-foreground/80">
+                      {t("Reklam oynuyor… ekranda kal", "Ad is playing… stay on screen")}
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <Button

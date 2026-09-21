@@ -120,10 +120,25 @@ export function buildWebDocument(lesson: Lesson, files: Files): string {
   const js = files["script.js"];
   const jsx = files["App.jsx"];
 
-  if (css !== undefined) html = html.replace(LINK_RE, () => `<style>\n${css}\n</style>`);
-  if (js !== undefined) html = html.replace(SCRIPT_RE, () => `<script>\n${escapeScript(js)}\n</script>`);
+  // Dosyalar gömülürken orijinal <link>/<script src> etiketleri DOM'da kalır
+  // (kontroller bu etiketleri arar), ancak ağ isteği yapmayacak hâle getirilir.
+  if (css !== undefined)
+    html = html.replace(
+      LINK_RE,
+      () => `<link rel="stylesheet" href="style.css" media="not all" data-cq-inlined="true">\n<style>\n${css}\n</style>`,
+    );
+  if (js !== undefined)
+    html = html.replace(
+      SCRIPT_RE,
+      () =>
+        `<script src="script.js" type="text/cq-inlined" data-cq-inlined="true"></script>\n<script>\n${escapeScript(js)}\n</script>`,
+    );
   if (lesson.language === "react" && jsx !== undefined) {
-    html = html.replace(BABEL_RE, () => `<script type="text/babel" data-presets="react">\n${escapeScript(jsx)}\n</script>`);
+    html = html.replace(
+      BABEL_RE,
+      () =>
+        `<script src="App.jsx" type="text/cq-inlined" data-cq-inlined="true"></script>\n<script type="text/babel" data-presets="react">\n${escapeScript(jsx)}\n</script>`,
+    );
     html = injectIntoHead(html, REACT_CDN);
   }
   html = injectIntoHead(html, CAPTURE_SCRIPT);

@@ -75,6 +75,8 @@ import {
 export const Route = createFileRoute("/_authenticated/lesson/$level")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Ders — CodeQuest" },
       { name: "description", content: "Açıklamayı oku, dosyaları düzenle, çalıştır ve XP kazan." },
       { property: "og:title", content: "Ders — CodeQuest" },

@@ -42,6 +42,7 @@ const PUBLIC_CODES = [
   "ALREADY_PRO",
   "NO_HINT_CREDITS",
   "BOT_BLOCKED",
+  "NO_ENERGY",
 ] as const;
 
 export type ActionResult<T = Json> = { ok: true; data: T } | { ok: false; code: string };

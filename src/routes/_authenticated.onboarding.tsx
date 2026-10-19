@@ -16,6 +16,8 @@ import { useT } from "@/lib/i18n";
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Avatarını seç — CodeQuest" },
       { name: "description", content: "Kendine bir şekil, renk ve kullanıcı adı seç; sonra ilk seviyene başla." },
       { property: "og:title", content: "Avatarını seç — CodeQuest" },

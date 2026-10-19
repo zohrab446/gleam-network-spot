@@ -8,6 +8,8 @@ import { useT } from "@/lib/i18n";
 export const Route = createFileRoute("/mesafeli-satis")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Mesafeli Satış Sözleşmesi — CodeQuest (NHR Yazılım)" },
       {
         name: "description",

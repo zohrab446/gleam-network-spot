@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { humanAction } from "./turnstile-middleware";
 
 /**
  * E-posta bazlı giriş koruması: 5 başarısız denemeden sonra 15 dakika kilit,
@@ -47,6 +49,7 @@ function lockedState(lockedUntil: string | null, failedCount: number): LoginGuar
 
 /** Giriş denemesinden önce hesap kilidi kontrolü. */
 export const checkLoginGuard = createServerFn({ method: "POST" })
+  .middleware([humanAction("login_check")])
   .inputValidator(parseEmail)
   .handler(async ({ data }): Promise<LoginGuardState> => {
     try {
@@ -70,6 +73,7 @@ export const checkLoginGuard = createServerFn({ method: "POST" })
 
 /** Başarısız giriş denemesini kaydeder ve gerekiyorsa hesabı kilitler. */
 export const recordLoginFailure = createServerFn({ method: "POST" })
+  .middleware([humanAction("login_failure")])
   .inputValidator(parseEmail)
   .handler(async ({ data }): Promise<LoginGuardState> => {
     try {
@@ -105,8 +109,11 @@ export const recordLoginFailure = createServerFn({ method: "POST" })
 
 /** Başarılı girişte sayaçları temizler. */
 export const clearLoginAttempts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator(parseEmail)
-  .handler(async ({ data }): Promise<{ ok: true }> => {
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    const email = context.claims.email;
+    if (typeof email !== "string" || email.toLowerCase() !== data.email) throw new Error("Geçersiz istek");
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       await supabaseAdmin.from("auth_login_attempts").delete().eq("email", data.email);

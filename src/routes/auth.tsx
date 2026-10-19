@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useThemeSync } from "@/components/AppShell";
 import { useT } from "@/lib/i18n";
+import { verifyAuthAction } from "@/lib/auth-verification.functions";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -44,6 +45,7 @@ function AuthPage() {
   const checkGuard = useServerFn(checkLoginGuard);
   const recordFailure = useServerFn(recordLoginFailure);
   const clearAttempts = useServerFn(clearLoginAttempts);
+  const verifyAuth = useServerFn(verifyAuthAction);
 
   function lockMessage(seconds: number) {
     const minutes = Math.max(1, Math.ceil(seconds / 60));
@@ -60,6 +62,7 @@ function AuthPage() {
   async function withGoogle() {
     setBusy(true);
     try {
+      await verifyAuth();
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
       });
@@ -82,6 +85,7 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
+        await verifyAuth();
         const { data, error } = await supabase.auth.signUp({
           email,
           password,

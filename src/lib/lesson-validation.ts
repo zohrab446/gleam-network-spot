@@ -7,7 +7,7 @@ export function canonicalLesson(id: string, level: number, language: string): Le
 }
 
 function fold(source: string) {
-  return source.replace(/[Çç]/g, "c").replace(/[Ğğ]/g, "g").replace(/[İı]/g, "i")
+  return source.replace(/[Çç]/g, "c").replace(/[Ğğ]/g, "g").replace(/[İIı]/g, "i")
     .replace(/[Şş]/g, "s").replace(/[Öö]/g, "o").replace(/[Üü]/g, "u").toLowerCase();
 }
 

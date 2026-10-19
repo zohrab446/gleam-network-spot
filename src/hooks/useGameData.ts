@@ -266,10 +266,12 @@ export function useCompleteLesson() {
       lesson,
       code,
       seconds,
+      files,
     }: {
       lesson: Lesson;
       code: string;
       seconds: number;
+      files: Record<string, string>;
       profile?: Profile;
       progress?: Progress[];
     }): Promise<CompletionReward> => {
@@ -290,6 +292,7 @@ export function useCompleteLesson() {
             language: lesson.language,
             code: code.slice(0, 20000),
             seconds,
+            files,
           },
         }),
       );

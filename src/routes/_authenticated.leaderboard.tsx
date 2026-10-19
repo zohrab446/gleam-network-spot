@@ -14,6 +14,8 @@ import { useT } from "@/lib/i18n";
 export const Route = createFileRoute("/_authenticated/leaderboard")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Liderlik Tablosu — CodeQuest" },
       { name: "description", content: "Aylık ve tüm zamanların en iyi 50 CodeQuest oyuncusunu gör." },
       { property: "og:title", content: "Liderlik Tablosu — CodeQuest" },

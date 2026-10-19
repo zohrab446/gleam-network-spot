@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792426452325,
+      "tag": "0000_validate_lesson_progress_and_atomic_skip",
+      "breakpoints": true
+    }
+  ]
+}

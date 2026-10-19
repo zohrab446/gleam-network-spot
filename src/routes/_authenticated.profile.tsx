@@ -33,6 +33,8 @@ const PLAN_LABELS_EN: Record<string, string> = {
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Profilim — CodeQuest" },
       { name: "description", content: "Avatarın, rozetlerin, XP'n, coinlerin ve uygulama ayarların tek yerde." },
       { property: "og:title", content: "Profilim — CodeQuest" },

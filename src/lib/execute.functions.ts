@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { verifyExecute } from "./turnstile-middleware";
 
 const WANDBOX_URL = "https://wandbox.org/api/compile.json";
 
@@ -29,7 +30,7 @@ type WandboxResponse = {
 
 /** C++ ve Java kodunu ücretsiz uzak derleyicide çalıştırır. */
 export const executeRemote = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth, verifyExecute])
   .inputValidator((data) =>
     z
       .object({

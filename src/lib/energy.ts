@@ -148,6 +148,8 @@ export const PRO_PERKS: { feature: string; free: string; pro: string }[] = [
 /** Enerji hata kodlarını Türkçe mesaja çevirir. */
 export function energyErrorMessage(error: unknown): string {
   const raw = (error as { message?: string } | null)?.message ?? "";
+  if (raw.includes("BOT_BLOCKED")) return translate("Güvenlik doğrulaması tamamlanamadı. Tekrar dene.", "Security verification could not be completed. Please try again.");
+  if (raw.includes("NO_ENERGY")) return translate("Bu işlem için yeterli enerjin yok.", "You do not have enough energy for this action.");
   if (raw.includes("SPIN_COOLDOWN")) return translate("Çarkı bugün çevirdin. 24 saat sonra tekrar dene.", "You already spun the wheel today. Try again in 24 hours.");
   if (raw.includes("AD_LIMIT")) return translate("Bugünün reklam hakkını doldurdun (2/2).", "You've used today's ad limit (2/2).");
   if (raw.includes("AD_COOLDOWN")) return translate("Yeni reklam için biraz beklemen gerekiyor.", "You need to wait a bit before watching another ad.");

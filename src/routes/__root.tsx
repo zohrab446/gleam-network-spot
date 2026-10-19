@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -16,6 +17,7 @@ import { Toaster } from "../components/ui/sonner";
 import { initAntiBot } from "../lib/antibot";
 import { PromoBanner } from "@/components/PromoBanner";
 import { useT } from "@/lib/i18n";
+import { HumanVerification } from "@/components/HumanVerification";
 
 function NotFoundComponent() {
   const t = useT();
@@ -40,12 +42,12 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const t = useT();
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    reportLovableError(error instanceof Error ? error : new Error("Page failed to load"), { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
@@ -145,6 +147,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <PromoBanner />
+        <HumanVerification />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster />

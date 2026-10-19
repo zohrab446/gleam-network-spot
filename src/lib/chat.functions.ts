@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { generateText } from "ai";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { verifyChat } from "./turnstile-middleware";
 
 const SYSTEM_PROMPT = `Sen CodeQuest'in yazılım öğrenme asistanısın. Türkçe ve İngilizce konuşabilirsin; öğrenci hangi dilde yazarsa o dilde cevap ver.
 Kurallar:
@@ -25,7 +26,7 @@ const ChatInput = z.object({
 });
 
 export const sendChatMessage = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth, verifyChat])
   .inputValidator((input: unknown) => ChatInput.parse(input))
   .handler(async ({ data }) => {
     const key = process.env["LOVABLE_API_KEY"];

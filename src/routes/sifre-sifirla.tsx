@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useThemeSync } from "@/components/AppShell";
 import { useT } from "@/lib/i18n";
+import { useServerFn } from "@tanstack/react-start";
+import { verifyAuthAction } from "@/lib/auth-verification.functions";
 
 export const Route = createFileRoute("/sifre-sifirla")({
   ssr: false,
@@ -27,6 +29,7 @@ export const Route = createFileRoute("/sifre-sifirla")({
 });
 
 function ResetPasswordPage() {
+  const verifyAuth = useServerFn(verifyAuthAction);
   useThemeSync();
   const t = useT();
   const navigate = useNavigate();
@@ -62,6 +65,7 @@ function ResetPasswordPage() {
     if (busy) return;
     setBusy(true);
     try {
+      await verifyAuth();
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: `${window.location.origin}/sifre-sifirla`,
       });
@@ -88,6 +92,7 @@ function ResetPasswordPage() {
     }
     setBusy(true);
     try {
+      await verifyAuth();
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       toast.success(t("Şifren güncellendi!", "Your password has been updated!"));

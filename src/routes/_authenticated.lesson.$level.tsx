@@ -75,6 +75,8 @@ import {
 export const Route = createFileRoute("/_authenticated/lesson/$level")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Ders — CodeQuest" },
       { name: "description", content: "Açıklamayı oku, dosyaları düzenle, çalıştır ve XP kazan." },
       { property: "og:title", content: "Ders — CodeQuest" },
@@ -210,14 +212,13 @@ function LessonPage() {
   const notEnoughEnergy = !pro && penalty > 0 && profile.energy < penalty;
 
   async function handleSkip() {
-    if (!pro && profile!.energy < SKIP_COST) {
+    if (!profile || !lesson) return;
+    if (!pro && profile.energy < SKIP_COST) {
       setEnergyBlocked(true);
       return;
     }
     try {
-      await spendEnergy.mutateAsync({ amount: SKIP_COST, reason: "skip_level", level: lesson!.level });
-      // Enerji harcandıysa ders "atlandı" sayılmalı, yoksa sonraki ders kilitli kalır.
-      await skipLevel.mutateAsync({ lesson: lesson!, profile: profile! });
+      await skipLevel.mutateAsync({ lesson, profile });
       toast(pro ? "Seviye atlandı (Pro) 👑" : `Seviye atlandı: -${SKIP_COST} enerji`);
       navigate({ to: "/lesson/$level", params: { level: String(nextLevel) } });
     } catch (error) {
@@ -271,6 +272,7 @@ function LessonPage() {
         lesson: lesson!,
         code: files[editable.name] ?? "",
         seconds,
+        files,
         profile: profile!,
         progress,
       });

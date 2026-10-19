@@ -16,6 +16,7 @@ import { Toaster } from "../components/ui/sonner";
 import { initAntiBot } from "../lib/antibot";
 import { PromoBanner } from "@/components/PromoBanner";
 import { useT } from "@/lib/i18n";
+import { HumanVerification } from "@/components/HumanVerification";
 
 function NotFoundComponent() {
   const t = useT();
@@ -145,6 +146,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <PromoBanner />
+        <HumanVerification />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster />

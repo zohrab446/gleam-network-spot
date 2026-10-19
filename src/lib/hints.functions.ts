@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { verifyHint } from "./turnstile-middleware";
 
 const inputSchema = z.object({
   lessonId: z.string().trim().min(1).max(100),
@@ -8,7 +9,7 @@ const inputSchema = z.object({
 });
 
 export const unlockLessonHint = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth, verifyHint])
   .inputValidator((input) => inputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

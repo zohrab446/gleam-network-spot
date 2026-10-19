@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { verifyPromo } from "./turnstile-middleware";
 
 const schema = z.object({ code: z.string().trim().min(2).max(40) });
 
@@ -14,7 +15,7 @@ export type PromoRedeemResult = {
 };
 
 export const redeemPromoCode = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth, verifyPromo])
   .inputValidator((input) => schema.parse(input))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

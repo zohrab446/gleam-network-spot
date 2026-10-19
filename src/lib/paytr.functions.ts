@@ -4,11 +4,12 @@ import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { getStoreProduct } from "@/lib/store";
+import { verifyCheckout } from "./turnstile-middleware";
 
 const checkoutSchema = z.object({ productId: z.string().min(1).max(40) });
 
 export const createPaytrCheckout = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth, verifyCheckout])
   .inputValidator((input) => checkoutSchema.parse(input))
   .handler(async ({ data, context }) => {
     const product = getStoreProduct(data.productId);

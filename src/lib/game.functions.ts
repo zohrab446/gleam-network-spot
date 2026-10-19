@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { parseUsername } from "@/lib/validation";
 import type { Json } from "@/integrations/supabase/types";
+import { verifyGameAction, verifyLesson, verifySkip, verifyStreak, verifyUsername } from "./turnstile-middleware";
 
 /** Şema/union detayları dışarıya sızmasın: tüm doğrulama hataları tek tip. */
 const GENERIC_ERROR = "Geçersiz istek";
@@ -63,7 +64,7 @@ function validate<T extends z.ZodTypeAny>(schema: T, input: unknown): z.infer<T>
 }
 
 export const runGameAction = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth, verifyGameAction])
   .inputValidator((input) => validate(actionSchema, input))
   .handler(async ({ data, context }): Promise<ActionResult<Json>> => {
     try {
@@ -146,7 +147,7 @@ export type CompletionResult = {
 
 /** XP / coin / seviye tamamen sunucuda hesaplanır; istemci değer gönderemez. */
 export const completeLesson = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth, verifyLesson])
   .inputValidator((input) => validate(completeSchema, input))
   .handler(async ({ data, context }): Promise<ActionResult<CompletionResult>> => {
     try {
@@ -173,7 +174,7 @@ const skipSchema = z.object({
 });
 
 export const skipLevel = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth, verifySkip])
   .inputValidator((input) => validate(skipSchema, input))
   .handler(async ({ data, context }): Promise<ActionResult<{ new_level: number }>> => {
     try {
@@ -192,7 +193,7 @@ export const skipLevel = createServerFn({ method: "POST" })
   });
 
 export const touchStreak = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth, verifyStreak])
   .handler(async ({ context }): Promise<ActionResult<Json>> => {
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -208,7 +209,7 @@ export const touchStreak = createServerFn({ method: "POST" })
 
 /** Kullanıcı adı: katı regex, HTML/olay yöneticisi içeren istekler reddedilir. */
 export const saveUsername = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth, verifyUsername])
   .inputValidator((input) => {
     const parsed = z.object({ username: z.string(), onboarded: z.boolean().optional() }).safeParse(input);
     if (!parsed.success) throw new Error(GENERIC_ERROR);

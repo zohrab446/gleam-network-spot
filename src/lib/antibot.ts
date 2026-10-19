@@ -25,17 +25,20 @@ function mark() {
 export function initAntiBot() {
   if (attached || typeof window === "undefined") return;
   attached = true;
-  window.addEventListener("keydown", () => {
+  window.addEventListener("keydown", (event) => {
+    if (!event.isTrusted) return;
     signals.keys += 1;
     mark();
   });
-  window.addEventListener("pointerdown", () => {
+  window.addEventListener("pointerdown", (event) => {
+    if (!event.isTrusted) return;
     signals.pointers += 1;
     mark();
   });
   window.addEventListener(
     "pointermove",
-    () => {
+    (event) => {
+      if (!event.isTrusted) return;
       signals.moves += 1;
       mark();
     },

@@ -210,14 +210,13 @@ function LessonPage() {
   const notEnoughEnergy = !pro && penalty > 0 && profile.energy < penalty;
 
   async function handleSkip() {
-    if (!pro && profile!.energy < SKIP_COST) {
+    if (!profile || !lesson) return;
+    if (!pro && profile.energy < SKIP_COST) {
       setEnergyBlocked(true);
       return;
     }
     try {
-      await spendEnergy.mutateAsync({ amount: SKIP_COST, reason: "skip_level", level: lesson!.level });
-      // Enerji harcandıysa ders "atlandı" sayılmalı, yoksa sonraki ders kilitli kalır.
-      await skipLevel.mutateAsync({ lesson: lesson!, profile: profile! });
+      await skipLevel.mutateAsync({ lesson, profile });
       toast(pro ? "Seviye atlandı (Pro) 👑" : `Seviye atlandı: -${SKIP_COST} enerji`);
       navigate({ to: "/lesson/$level", params: { level: String(nextLevel) } });
     } catch (error) {
@@ -271,6 +270,7 @@ function LessonPage() {
         lesson: lesson!,
         code: files[editable.name] ?? "",
         seconds,
+        files,
         profile: profile!,
         progress,
       });

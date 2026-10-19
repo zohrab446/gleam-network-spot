@@ -4,6 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { parseUsername } from "@/lib/validation";
 import type { Json } from "@/integrations/supabase/types";
 import { verifyGameAction, verifyLesson, verifySkip, verifyStreak, verifyUsername } from "./turnstile-middleware";
+import { canonicalLesson, validateLessonSource } from "./lesson-validation";
 
 /** Şema/union detayları dışarıya sızmasın: tüm doğrulama hataları tek tip. */
 const GENERIC_ERROR = "Geçersiz istek";
@@ -133,6 +134,7 @@ const completeSchema = z.object({
   level: z.number().int().min(1).max(320),
   language: z.string().trim().min(1).max(30),
   code: z.string().max(20000).optional(),
+  files: z.record(z.string().max(64), z.string().max(40000)).optional(),
   seconds: z.number().int().min(0).max(86400),
 });
 
@@ -151,6 +153,10 @@ export const completeLesson = createServerFn({ method: "POST" })
   .inputValidator((input) => validate(completeSchema, input))
   .handler(async ({ data, context }): Promise<ActionResult<CompletionResult>> => {
     try {
+      const lesson = canonicalLesson(data.lessonId, data.level, data.language);
+      if (!data.files || Object.keys(data.files).length > 8 || !validateLessonSource(lesson, data.files)) {
+        throw new Error("BOT_BLOCKED:solution");
+      }
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: result, error } = await supabaseAdmin.rpc("game_complete_lesson", {
         p_user: context.userId,
@@ -178,6 +184,7 @@ export const skipLevel = createServerFn({ method: "POST" })
   .inputValidator((input) => validate(skipSchema, input))
   .handler(async ({ data, context }): Promise<ActionResult<{ new_level: number }>> => {
     try {
+      canonicalLesson(data.lessonId, data.level, data.language);
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: result, error } = await supabaseAdmin.rpc("game_skip_level", {
         p_user: context.userId,

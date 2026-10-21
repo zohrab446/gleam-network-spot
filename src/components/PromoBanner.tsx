@@ -20,8 +20,8 @@ export function PromoBanner() {
         <span className="inline-flex items-center gap-2">
           <Gift className="h-4 w-4" />
           {t(
-            "Her ayın 15'inde liderlik tablosunun 1. sırasındaki oyuncuya 5 aylık Claude Pro hediye!",
-            "On the 15th of every month, the #1 player on the leaderboard wins 5 months of Claude Pro!",
+            "Her ayın 15'inde liderlik tablosunun 1. sırasındaki oyuncuya 1 aylık Claude Pro hediye!",
+            "On the 15th of every month, the #1 player on the leaderboard wins 1 month of Claude Pro!",
           )}
           <Sparkle className="h-4 w-4" />
         </span>

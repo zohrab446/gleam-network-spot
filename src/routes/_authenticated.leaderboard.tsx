@@ -97,7 +97,7 @@ function Leaderboard() {
               " sıralamasının 1. sırasındaki oyuncuya",
               " leaderboard's #1 player receives",
             )}
-            <span className="font-bold"> {t("5 aylık Claude Pro", "5 months of Claude Pro")}</span>
+            <span className="font-bold"> {t("1 aylık Claude Pro", "1 month of Claude Pro")}</span>
             {t(" hediye ediyoruz. Zirveye oyna!", " as a gift. Play for the top!")}
           </p>
         </div>

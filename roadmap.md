@@ -1,4 +1,8 @@
 # Bot protection
+# Leaderboard period
+- [ ] Change leaderboard periods to the 15th-to-15th in Turkey time and restore current-period XP from recorded lesson rewards.
+- [ ] Update period labels and verify boundary tests and leaderboard results.
+
 - [x] Add fresh Turnstile verification to protected actions, with fail-closed server validation.
 - [x] Reject fabricated lesson identities and locked lessons; make skips atomic.
 - [x] Verify authenticated rejection, widget UI, and tests; document deployment requirements.

@@ -37,7 +37,7 @@ export function ParticipantsRail() {
         <div className="mt-3 inline-flex rounded-xl bg-secondary p-1" role="tablist" aria-label={t("Yarışma aralığı", "Ranking range")}>
           {(
             [
-              { id: "monthly", label: t("Bu ay", "This month") },
+              { id: "monthly", label: t("Bu dönem", "This period") },
               { id: "all", label: t("Tüm zaman", "All time") },
             ] as const
           ).map((tab) => (

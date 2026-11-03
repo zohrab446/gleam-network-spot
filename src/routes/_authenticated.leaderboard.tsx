@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
+import { leaderboardPeriod } from "@/lib/leaderboard-period";
 
 export const Route = createFileRoute("/_authenticated/leaderboard")({
   head: () => ({
@@ -33,6 +34,10 @@ function Leaderboard() {
   const { data: rows = [], isLoading } = useLeaderboard(scope);
 
   const myRow = rows.find((row) => row.user_id === user?.id);
+  const period = leaderboardPeriod();
+  const formatDate = (date: string) => new Intl.DateTimeFormat(t("tr-TR", "en-GB"), {
+    day: "numeric", month: "long", year: "numeric", timeZone: "UTC",
+  }).format(new Date(`${date}T00:00:00Z`));
 
   async function share() {
     const text = t(
@@ -66,7 +71,7 @@ function Leaderboard() {
         <div className="inline-flex rounded-xl bg-secondary p-1" role="tablist" aria-label={t("Zaman aralığı", "Time range")}>
           {(
             [
-              { id: "monthly", label: t("Bu ay", "This month") },
+              { id: "monthly", label: t("Bu dönem", "This period") },
               { id: "all", label: t("Tüm zamanlar", "All time") },
             ] as const
           ).map((tab) => (
@@ -85,6 +90,12 @@ function Leaderboard() {
           ))}
         </div>
 
+        {scope === "monthly" && (
+          <p className="text-sm text-muted-foreground">
+            {formatDate(period.start)} – {formatDate(period.end)} · {t("Türkiye saati", "Istanbul time")}
+          </p>
+        )}
+
         <div className="card-surface flex items-center gap-3 border-accent/40 bg-accent-soft p-4 text-sm font-semibold">
           <Gift className="h-5 w-5 shrink-0 text-accent" />
           <p>
@@ -92,13 +103,14 @@ function Leaderboard() {
               "Her ayın 15'inde ",
               "On the 15th of every month, ",
             )}
-            <span className="font-bold">{t('"Bu ay"', '"This month"')}</span>
+            <span className="font-bold">{t('"Bu dönem"', '"This period"')}</span>
             {t(
               " sıralamasının 1. sırasındaki oyuncuya",
               " leaderboard's #1 player receives",
             )}
             <span className="font-bold"> {t("1 aylık Claude Pro", "1 month of Claude Pro")}</span>
             {t(" hediye ediyoruz. Zirveye oyna!", " as a gift. Play for the top!")}
+            {t(" Puanlar ayın 1'inde değil, her ayın 15'inde sıfırlanır.", " Points reset on the 15th, not the 1st.")}
           </p>
         </div>
 

@@ -785,6 +785,7 @@ export type Database = {
           xp: number
         }[]
       }
+      leaderboard_period_start: { Args: { p_at?: string }; Returns: string }
       pro_start_trial: {
         Args: { p_user: string }
         Returns: {

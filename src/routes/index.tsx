@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AuthPage } from "@/routes/auth";
+import { AuthPage } from "@/components/AuthExperience";
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
     { title: "CodeQuest — Türkçe kodlama öğren" },

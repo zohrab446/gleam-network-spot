@@ -1,305 +1,67 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Check, Coins, Flame, Lock, Play, Trophy, Zap } from "lucide-react";
-import { CATEGORIES, LANGUAGE_META, LESSONS, MAX_LEVEL, isLessonUnlocked, nextLevelInTrack, trackProgress } from "@/data/lessons";
+import { ArrowRight, BookOpen, Code2, Coins, Flame, Folder, Gift, Trophy, Zap, Star, Clock, Award, FileText, Users, Briefcase, Quote, Eye, Heart, Crown } from "lucide-react";
 import { TRACKS } from "@/data/types";
-import {
-  nextLessonLevel,
-  useLeaderboard,
-  useProfile,
-  useProgress,
-  useTouchStreak,
-} from "@/hooks/useGameData";
-import { levelProgress, streakMultiplier, xpRewardFor } from "@/lib/gamification";
+import { getLesson, nextLevelInTrack, trackProgress } from "@/data/lessons";
+import { nextLessonLevel, useLeaderboard, useProfile, useProgress, useTouchStreak } from "@/hooks/useGameData";
+import { levelProgress, xpRewardFor, coinRewardFor } from "@/lib/gamification";
 import { AppShell } from "@/components/AppShell";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { EnergyCard } from "@/components/EnergyMeter";
-import { useClaimDailyLogin, useEnergySync } from "@/hooks/useEnergy";
+import { FeaturePreview } from "@/components/FeaturePreview";
+import { useClaimDailyLogin } from "@/hooks/useEnergy";
 import { energyErrorMessage, isProActive } from "@/lib/energy";
+import { portfolioPreview, competitionPreview } from "@/data/dashboard-preview";
 import { toast } from "sonner";
-import { Gift } from "lucide-react";
-import { useLanguage, useT } from "@/lib/i18n";
-import { trackTagline } from "@/data/i18n";
+import mascot from "@/assets/mascot.png";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({
-    meta: [
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { title: "Panom — CodeQuest" },
-      {
-        name: "description",
-        content: "Seviyeni, XP'ni, coinlerini ve serini takip et; kaldığın dersten devam et.",
-      },
-      { property: "og:title", content: "Panom — CodeQuest" },
-      { property: "og:description", content: "CodeQuest ilerlemenin tamamı tek ekranda." },
-    ],
-  }),
-  component: Dashboard,
+  head: () => ({ meta: [
+    { title: "Ana Panel — CodeQuest" }, { name: "description", content: "Öğrenme yollarını, ders ilerlemeni, enerjini ve liderlik sıralamanı CodeQuest ana panelinde takip et." },
+    { property: "og:title", content: "Ana Panel — CodeQuest" }, { property: "og:description", content: "Kod öğrenmeye kaldığın yerden devam et ve kişisel ilerlemeni takip et." },
+    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+  ] }), component: Dashboard,
 });
-
 function Dashboard() {
-  const t = useT();
-  const lang = useLanguage();
   const navigate = useNavigate();
   const { data: profile, isLoading } = useProfile();
   const { data: progress = [], isLoading: progressLoading } = useProgress();
-  const { data: leaders = [] } = useLeaderboard("all");
+  const [scope, setScope] = useState<"monthly" | "all">("monthly");
+  const { data: leaders = [] } = useLeaderboard(scope);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [allTracks, setAllTracks] = useState(false);
   const touchStreak = useTouchStreak(profile);
   const dailyLogin = useClaimDailyLogin();
-  useEnergySync();
-
-  useEffect(() => {
-    if (profile && !profile.onboarded) navigate({ to: "/onboarding", replace: true });
-  }, [profile, navigate]);
-
+  useEffect(() => { if (profile && !profile.onboarded) navigate({ to: "/onboarding", replace: true }); }, [profile, navigate]);
   useEffect(() => {
     if (!profile) return;
     const today = new Date().toISOString().slice(0, 10);
     if (profile.last_active_date !== today) touchStreak.mutate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.id, profile?.last_active_date]);
-
-  if (isLoading || progressLoading || !profile) {
-    return (
-      <AppShell>
-        <div className="space-y-4">
-          <Skeleton className="h-36 w-full rounded-2xl" />
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Skeleton className="h-24 rounded-2xl" />
-            <Skeleton className="h-24 rounded-2xl" />
-            <Skeleton className="h-24 rounded-2xl" />
-          </div>
-          <Skeleton className="h-64 w-full rounded-2xl" />
-        </div>
-      </AppShell>
-    );
-  }
-
+  if (isLoading || progressLoading || !profile) return <AppShell dashboard><Skeleton className="h-60 rounded-2xl" /><div className="mt-5 grid grid-cols-3 gap-4"><Skeleton className="h-44" /><Skeleton className="h-44" /><Skeleton className="h-44" /></div></AppShell>;
   const completed = new Set(progress.map((p) => p.level));
   const continueLevel = nextLessonLevel(progress);
-  const multiplier = streakMultiplier(profile.streak);
+  const lesson = getLesson(continueLevel);
   const pct = levelProgress(profile.level, profile.xp);
   const dailyClaimed = profile.last_login_reward_date === new Date().toISOString().slice(0, 10);
-
-  return (
-    <AppShell>
-      <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
-        <div className="space-y-6">
-          <section className="card-surface pop-in overflow-hidden">
-            <div className="bg-brand-gradient flex flex-wrap items-center gap-4 p-6 text-primary-foreground">
-              <PlayerAvatar shape={profile.avatar_shape} color={profile.avatar_color} size="lg" />
-              <div className="min-w-0">
-                <h1 className="truncate text-2xl">{t("Merhaba", "Hello")}, {profile.username ?? t("Kodcu", "Coder")}!</h1>
-                <p className="text-sm opacity-90">
-                  {completed.size} {t("ders tamamlandı", "lessons completed")} · {MAX_LEVEL - completed.size} {t("ders kaldı", "lessons left")}
-                </p>
-              </div>
-              <Button asChild size="lg" variant="secondary" className="ml-auto font-bold">
-                <Link to="/lesson/$level" params={{ level: String(continueLevel) }}>
-                  <Play className="mr-1 h-4 w-4" /> {t("Devam et", "Continue")}
-                </Link>
-              </Button>
-            </div>
-
-            <div className="p-6">
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
-                    {t("Şu anki seviye", "Current level")}
-                  </p>
-                  <p className="font-display text-5xl font-extrabold text-gradient-brand">{profile.level}</p>
-                </div>
-                <p className="text-sm font-semibold text-muted-foreground">
-                  {t("Sonraki seviyeye", "To next level")} {Math.max(0, xpRewardFor(profile.level) - Math.round((pct / 100) * xpRewardFor(profile.level)))} XP
-                </p>
-              </div>
-              <Progress value={pct} className="mt-3 h-3" aria-label={t("Seviye ilerlemesi", "Level progress")} />
-              {multiplier > 1 && (
-                <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-success-soft px-3 py-1 text-sm font-bold text-success">
-                  {t("🔥 7+ gün seri: XP'ler 2 katı!", "🔥 7+ day streak: XP is 2x!")}
-                </p>
-              )}
-            </div>
-          </section>
-
-          <EnergyCard profile={profile} />
-
-          {!dailyClaimed && (
-            <section className="card-surface flex flex-wrap items-center gap-3 p-5">
-              <Gift className="h-6 w-6 text-accent" />
-              <div className="min-w-0 flex-1">
-                <p className="font-display text-base font-extrabold">{t("Günlük ödülün hazır!", "Your daily reward is ready!")}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t("Enerji +", "Energy +")} {isProActive(profile) ? "150" : "50"} {t("coin seni bekliyor.", "coins are waiting for you.")}
-                </p>
-              </div>
-              <Button
-                className="font-bold"
-                disabled={dailyLogin.isPending}
-                onClick={() =>
-                  dailyLogin.mutate(undefined, {
-                    onSuccess: (result) =>
-                      toast.success(t(`${result.day}. gün: +${result.energy} enerji, +${result.coins} coin!`, `Day ${result.day}: +${result.energy} energy, +${result.coins} coins!`)),
-                    onError: (error) => toast.error(energyErrorMessage(error)),
-                  })
-                }
-              >
-                {t("Ödülü al", "Claim reward")}
-              </Button>
-            </section>
-          )}
-
-          <section className="grid gap-4 sm:grid-cols-3">
-            <StatCard icon={<Flame className="h-5 w-5 text-streak" />} label={t("Günlük seri", "Daily streak")} value={`${profile.streak} ${t("gün", "days")}`} />
-            <StatCard icon={<Coins className="h-5 w-5 text-coin" />} label={t("Coin", "Coins")} value={profile.coins} />
-            <StatCard icon={<Zap className="h-5 w-5 text-primary" />} label={t("Toplam XP", "Total XP")} value={profile.xp} />
-          </section>
-
-          <section aria-labelledby="lessons-heading" className="space-y-4">
-            <h2 id="lessons-heading" className="text-xl">
-              {t("Teknoloji yolları", "Tech tracks")}
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {TRACKS.map((track) => {
-                const tp = trackProgress(track, completed);
-                const target = nextLevelInTrack(track, completed);
-                return (
-                  <Link
-                    key={track.id}
-                    to="/lesson/$level"
-                    params={{ level: String(target) }}
-                    className="card-surface flex flex-col gap-3 p-5 transition-transform hover:-translate-y-0.5"
-                    aria-label={t(`${track.label} yoluna devam et`, `Continue ${track.label} track`)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="flex h-11 w-11 items-center justify-center rounded-xl text-xl"
-                        style={{ backgroundColor: `var(--color-${track.colorVar})` }}
-                      >
-                        {track.emoji}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="font-display text-base font-extrabold">{track.label}</p>
-                        <p className="truncate text-xs text-muted-foreground">{trackTagline(track.id, lang, track.tagline)}</p>
-                      </div>
-                      <span className="ml-auto font-display text-lg font-extrabold text-primary">%{tp.pct}</span>
-                    </div>
-                    <Progress value={tp.pct} className="h-2" aria-label={t(`${track.label} ilerlemesi`, `${track.label} progress`)} />
-                    <p className="text-xs font-semibold text-muted-foreground">
-                      {tp.done}/{tp.total} {t("ders", "lessons")} · {t("Seviye", "Level")} {track.from}–{track.to}
-                    </p>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        </div>
-
-        <aside className="space-y-4">
-          <section className="card-surface p-5">
-            <h2 className="flex items-center gap-2 text-lg">
-              <Trophy className="h-5 w-5 text-accent" /> {t("İlk 3", "Top 3")}
-            </h2>
-            <ol className="mt-4 space-y-3">
-              {leaders.slice(0, 3).map((row, index) => (
-                <li key={row.user_id} className="flex items-center gap-3">
-                  <span className="w-6 text-center font-display text-lg font-extrabold text-muted-foreground">
-                    {["🥇", "🥈", "🥉"][index]}
-                  </span>
-                  <PlayerAvatar size="sm" shape={row.avatar_shape} color={row.avatar_color} />
-                  <span className="min-w-0 flex-1 truncate text-sm font-bold">{row.username}</span>
-                  <span className="text-sm font-bold text-primary">{row.xp} XP</span>
-                </li>
-              ))}
-              {leaders.length === 0 && (
-                <li className="text-sm text-muted-foreground">{t("Henüz kimse XP kazanmadı. İlk sen ol!", "No one has earned XP yet. Be the first!")}</li>
-              )}
-            </ol>
-            <Button asChild variant="ghost" className="mt-4 w-full font-bold">
-              <Link to="/leaderboard">{t("Tüm tabloyu gör", "See full leaderboard")}</Link>
-            </Button>
-          </section>
-
-          <section className="card-surface p-5">
-            <h2 className="text-lg">{t("Günün ipucu 💡", "Tip of the day 💡")}</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {t(
-                "Takıldığında sağ alttaki asistanı aç. Sana cevabı vermez ama doğru soruyu sormanı sağlar.",
-                "When you get stuck, open the assistant in the bottom right. It won't give you the answer, but helps you ask the right question.",
-              )}
-            </p>
-          </section>
-        </aside>
-      </div>
-    </AppShell>
-  );
-}
-
-function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {
-  return (
-    <div className="card-surface flex items-center gap-3 p-4">
-      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-secondary">{icon}</span>
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
-        <p className="font-display text-xl font-extrabold">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function LessonCard({
-  level,
-  title,
-  description,
-  done,
-  locked,
-}: {
-  level: number;
-  title: string;
-  description: string;
-  done: boolean;
-  locked: boolean;
-}) {
-  const t = useT();
-  const content = (
-    <div
-      className={cn(
-        "card-surface flex h-full items-start gap-3 p-4 transition-transform",
-        !locked && "hover:-translate-y-0.5",
-        locked && "opacity-60",
-        done && "border-success",
-      )}
-    >
-      <span
-        className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display font-extrabold",
-          done
-            ? "bg-success text-success-foreground"
-            : locked
-              ? "bg-locked text-muted-foreground"
-              : "bg-primary-soft text-primary",
-        )}
-      >
-        {done ? <Check className="h-5 w-5" /> : locked ? <Lock className="h-4 w-4" /> : level}
-      </span>
-      <div className="min-w-0">
-        <p className="font-display text-sm font-bold">
-          {level}. {title}
-        </p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{locked ? t("Önceki dersi bitir 🔒", "Finish previous lesson 🔒") : description}</p>
-      </div>
-    </div>
-  );
-
-  if (locked) return <div aria-disabled="true">{content}</div>;
-  return (
-    <Link to="/lesson/$level" params={{ level: String(level) }} aria-label={t(`Seviye ${level}: ${title}`, `Level ${level}: ${title}`)}>
-      {content}
-    </Link>
-  );
+  const score = (row: typeof leaders[number]) => scope === "monthly" ? row.monthly_xp : row.xp;
+  const ranked = leaders.slice(0, 5);
+  const own = leaders.find((row) => row.user_id === profile.id);
+  if (own && !ranked.some((row) => row.user_id === own.user_id)) ranked.push(own);
+  return <AppShell dashboard><div className="cq-dashboard-grid"><div className="min-w-0 space-y-5">
+    <section className="cq-dashboard-hero cq-hero"><img src={mascot} className="cq-dashboard-mascot" alt="CodeQuest maskotu" /><div className="relative z-10 max-w-[70%] max-sm:max-w-full"><p className="text-sm font-bold">Merhaba, {profile.username ?? "Kodcu"}! 👋</p><h1 className="mt-2 text-3xl font-extrabold">Bugün ne yapmak istersin?</h1><p className="mt-2 max-w-lg text-xs leading-6 text-hero-foreground/85">Hedeflerine bir adım daha yaklaş. Kodlamayı öğren, projeler üret,<br className="hidden sm:block" /> kendi geleceğini inşa et.</p></div><div className="relative z-10 mt-5 grid max-w-[74%] grid-cols-3 gap-2 max-sm:max-w-full max-sm:grid-cols-1"><Button asChild variant="secondary" className="h-auto justify-start whitespace-normal bg-hero-foreground px-3 py-3 text-primary"><Link to="/lesson/$level" params={{ level: String(continueLevel) }}><span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft"><ArrowRight /></span><span className="text-left text-[10px]">Öğrenmeye devam et<span className="mt-1 block font-medium text-muted-foreground">{lesson?.language.toUpperCase()} · {continueLevel}. ders</span></span></Link></Button><Button variant="secondary" className="h-auto justify-start whitespace-normal bg-hero-foreground/90 px-3 py-3 text-primary" onClick={() => setPreview("Proje ekle")}><Folder /><span className="text-left text-[10px]">Proje ekle<span className="mt-1 block font-medium text-muted-foreground">Portföyünü büyüt</span></span></Button><Button asChild variant="secondary" className="h-auto justify-start whitespace-normal bg-primary-soft px-3 py-3 text-primary"><Link to="/leaderboard"><Trophy /><span className="text-left text-[10px]">Yarışmayı keşfet<span className="mt-1 block font-medium text-muted-foreground">Liderliğe yüksel</span></span></Link></Button></div></section>
+    <section id="ogrenme-yollari" className="scroll-mt-24"><div className="mb-3 flex items-center justify-between gap-2"><div><h2 className="flex items-center gap-2 text-base"><BookOpen className="size-5 text-primary" />Öğrenme Yolları</h2><p className="mt-1 text-[11px] text-muted-foreground">Adım adım ilerleyerek yeni beceriler kazan. Seviyeni tamamla, rozetleri topla!</p></div><Button variant="link" size="sm" onClick={() => setAllTracks(!allTracks)}>{allTracks ? "Daha az göster" : "Tüm yolları gör"}<ArrowRight /></Button></div><div className="cq-track-grid">{TRACKS.slice(0, allTracks ? 7 : 5).map((track) => { const tp = trackProgress(track, completed); const target = nextLevelInTrack(track, completed); return <Link key={track.id} to="/lesson/$level" params={{ level: String(target) }} className="card-surface relative p-4 transition-transform hover:-translate-y-1"><span className="absolute right-3 top-3 flex size-6 items-center justify-center rounded-full border border-border bg-primary-soft text-primary"><ArrowRight className="size-3" /></span><span className={`flex h-11 items-center text-3xl font-extrabold ${track.id === "html" ? "text-lang-html" : track.id === "css" ? "text-lang-css" : track.id === "react" ? "text-lang-react" : "text-primary"}`}>{track.id === "html" ? "❺" : track.id === "css" ? "❸" : track.id === "javascript" ? <span className="rounded bg-lang-js px-1 text-xl text-foreground">JS</span> : track.emoji}</span><h3 className="mt-2 text-sm">{track.label}</h3><p className="mt-1 min-h-8 text-[10px] leading-4 text-muted-foreground">{track.tagline}</p><p className="mt-3 text-right text-[10px] font-bold text-primary">%{tp.pct}</p><Progress value={tp.pct} className="mt-1 h-1.5" /><p className="mt-2 text-[10px] text-muted-foreground">{tp.done}/{tp.total} ders</p></Link>; })}</div></section>
+    <div className="grid gap-4 md:grid-cols-2"><section className="card-surface p-4"><h2 className="mb-4 flex items-center gap-2 text-sm"><Star className="size-4 text-coin" />Önerilen Ders</h2><div className="flex gap-3"><div className="cq-hero flex w-28 shrink-0 items-center justify-center rounded-xl"><Code2 className="size-12" /></div><div className="min-w-0"><span className="rounded-md bg-primary-soft px-2 py-1 text-[9px] font-bold text-primary">{lesson?.language.toUpperCase()}</span><h3 className="mt-2 text-sm">{lesson?.title}</h3><p className="mt-1 line-clamp-2 text-[10px] leading-4 text-muted-foreground">{lesson?.description}</p><div className="mt-3 flex flex-wrap items-center gap-2 text-[9px] text-muted-foreground"><span className="flex items-center gap-1"><Clock className="size-3" />Kendi hızında</span><span className="flex items-center gap-1 text-primary"><Zap className="size-3" />+{xpRewardFor(continueLevel)} XP</span><span className="flex items-center gap-1"><Coins className="size-3 text-coin" />+{coinRewardFor(continueLevel)} Coin</span></div></div></div><Button asChild size="sm" className="mt-3 w-full"><Link to="/lesson/$level" params={{ level: String(continueLevel) }}>Derse devam et<ArrowRight /></Link></Button></section>
+    <section className="card-surface p-4"><div className="mb-4 flex items-center justify-between"><h2 className="flex items-center gap-2 text-sm"><Folder className="size-4 text-primary" />Son Portföy Aktivitesi</h2><span className="rounded-md bg-secondary px-2 py-1 text-[9px] text-muted-foreground">Örnek proje</span></div><div className="flex gap-3"><div className="flex w-24 shrink-0 flex-col justify-center rounded-xl bg-foreground p-3 text-hero-foreground"><span className="font-mono text-xs text-accent">&lt;portfolio /&gt;</span><span className="mt-2 text-xs font-bold">Merhaba,<br />ben bir geliştiriciyim.</span></div><div><h3 className="text-sm">{portfolioPreview.title}</h3><p className="mt-2 text-[10px] leading-4 text-muted-foreground">{portfolioPreview.description}</p><div className="mt-2 flex flex-wrap gap-1">{portfolioPreview.technologies.map((tech) => <span key={tech} className="rounded-md bg-primary-soft px-2 py-1 text-[9px] text-primary">{tech}</span>)}</div><div className="mt-3 flex gap-3 text-[9px] text-muted-foreground"><span className="flex items-center gap-1"><Eye className="size-3" />—</span><span className="flex items-center gap-1"><Heart className="size-3" />—</span></div></div></div><Button variant="outline" size="sm" className="mt-3 w-full" onClick={() => setPreview("Projelerim")}>Projelerimi gör<ArrowRight /></Button></section></div>
+    <section><h2 className="mb-3 flex items-center gap-2 text-sm"><Zap className="size-4 text-primary" />Hızlı Erişim</h2><div className="grid grid-cols-3 gap-2 sm:grid-cols-6">{[{ title: "Kod Editörü", icon: Code2 }, { title: "Sınavlar", icon: FileText }, { title: "Rozetlerim", icon: Award }, { title: "Sertifikalar", icon: FileText }, { title: "Topluluk", icon: Users }, { title: "Kariyer Rehberi", icon: Briefcase }].map(({ title, icon: Icon }) => title === "Kod Editörü" ? <Button key={title} asChild variant="outline" className="h-auto whitespace-normal bg-card p-3 text-[10px]"><Link to="/lesson/$level" params={{ level: String(continueLevel) }}><Icon className="text-primary" />{title}</Link></Button> : title === "Rozetlerim" ? <Button key={title} asChild variant="outline" className="h-auto whitespace-normal bg-card p-3 text-[10px]"><Link to="/profile"><Icon className="text-primary" />{title}</Link></Button> : <Button key={title} variant="outline" className="h-auto whitespace-normal bg-card p-3 text-[10px]" onClick={() => setPreview(title)}><Icon className="text-primary" />{title}</Button>)}</div></section>
+  </div><aside className="min-w-0 space-y-4"><section className="card-surface p-4"><div className="flex items-center justify-between"><h2 className="flex items-center gap-2 text-sm"><Star className="size-4 text-coin" />Senin İlerlemen</h2><Button asChild variant="link" size="sm"><Link to="/profile">Detayları gör<ArrowRight /></Link></Button></div><div className="mt-4 flex items-center gap-3"><div className="relative flex size-16 shrink-0 items-center justify-center"><svg viewBox="0 0 64 64" className="absolute inset-0 size-16 -rotate-90 text-primary" aria-label={`Seviye ilerlemesi yüzde ${pct}`}><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="5" className="text-primary-soft" /><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeDasharray={`${pct * 1.759} 175.9`} /></svg><Star className="size-7 fill-primary text-primary" /></div><div className="min-w-0 flex-1"><p className="text-[10px] text-muted-foreground">Şu anki seviye</p><div className="flex items-end justify-between gap-2"><p className="text-3xl font-extrabold text-primary">{profile.level}</p><p className="text-[9px] text-muted-foreground">Sonraki seviye: {Math.max(0, xpRewardFor(profile.level) - Math.round(pct / 100 * xpRewardFor(profile.level)))} XP</p></div><Progress value={pct} className="mt-2 h-1.5" /></div></div><div className="mt-5 grid grid-cols-4 gap-2">{[{ title: "Günlük seri", value: `${profile.streak} gün`, icon: Flame, tone: "text-streak" }, { title: "Enerji", value: isProActive(profile) ? "∞" : `${profile.energy}/${profile.max_energy}`, icon: Gift, tone: "text-success" }, { title: "Coin", value: profile.coins.toLocaleString("tr-TR"), icon: Coins, tone: "text-coin" }, { title: "Toplam XP", value: profile.xp.toLocaleString("tr-TR"), icon: Zap, tone: "text-primary" }].map(({ title, value, icon: Icon, tone }) => <div key={title} className="min-w-0 rounded-xl border border-border px-1 py-3 text-center"><Icon className={`mx-auto size-5 ${tone}`} /><p className="mt-2 text-[9px] text-muted-foreground">{title}</p><p className="mt-1 break-all text-xs font-extrabold">{value}</p></div>)}</div></section>
+    <section className="card-surface p-4"><div className="flex items-center justify-between"><h2 className="flex items-center gap-2 text-sm"><Trophy className="size-4 text-coin" />Liderlik Tablosu</h2><Button asChild variant="link" size="sm"><Link to="/leaderboard">Tüm tablo<ArrowRight /></Link></Button></div><div className="mt-3 grid grid-cols-2 gap-1 rounded-lg bg-secondary p-1">{([{ value: "monthly", title: "Bu dönem" }, { value: "all", title: "Tüm zamanlar" }] as const).map((tab) => <Button key={tab.value} size="sm" variant="ghost" onClick={() => setScope(tab.value)} className={scope === tab.value ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}>{tab.title}</Button>)}</div><p className="mt-2 text-[9px] text-muted-foreground">Dönem: her ayın 15’inden sonraki ayın 15’ine</p><ol className="mt-3 space-y-1">{ranked.map((row, index) => <li key={row.user_id} className={`flex items-center gap-2 rounded-xl p-2 ${row.user_id === profile.id ? "bg-primary-soft" : ""}`}><span className="w-5 text-center text-xs font-bold text-muted-foreground">{index < 3 ? ["🥇", "🥈", "🥉"][index] : row.rank_position}</span><PlayerAvatar size="sm" shape={row.avatar_shape} color={row.avatar_color} /><span className="min-w-0 flex-1 truncate text-[11px] font-bold">{row.username}{row.user_id === profile.id ? " (sen)" : ""}</span><span className="text-[10px] font-bold text-primary">{score(row).toLocaleString("tr-TR")} XP</span></li>)}</ol>{!ranked.length && <p className="py-6 text-center text-xs text-muted-foreground">Bu dönemin ilk puanını sen kazan!</p>}</section>
+    {!dailyClaimed && <section className="card-surface p-4"><h2 className="flex items-center gap-2 text-sm"><Gift className="size-4 text-success" />Günlük ödülün hazır!</h2><p className="mt-2 text-xs text-muted-foreground">Bugünün enerji ve coin ödülünü al.</p><Button className="mt-3 w-full" disabled={dailyLogin.isPending} onClick={() => dailyLogin.mutate(undefined, { onSuccess: (result) => toast.success(`${result.day}. gün: +${result.energy} enerji, +${result.coins} coin!`), onError: (error) => toast.error(energyErrorMessage(error)) })}>{dailyLogin.isPending ? "Bekle..." : "Ödülü al"}<Gift /></Button></section>}
+    <section className="card-surface p-4"><div className="flex items-center justify-between"><h2 className="flex items-center gap-2 text-sm"><Trophy className="size-4 text-coin" />Yaklaşan Yarışma</h2><span className="rounded-md bg-secondary px-2 py-1 text-[9px] text-muted-foreground">Örnek</span></div><div className="mt-3 flex gap-3"><div className="cq-hero flex size-16 shrink-0 items-center justify-center rounded-xl"><Trophy className="size-8 text-coin" /></div><div><h3 className="text-xs">{competitionPreview.title}</h3><p className="mt-1 text-[10px] leading-4 text-muted-foreground">{competitionPreview.description}</p><Button variant="link" size="sm" className="mt-1 h-6 px-0" onClick={() => setPreview("Yarışmalar")}>Yarışmayı keşfet<ArrowRight /></Button></div></div></section>
+    <section className="card-surface flex gap-3 p-4"><Quote className="size-6 shrink-0 fill-primary text-primary" /><div><p className="text-xs leading-5 text-muted-foreground">“Disiplin, motivasyondan daha değerlidir.”</p><p className="mt-1 text-[10px] text-muted-foreground">— CodeQuest</p></div></section>
+    <Button asChild variant="outline" className="w-full bg-card"><Link to="/rewards"><Gift />Tüm ödüllerim<ArrowRight /></Link></Button>
+  </aside></div><FeaturePreview title={preview} onClose={() => setPreview(null)} /></AppShell>;
 }

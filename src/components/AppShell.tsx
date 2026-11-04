@@ -12,6 +12,7 @@ import { ParticipantsRail } from "@/components/ParticipantsRail";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/store/settings";
 import { useT } from "@/lib/i18n";
+import { QuestNavigation } from "@/components/QuestNavigation";
 
 export function useThemeSync() {
   const theme = useSettings((s) => s.theme);
@@ -25,10 +26,12 @@ export function AppShell({
   children,
   lessonTitle,
   wide = false,
+  dashboard = false,
 }: {
   children: ReactNode;
   lessonTitle?: string;
   wide?: boolean;
+  dashboard?: boolean;
 }) {
   useThemeSync();
   useEnergySync();
@@ -46,48 +49,13 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-30 border-b border-border bg-card/85 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-7xl items-center gap-3 px-4 py-3">
-          <Link to="/dashboard" className="flex items-center gap-2" aria-label={t("CodeQuest panosu", "CodeQuest dashboard")}>
-            <span className="bg-brand-gradient flex h-9 w-9 items-center justify-center rounded-xl text-lg text-primary-foreground">
-              ⌘
-            </span>
-            <span className="font-display text-lg font-extrabold tracking-tight">
-              Code<span className="text-gradient-brand">Quest</span>
-            </span>
-          </Link>
-
-          <nav className="ml-2 hidden items-center gap-1 sm:flex" aria-label={t("Ana menü", "Main menu")}>
-            <NavItem to="/dashboard" icon={<Zap className="h-4 w-4" />} label={t("Panom", "Dashboard")} />
-            <NavItem to="/rewards" icon={<Gift className="h-4 w-4" />} label={t("Ödüller", "Rewards")} />
-            <NavItem to="/leaderboard" icon={<Trophy className="h-4 w-4" />} label={t("Liderlik", "Leaderboard")} />
-            <NavItem to="/profile" icon={<UserIcon className="h-4 w-4" />} label={t("Profil", "Profile")} />
-          </nav>
-
-          <div className="ml-auto flex items-center gap-2">
-            <EnergyChip profile={profile} />
-            <Chip icon={<Flame className="h-4 w-4 text-streak" />} value={profile?.streak ?? 0} label={t("gün seri", "day streak")} />
-            <Chip icon={<Coins className="h-4 w-4 text-coin" />} value={profile?.coins ?? 0} label={t("coin", "coins")} />
-            <Chip icon={<Zap className="h-4 w-4 text-primary" />} value={profile?.xp ?? 0} label="XP" />
-            <Link to="/profile" aria-label={t("Profilim", "My profile")}>
-              <PlayerAvatar
-                size="sm"
-                shape={profile?.avatar_shape ?? "star"}
-                color={profile?.avatar_color ?? "indigo"}
-              />
-            </Link>
-            <Button variant="ghost" size="icon" onClick={() => void signOut()} aria-label={t("Çıkış yap", "Sign out")}>
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </header>
+      <QuestNavigation profile={profile ?? undefined} onSignOut={() => void signOut()} />
 
       <div
-        className={`mx-auto flex w-full flex-1 items-start gap-6 px-4 py-6 ${wide ? "max-w-[120rem]" : "max-w-[85rem]"}`}
+        className={`mx-auto flex w-full flex-1 items-start gap-6 px-4 py-6 ${dashboard ? "max-w-[1480px]" : wide ? "max-w-[120rem]" : "max-w-[85rem]"}`}
       >
         <main className="min-w-0 flex-1">{children}</main>
-        <ParticipantsRail />
+        {!dashboard && <ParticipantsRail />}
       </div>
 
       <nav

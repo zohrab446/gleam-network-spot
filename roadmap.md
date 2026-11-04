@@ -1,3 +1,8 @@
+# Reference redesign
+- [ ] Refresh the shared visual system and navigation to match uploaded references.
+- [ ] Restyle landing/sign-in and dashboard while preserving auth, progress, rewards, and security.
+- [ ] Verify desktop/mobile layouts and existing flows; stop before other pages.
+
 # Leaderboard period
 - [x] Change leaderboard periods to the 15th-to-15th in Turkey time and restore current-period XP from recorded lesson rewards.
 - [x] Update period labels and verify boundary tests and leaderboard results.

@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import { ArrowRight, Eye, EyeOff, Mail, LockKeyhole, ShieldCheck, BookOpen, Star } from "lucide-react";
+import { QuestNavigation } from "@/components/QuestNavigation";
+import { AuthStory } from "@/components/AuthStory";
+import { Brand } from "@/components/Brand";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -31,7 +35,7 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-function AuthPage() {
+export function AuthPage() {
   useThemeSync();
   const t = useT();
   const navigate = useNavigate();
@@ -40,6 +44,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [needsVerification, setNeedsVerification] = useState(false);
   const [humanCheck, setHumanCheck] = useState("");
   const checkGuard = useServerFn(checkLoginGuard);
@@ -136,99 +141,28 @@ function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
-      <div className="w-full max-w-md">
-        <Link to="/" className="mb-6 flex items-center justify-center gap-2 font-display text-2xl font-extrabold">
-          <span className="bg-brand-gradient flex h-10 w-10 items-center justify-center rounded-xl text-primary-foreground">
-            ⌘
-          </span>
-          Code<span className="text-gradient-brand">Quest</span>
-        </Link>
-
-        <div className="card-surface pop-in p-6">
-          <h1 className="text-2xl">{mode === "signin" ? t("Tekrar hoş geldin!", "Welcome back!") : t("Hemen başla", "Get started")}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {mode === "signin"
-              ? t("Serini bozmadan kaldığın yerden devam et.", "Pick up where you left off without breaking your streak.")
-              : t("Hesap oluştur, ilk seviyeni 5 dakikada bitir.", "Create an account and finish your first level in 5 minutes.")}
-          </p>
-
-          <Button
-            type="button"
-            variant="secondary"
-            className="mt-6 w-full font-bold"
-            disabled={busy}
-            onClick={() => void withGoogle()}
-          >
-            <span className="mr-2 text-lg">G</span> {t("Google ile devam et", "Continue with Google")}
-          </Button>
-
-          <div className="my-5 flex items-center gap-3 text-xs font-bold uppercase text-muted-foreground">
-            <span className="h-px flex-1 bg-border" /> {t("veya", "or")} <span className="h-px flex-1 bg-border" />
-          </div>
-
-          <form className="space-y-4" onSubmit={withEmail}>
-            <div className="space-y-1.5">
-              <Label htmlFor="email">{t("E-posta", "Email")}</Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                autoComplete="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder={t("sen@ornek.com", "you@example.com")}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="password">{t("Şifre", "Password")}</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                minLength={6}
-                autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder={t("En az 6 karakter", "At least 6 characters")}
-              />
-            </div>
-            {mode === "signin" && needsVerification ? (
-              <div className="space-y-1.5 rounded-xl border border-border bg-secondary/50 p-3">
-                <Label htmlFor="human-check">{t("Güvenlik kontrolü: 3 + 4 kaçtır?", "Security check: what is 3 + 4?")}</Label>
-                <Input
-                  id="human-check"
-                  inputMode="numeric"
-                  required
-                  value={humanCheck}
-                  onChange={(event) => setHumanCheck(event.target.value)}
-                  placeholder={t("Yanıt", "Answer")}
-                />
-              </div>
-            ) : null}
-            <Button type="submit" className="w-full font-bold" disabled={busy}>
-              {busy ? t("Bekle...", "Please wait...") : mode === "signin" ? t("Giriş yap", "Sign in") : t("Hesap oluştur", "Create account")}
-            </Button>
+    <div className="min-h-screen bg-background">
+      <QuestNavigation onAuthMode={setMode} />
+      <main className="cq-auth-grid mx-auto max-w-[1480px] px-4 py-5 sm:px-6">
+        <AuthStory />
+        <section className="card-surface flex flex-col justify-center rounded-3xl px-6 py-9 sm:px-9">
+          <Brand />
+          <h2 className="mt-7 text-3xl font-extrabold">{mode === "signin" ? "Tekrar hoş geldin! 👋" : "Aramıza hoş geldin! 🚀"}</h2>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">{mode === "signin" ? "Hesabına giriş yaparak öğrenmeye, üretmeye ve gelişmeye devam et." : "Hesabını oluştur, kodlama yolculuğuna bugün başla."}</p>
+          <form className="mt-7 space-y-5" onSubmit={withEmail}>
+            <div className="space-y-2"><Label htmlFor="email">E-posta</Label><div className="relative"><Mail className="absolute left-3 top-3 size-4 text-muted-foreground" /><Input id="email" type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="ornek@email.com" className="h-11 rounded-xl pl-10" /></div></div>
+            <div className="space-y-2"><Label htmlFor="password">Şifre</Label><div className="relative"><LockKeyhole className="absolute left-3 top-3 size-4 text-muted-foreground" /><Input id="password" type={showPassword ? "text" : "password"} required minLength={6} autoComplete={mode === "signin" ? "current-password" : "new-password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Şifrenizi girin" className="h-11 rounded-xl pl-10 pr-11" /><Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}>{showPassword ? <EyeOff /> : <Eye />}</Button></div></div>
+            {mode === "signin" && <div className="flex items-center justify-between gap-2 text-xs"><span className="flex items-center gap-1.5 text-muted-foreground"><ShieldCheck className="size-4 text-primary" />Güvenli oturum</span><Link to="/sifre-sifirla" className="font-semibold text-primary">Şifremi unuttum?</Link></div>}
+            {mode === "signin" && needsVerification && <div className="space-y-2 rounded-xl bg-secondary p-3"><Label htmlFor="human-check">Güvenlik kontrolü: 3 + 4 kaçtır?</Label><Input id="human-check" inputMode="numeric" required value={humanCheck} onChange={(event) => setHumanCheck(event.target.value)} placeholder="Yanıt" /></div>}
+            <Button type="submit" className="h-12 w-full" disabled={busy}>{busy ? "Bekle..." : mode === "signin" ? "Giriş Yap" : "Hesap Oluştur"}<ArrowRight /></Button>
           </form>
-
-          {mode === "signin" ? (
-            <Link
-              to="/sifre-sifirla"
-              className="mt-4 block text-center text-sm font-bold text-primary hover:underline"
-            >
-              {t("Şifremi unuttum", "Forgot my password")}
-            </Link>
-          ) : null}
-
-          <button
-            type="button"
-            className="mt-3 w-full text-sm font-bold text-primary hover:underline"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          >
-            {mode === "signin" ? t("Hesabın yok mu? Kayıt ol", "Don't have an account? Sign up") : t("Zaten hesabın var mı? Giriş yap", "Already have an account? Sign in")}
-          </button>
-        </div>
-      </div>
+          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />veya<span className="h-px flex-1 bg-border" /></div>
+          <Button type="button" variant="outline" className="h-11 w-full bg-card" disabled={busy} onClick={() => void withGoogle()}><span className="text-lg font-extrabold">G</span>Google ile devam et</Button>
+          <div className="mt-4 text-center text-xs text-muted-foreground">{mode === "signin" ? "Hesabın yok mu?" : "Zaten hesabın var mı?"}<Button variant="link" size="sm" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}>{mode === "signin" ? "Kayıt ol" : "Giriş yap"}</Button></div>
+          <div className="mt-6 grid grid-cols-3 gap-2 rounded-2xl bg-muted p-4">{[{ icon: ShieldCheck, title: "Güvenli giriş", text: "Verilerin güvende" }, { icon: BookOpen, title: "320 ders", text: "Adım adım öğren" }, { icon: Star, title: "7 öğrenme yolu", text: "Kendi yolunu seç" }].map(({ icon: Icon, title, text }) => <div key={title} className="min-w-0 border-r border-border text-center last:border-0"><Icon className="mx-auto mb-2 size-5 text-primary" /><p className="text-[10px] font-bold">{title}</p><p className="mt-1 text-[9px] text-muted-foreground">{text}</p></div>)}</div>
+        </section>
+      </main>
+      <footer className="flex justify-center gap-5 px-4 pb-5 text-xs text-muted-foreground"><Link to="/iletisim">İletişim</Link><Link to="/mesafeli-satis">Mesafeli satış sözleşmesi</Link><span>© {new Date().getFullYear()} CodeQuest</span></footer>
     </div>
   );
 }

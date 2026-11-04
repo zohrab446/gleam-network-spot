@@ -91,7 +91,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "CodeQuest ile HTML, CSS, JavaScript, Java, Python ve C++ öğren: 35 seviye, XP, coin, seri ve yapay zekâ asistanı.",
+          "CodeQuest ile HTML, CSS, JavaScript, React, Java, Python ve C++ öğren: 320 seviye, XP, coin, seri ve yapay zekâ asistanı.",
       },
       { name: "author", content: "CodeQuest" },
       { property: "og:type", content: "website" },
@@ -103,7 +103,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap",
       },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/favicon.png" },

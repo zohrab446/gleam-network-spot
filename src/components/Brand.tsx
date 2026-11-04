@@ -1,0 +1,3 @@
+export function Brand({ light = false }: { light?: boolean }) {
+  return <span className={`inline-flex shrink-0 items-center gap-2.5 font-display text-xl font-extrabold ${light ? "text-hero-foreground" : "text-foreground"}`}><span className="flex size-9 items-center justify-center rounded-full bg-brand-gradient text-2xl font-medium text-hero-foreground">⌘</span><span>Code<span className={light ? "" : "text-primary"}>Quest</span></span></span>;
+}

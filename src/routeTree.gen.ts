@@ -20,7 +20,10 @@ import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenti
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
 import { Route as AuthenticatedProRouteImport } from './routes/_authenticated.pro'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
+import { Route as AuthenticatedProjelerRouteImport } from './routes/_authenticated.projeler'
 import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated.rewards'
+import { Route as AuthenticatedSinavlarRouteImport } from './routes/_authenticated.sinavlar'
+import { Route as AuthenticatedYarismalarRouteImport } from './routes/_authenticated.yarismalar'
 import { Route as ApiTestEndpointRouteImport } from './routes/api/test-endpoint'
 import { Route as AuthenticatedLessonLevelRouteImport } from './routes/_authenticated.lesson.$level'
 import { Route as AuthenticatedPaymentFailedRouteImport } from './routes/_authenticated.payment.failed'
@@ -82,9 +85,24 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedProjelerRoute = AuthenticatedProjelerRouteImport.update({
+  id: '/projeler',
+  path: '/projeler',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedRewardsRoute = AuthenticatedRewardsRouteImport.update({
   id: '/rewards',
   path: '/rewards',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSinavlarRoute = AuthenticatedSinavlarRouteImport.update({
+  id: '/sinavlar',
+  path: '/sinavlar',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedYarismalarRoute = AuthenticatedYarismalarRouteImport.update({
+  id: '/yarismalar',
+  path: '/yarismalar',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const ApiTestEndpointRoute = ApiTestEndpointRouteImport.update({
@@ -127,7 +145,10 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/pro': typeof AuthenticatedProRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/projeler': typeof AuthenticatedProjelerRoute
   '/rewards': typeof AuthenticatedRewardsRoute
+  '/sinavlar': typeof AuthenticatedSinavlarRoute
+  '/yarismalar': typeof AuthenticatedYarismalarRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
   '/payment/failed': typeof AuthenticatedPaymentFailedRoute
@@ -145,7 +166,10 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/pro': typeof AuthenticatedProRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/projeler': typeof AuthenticatedProjelerRoute
   '/rewards': typeof AuthenticatedRewardsRoute
+  '/sinavlar': typeof AuthenticatedSinavlarRoute
+  '/yarismalar': typeof AuthenticatedYarismalarRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
   '/payment/failed': typeof AuthenticatedPaymentFailedRoute
@@ -165,7 +189,10 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/pro': typeof AuthenticatedProRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/projeler': typeof AuthenticatedProjelerRoute
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
+  '/_authenticated/sinavlar': typeof AuthenticatedSinavlarRoute
+  '/_authenticated/yarismalar': typeof AuthenticatedYarismalarRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/_authenticated/lesson/$level': typeof AuthenticatedLessonLevelRoute
   '/_authenticated/payment/failed': typeof AuthenticatedPaymentFailedRoute
@@ -185,7 +212,10 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pro'
     | '/profile'
+    | '/projeler'
     | '/rewards'
+    | '/sinavlar'
+    | '/yarismalar'
     | '/api/test-endpoint'
     | '/lesson/$level'
     | '/payment/failed'
@@ -203,7 +233,10 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pro'
     | '/profile'
+    | '/projeler'
     | '/rewards'
+    | '/sinavlar'
+    | '/yarismalar'
     | '/api/test-endpoint'
     | '/lesson/$level'
     | '/payment/failed'
@@ -222,7 +255,10 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/pro'
     | '/_authenticated/profile'
+    | '/_authenticated/projeler'
     | '/_authenticated/rewards'
+    | '/_authenticated/sinavlar'
+    | '/_authenticated/yarismalar'
     | '/api/test-endpoint'
     | '/_authenticated/lesson/$level'
     | '/_authenticated/payment/failed'
@@ -320,11 +356,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/projeler': {
+      id: '/_authenticated/projeler'
+      path: '/projeler'
+      fullPath: '/projeler'
+      preLoaderRoute: typeof AuthenticatedProjelerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/rewards': {
       id: '/_authenticated/rewards'
       path: '/rewards'
       fullPath: '/rewards'
       preLoaderRoute: typeof AuthenticatedRewardsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sinavlar': {
+      id: '/_authenticated/sinavlar'
+      path: '/sinavlar'
+      fullPath: '/sinavlar'
+      preLoaderRoute: typeof AuthenticatedSinavlarRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/yarismalar': {
+      id: '/_authenticated/yarismalar'
+      path: '/yarismalar'
+      fullPath: '/yarismalar'
+      preLoaderRoute: typeof AuthenticatedYarismalarRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/api/test-endpoint': {
@@ -371,7 +428,10 @@ interface AuthenticatedRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedProRoute: typeof AuthenticatedProRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedProjelerRoute: typeof AuthenticatedProjelerRoute
   AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
+  AuthenticatedSinavlarRoute: typeof AuthenticatedSinavlarRoute
+  AuthenticatedYarismalarRoute: typeof AuthenticatedYarismalarRoute
   AuthenticatedLessonLevelRoute: typeof AuthenticatedLessonLevelRoute
   AuthenticatedPaymentFailedRoute: typeof AuthenticatedPaymentFailedRoute
   AuthenticatedPaymentSuccessRoute: typeof AuthenticatedPaymentSuccessRoute
@@ -383,7 +443,10 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedProRoute: AuthenticatedProRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedProjelerRoute: AuthenticatedProjelerRoute,
   AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
+  AuthenticatedSinavlarRoute: AuthenticatedSinavlarRoute,
+  AuthenticatedYarismalarRoute: AuthenticatedYarismalarRoute,
   AuthenticatedLessonLevelRoute: AuthenticatedLessonLevelRoute,
   AuthenticatedPaymentFailedRoute: AuthenticatedPaymentFailedRoute,
   AuthenticatedPaymentSuccessRoute: AuthenticatedPaymentSuccessRoute,

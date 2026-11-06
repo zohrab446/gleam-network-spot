@@ -1,15 +1,12 @@
 import { useEffect, type ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Coins, Flame, Gift, LogOut, Trophy, User as UserIcon, Zap } from "lucide-react";
+import { Gift, Trophy, User as UserIcon, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useGameData";
 import { useEnergySync } from "@/hooks/useEnergy";
-import { EnergyChip } from "@/components/EnergyMeter";
-import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { ChatWidget } from "@/components/ChatWidget";
 import { ParticipantsRail } from "@/components/ParticipantsRail";
-import { Button } from "@/components/ui/button";
 import { useSettings } from "@/store/settings";
 import { useT } from "@/lib/i18n";
 import { QuestNavigation } from "@/components/QuestNavigation";
@@ -97,17 +94,5 @@ function NavItem({
       {icon}
       {label}
     </Link>
-  );
-}
-
-function Chip({ icon, value, label }: { icon: ReactNode; value: number; label: string }) {
-  return (
-    <span
-      className="hidden items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-sm font-bold text-secondary-foreground md:inline-flex"
-      title={label}
-    >
-      {icon}
-      {value}
-    </span>
   );
 }

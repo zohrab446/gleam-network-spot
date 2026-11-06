@@ -68,7 +68,7 @@ function ProjectsPage() {
       if (value && !/^https?:\/\//i.test(value)) { toast.error("Bağlantılar http:// veya https:// ile başlamalı."); return; }
     }
     const project: Project = { id: editing ?? `p-${Date.now()}`, title: form.title.trim(), description: form.description.trim(), tech: form.tech.split(",").map((t) => t.trim()).filter(Boolean), status: form.status, category: form.category, views: "0", likes: 0, updated: "az önce güncellendi", github: form.github, demo: form.demo, cover: form.cover, icon: "🚀" };
-    setProjects((prev) => editing ? prev.map((p) => p.id === editing ? { ...p, ...project, likes: p.likes, views: p.views, featured: p.featured } : p) : [project, ...prev]);
+    setProjects((prev) => editing ? prev.map((p) => p.id === editing ? { ...p, ...project, likes: p.likes, views: p.views, featured: p.featured ?? false } : p) : [project, ...prev]);
     setAddOpen(false);
     setEditing(null);
     setForm({ title: "", description: "", tech: "", github: "", demo: "", cover: "", category: "Web", status: "Geliştirme Aşamasında" });

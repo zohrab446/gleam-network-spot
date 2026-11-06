@@ -14,3 +14,5 @@
 - Lesson identities and progression are validated against the shared catalog; skips debit energy and write progress in one locked database transaction to prevent free skips.
 - Server source checks reuse canonical lesson patterns, but runtime/DOM/style grading stays isolated in the browser until an external sandbox grader is provisioned; never execute submitted code in the app worker.
 - Leaderboard award, streak rollover, and ranking SQL share leaderboard_period_start; UI uses the matching Istanbul date-only helper to keep period boundaries consistent.
+
+- Redesign pages use the shared QuestNavigation and semantic theme tokens; unconnected portfolio, exam history, and competition content remains explicitly labelled as preview data so it cannot be confused with persisted account records.

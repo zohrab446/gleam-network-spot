@@ -140,7 +140,7 @@ function RootComponent() {
       script.async = true;
       script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5872673391651434";
       script.crossOrigin = "anonymous";
-      script.dataset.cqAdsense = "true";
+      script.dataset["cqAdsense"] = "true";
       document.head.appendChild(script);
     }
   }, []);

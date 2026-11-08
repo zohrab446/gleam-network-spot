@@ -1,4 +1,7 @@
 # Reference redesign
+- [ ] Add Community feed, persisted posts/comments/likes/saves, detail page and event registration.
+- [ ] Redesign Pro with entitlement-gated AI code analysis and clearly marked illustrative career panels; preserve checkout.
+- [ ] Verify Community and Pro interactions, permissions and desktop/mobile layouts.
 - [ ] Refresh the shared visual system and navigation to match uploaded references.
 - [ ] Restyle landing/sign-in and dashboard while preserving auth, progress, rewards, and security.
 - [ ] Verify desktop/mobile layouts and existing flows.

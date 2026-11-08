@@ -15,6 +15,13 @@
       "when": 1793735239642,
       "tag": "0001_leaderboard_fifteenth_period",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794141449733,
+      "tag": "0002_community_posts_interactions",
+      "breakpoints": true
     }
   ]
 }

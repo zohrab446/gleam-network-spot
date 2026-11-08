@@ -23,11 +23,13 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedProjelerRouteImport } from './routes/_authenticated.projeler'
 import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated.rewards'
 import { Route as AuthenticatedSinavlarRouteImport } from './routes/_authenticated.sinavlar'
+import { Route as AuthenticatedToplulukRouteImport } from './routes/_authenticated.topluluk'
 import { Route as AuthenticatedYarismalarRouteImport } from './routes/_authenticated.yarismalar'
 import { Route as ApiTestEndpointRouteImport } from './routes/api/test-endpoint'
 import { Route as AuthenticatedLessonLevelRouteImport } from './routes/_authenticated.lesson.$level'
 import { Route as AuthenticatedPaymentFailedRouteImport } from './routes/_authenticated.payment.failed'
 import { Route as AuthenticatedPaymentSuccessRouteImport } from './routes/_authenticated.payment.success'
+import { Route as AuthenticatedToplulukPostIdRouteImport } from './routes/_authenticated.topluluk_.$postId'
 import { Route as ApiPublicPaytrCallbackRouteImport } from './routes/api/public/paytr/callback'
 
 const IndexRoute = IndexRouteImport.update({
@@ -100,6 +102,11 @@ const AuthenticatedSinavlarRoute = AuthenticatedSinavlarRouteImport.update({
   path: '/sinavlar',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedToplulukRoute = AuthenticatedToplulukRouteImport.update({
+  id: '/topluluk',
+  path: '/topluluk',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedYarismalarRoute = AuthenticatedYarismalarRouteImport.update({
   id: '/yarismalar',
   path: '/yarismalar',
@@ -128,6 +135,12 @@ const AuthenticatedPaymentSuccessRoute =
     path: '/payment/success',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedToplulukPostIdRoute =
+  AuthenticatedToplulukPostIdRouteImport.update({
+    id: '/topluluk_/$postId',
+    path: '/topluluk/$postId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const ApiPublicPaytrCallbackRoute = ApiPublicPaytrCallbackRouteImport.update({
   id: '/api/public/paytr/callback',
   path: '/api/public/paytr/callback',
@@ -148,11 +161,13 @@ export interface FileRoutesByFullPath {
   '/projeler': typeof AuthenticatedProjelerRoute
   '/rewards': typeof AuthenticatedRewardsRoute
   '/sinavlar': typeof AuthenticatedSinavlarRoute
+  '/topluluk': typeof AuthenticatedToplulukRoute
   '/yarismalar': typeof AuthenticatedYarismalarRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
   '/payment/failed': typeof AuthenticatedPaymentFailedRoute
   '/payment/success': typeof AuthenticatedPaymentSuccessRoute
+  '/topluluk/$postId': typeof AuthenticatedToplulukPostIdRoute
   '/api/public/paytr/callback': typeof ApiPublicPaytrCallbackRoute
 }
 export interface FileRoutesByTo {
@@ -169,11 +184,13 @@ export interface FileRoutesByTo {
   '/projeler': typeof AuthenticatedProjelerRoute
   '/rewards': typeof AuthenticatedRewardsRoute
   '/sinavlar': typeof AuthenticatedSinavlarRoute
+  '/topluluk': typeof AuthenticatedToplulukRoute
   '/yarismalar': typeof AuthenticatedYarismalarRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
   '/payment/failed': typeof AuthenticatedPaymentFailedRoute
   '/payment/success': typeof AuthenticatedPaymentSuccessRoute
+  '/topluluk/$postId': typeof AuthenticatedToplulukPostIdRoute
   '/api/public/paytr/callback': typeof ApiPublicPaytrCallbackRoute
 }
 export interface FileRoutesById {
@@ -192,11 +209,13 @@ export interface FileRoutesById {
   '/_authenticated/projeler': typeof AuthenticatedProjelerRoute
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
   '/_authenticated/sinavlar': typeof AuthenticatedSinavlarRoute
+  '/_authenticated/topluluk': typeof AuthenticatedToplulukRoute
   '/_authenticated/yarismalar': typeof AuthenticatedYarismalarRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
   '/_authenticated/lesson/$level': typeof AuthenticatedLessonLevelRoute
   '/_authenticated/payment/failed': typeof AuthenticatedPaymentFailedRoute
   '/_authenticated/payment/success': typeof AuthenticatedPaymentSuccessRoute
+  '/_authenticated/topluluk_/$postId': typeof AuthenticatedToplulukPostIdRoute
   '/api/public/paytr/callback': typeof ApiPublicPaytrCallbackRoute
 }
 export interface FileRouteTypes {
@@ -215,11 +234,13 @@ export interface FileRouteTypes {
     | '/projeler'
     | '/rewards'
     | '/sinavlar'
+    | '/topluluk'
     | '/yarismalar'
     | '/api/test-endpoint'
     | '/lesson/$level'
     | '/payment/failed'
     | '/payment/success'
+    | '/topluluk/$postId'
     | '/api/public/paytr/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -236,11 +257,13 @@ export interface FileRouteTypes {
     | '/projeler'
     | '/rewards'
     | '/sinavlar'
+    | '/topluluk'
     | '/yarismalar'
     | '/api/test-endpoint'
     | '/lesson/$level'
     | '/payment/failed'
     | '/payment/success'
+    | '/topluluk/$postId'
     | '/api/public/paytr/callback'
   id:
     | '__root__'
@@ -258,11 +281,13 @@ export interface FileRouteTypes {
     | '/_authenticated/projeler'
     | '/_authenticated/rewards'
     | '/_authenticated/sinavlar'
+    | '/_authenticated/topluluk'
     | '/_authenticated/yarismalar'
     | '/api/test-endpoint'
     | '/_authenticated/lesson/$level'
     | '/_authenticated/payment/failed'
     | '/_authenticated/payment/success'
+    | '/_authenticated/topluluk_/$postId'
     | '/api/public/paytr/callback'
   fileRoutesById: FileRoutesById
 }
@@ -377,6 +402,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSinavlarRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/topluluk': {
+      id: '/_authenticated/topluluk'
+      path: '/topluluk'
+      fullPath: '/topluluk'
+      preLoaderRoute: typeof AuthenticatedToplulukRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/yarismalar': {
       id: '/_authenticated/yarismalar'
       path: '/yarismalar'
@@ -412,6 +444,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPaymentSuccessRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/topluluk_/$postId': {
+      id: '/_authenticated/topluluk_/$postId'
+      path: '/topluluk/$postId'
+      fullPath: '/topluluk/$postId'
+      preLoaderRoute: typeof AuthenticatedToplulukPostIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/api/public/paytr/callback': {
       id: '/api/public/paytr/callback'
       path: '/api/public/paytr/callback'
@@ -431,10 +470,12 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProjelerRoute: typeof AuthenticatedProjelerRoute
   AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
   AuthenticatedSinavlarRoute: typeof AuthenticatedSinavlarRoute
+  AuthenticatedToplulukRoute: typeof AuthenticatedToplulukRoute
   AuthenticatedYarismalarRoute: typeof AuthenticatedYarismalarRoute
   AuthenticatedLessonLevelRoute: typeof AuthenticatedLessonLevelRoute
   AuthenticatedPaymentFailedRoute: typeof AuthenticatedPaymentFailedRoute
   AuthenticatedPaymentSuccessRoute: typeof AuthenticatedPaymentSuccessRoute
+  AuthenticatedToplulukPostIdRoute: typeof AuthenticatedToplulukPostIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -446,10 +487,12 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProjelerRoute: AuthenticatedProjelerRoute,
   AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
   AuthenticatedSinavlarRoute: AuthenticatedSinavlarRoute,
+  AuthenticatedToplulukRoute: AuthenticatedToplulukRoute,
   AuthenticatedYarismalarRoute: AuthenticatedYarismalarRoute,
   AuthenticatedLessonLevelRoute: AuthenticatedLessonLevelRoute,
   AuthenticatedPaymentFailedRoute: AuthenticatedPaymentFailedRoute,
   AuthenticatedPaymentSuccessRoute: AuthenticatedPaymentSuccessRoute,
+  AuthenticatedToplulukPostIdRoute: AuthenticatedToplulukPostIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

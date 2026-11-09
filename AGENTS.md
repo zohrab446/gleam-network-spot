@@ -16,3 +16,4 @@
 - Leaderboard award, streak rollover, and ranking SQL share leaderboard_period_start; UI uses the matching Istanbul date-only helper to keep period boundaries consistent.
 
 - Redesign pages use the shared QuestNavigation and semantic theme tokens; unconnected portfolio, exam history, and competition content remains explicitly labelled as preview data so it cannot be confused with persisted account records.
+- Pro career previews live in ProWorkspace, separate from paid plans and checkout; illustrative scores and interview practice never imply persisted or AI-evaluated results.

@@ -1,0 +1,55 @@
+import { useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { Check, Code2, Crown, FileText, Folder, LockKeyhole, MessageCircle, Sparkles, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import type { Profile } from "@/hooks/useGameData";
+import mascot from "@/assets/mascot.png";
+
+const weeks = ["HTML & CSS Temelleri", "JavaScript Temelleri", "React ile Arayüz Geliştirme", "API Entegrasyonları", "Gerçek Proje: Kişisel Blog"];
+const questions = ["Bir web sayfasında semantik HTML neden önemlidir?", "Flexbox ile Grid arasındaki fark nedir?", "React içinde state ve props hangi amaçla kullanılır?"];
+
+export function ProWorkspace({ profile, pro, completed }: { profile: Profile; pro: boolean; completed: number }) {
+  const [panel, setPanel] = useState<"interview" | "cv" | null>(null);
+  const [week, setWeek] = useState(2);
+  const [question, setQuestion] = useState(0);
+  const [answer, setAnswer] = useState("");
+  const [finished, setFinished] = useState(false);
+  const [analysisTab, setAnalysisTab] = useState("Öneriler");
+  const preview = "Örnek çalışma · Hesap kaydı değildir";
+  return <div className="cq-dashboard-grid">
+    <div className="min-w-0 space-y-5">
+      <section className="cq-hero cq-dashboard-hero">
+        <img src={mascot} alt="CodeQuest Pro maskotu" className="cq-dashboard-mascot" />
+        <div className="relative z-10 max-w-[65%] max-sm:max-w-full">
+          <p className="flex items-center gap-2 font-bold"><Crown className="text-coin" />CodeQuest Pro</p>
+          <h1 className="mt-3 text-3xl font-extrabold">Daha hızlı öğren. Daha ileri git.</h1>
+          <p className="mt-3 text-sm leading-6 opacity-90">Sınırsız enerji, reklamsız öğrenme ve 2x coin ile hedeflerine odaklan.</p>
+          <div className="mt-5 flex flex-wrap gap-3 text-xs font-semibold"><span className="flex items-center gap-1"><Zap className="size-4" />Sınırsız enerji</span><span className="flex items-center gap-1"><Code2 className="size-4" />Kişisel gelişim</span><span className="flex items-center gap-1"><Folder className="size-4" />Gerçek projeler</span></div>
+        </div>
+      </section>
+      <section className="space-y-3" aria-labelledby="analysis-heading">
+        <div className="flex flex-wrap items-center justify-between gap-2"><h2 id="analysis-heading" className="flex items-center gap-2 text-lg"><Code2 className="text-primary" />AI Kod Analizi</h2><span className="text-xs text-muted-foreground">{preview}</span></div>
+        <div className="rounded-xl border border-border bg-card p-5">
+          <div className="flex flex-wrap items-center gap-2 text-xs"><strong>two_sum.py</strong><span className="rounded-md bg-primary-soft px-2 py-1 text-primary">Python</span><span className="ml-auto text-muted-foreground">Örnek analiz</span></div>
+          <div className="mt-4 grid gap-5 sm:grid-cols-[1fr_100px]"><pre className="min-w-0 overflow-x-auto rounded-lg bg-secondary p-4 text-xs leading-7 text-primary">{`def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i + 1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n    return []`}</pre><div className="flex flex-col items-center justify-center"><strong className="flex size-24 items-center justify-center rounded-full border-8 border-success text-3xl">78</strong><span className="mt-2 text-xs font-bold">Örnek kod skoru</span></div></div>
+          <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Örnek kod analizi">{["Öneriler", "İyileştirmeler", "Görev Önerileri"].map(tab => <Button key={tab} role="tab" aria-selected={analysisTab === tab} size="sm" variant={analysisTab === tab ? "default" : "outline"} onClick={() => setAnalysisTab(tab)}>{tab}</Button>)}</div>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">{analysisTab === "Öneriler" ? "İç içe döngüler O(n²) maliyetlidir. Hash map ile O(n) yaklaşımını değerlendirebilirsin." : analysisTab === "İyileştirmeler" ? "Değişken adlarını açıklayıcı seç; boş liste ve tekrarlanan sayılar için test ekle." : "Aynı problemi sözlük kullanarak çöz ve iki yaklaşımın çalışma süresini karşılaştır."}</p>
+          <p className="mt-4 border-t border-border pt-3 text-xs text-muted-foreground">Canlı kod analizi henüz kullanıma açık değil; kodun gönderilmez.</p>
+        </div>
+      </section>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <section className="space-y-3"><h2 className="flex items-center gap-2 text-base"><MessageCircle className="text-primary" />Teknik Mülakat Simülasyonu</h2><div className="relative overflow-hidden rounded-xl border border-border bg-card p-5"><p className="text-xs text-muted-foreground">{preview}</p><div className={cn("mt-4", !pro && "select-none blur-sm")}><div className="flex items-center gap-3"><Sparkles className="size-10 shrink-0 text-primary" /><p className="rounded-lg bg-primary-soft p-3 text-sm leading-6">Merhaba! Frontend mülakatına birlikte hazırlanalım. Hazır mısın?</p></div></div><Button className="mt-4 w-full" onClick={() => { if (!pro) { document.getElementById("plans-heading")?.scrollIntoView({ behavior: "smooth" }); return; } setQuestion(0); setAnswer(""); setFinished(false); setPanel("interview"); }}>{pro ? <MessageCircle /> : <LockKeyhole />}{pro ? "Örnek Simülasyonu Başlat" : "Pro'ya Geç"}</Button></div></section>
+        <section className="space-y-3"><h2 className="flex items-center gap-2 text-base"><Folder className="text-primary" />Gerçekçi Proje Görevleri</h2><div className="rounded-xl border border-border bg-card p-5"><p className="text-xs text-muted-foreground">{preview}</p><h3 className="mt-4 text-sm">Kişisel Finans Takip Uygulaması</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Gelir ve giderleri listele, kategori filtreleri ve aylık özet ekle.</p><div className="mt-3 flex gap-2 text-xs text-primary"><span>React</span><span>12 örnek görev</span></div><Button asChild variant="outline" className="mt-4 w-full"><Link to="/projeler"><Folder />Projeleri Gör</Link></Button></div></section>
+      </div>
+    </div>
+    <aside className="min-w-0 space-y-5">
+      <section className="space-y-3"><h2 className="flex items-center gap-2 text-lg"><Crown className="text-coin" />{pro ? "Pro Üyeliğin Aktif" : "CodeQuest Pro'ya Geç"}</h2><div className="rounded-xl border border-border bg-card p-5"><strong className="text-sm">{pro ? profile.pro_plan === "trial" ? "7 günlük deneme" : "CodeQuest Pro" : "Daha fazlasına hazır mısın?"}</strong><p className="mt-2 text-xs leading-6 text-muted-foreground">{pro ? profile.pro_expires_at ? `Üyelik bitişi: ${new Date(profile.pro_expires_at).toLocaleDateString("tr-TR")}` : "Sınırsız süreli erişim" : "Sınırsız enerji ve 2x coin."}</p><Button variant="outline" size="sm" className="mt-3" onClick={() => document.getElementById("plans-heading")?.scrollIntoView({ behavior: "smooth" })}>Planları Gör</Button></div><div className="grid grid-cols-2 gap-3">{[["Ders", completed], ["Seviye", profile.level], ["Seri", `${profile.streak} gün`], ["Coin", profile.coins.toLocaleString("tr-TR")]].map(([label, value]) => <div key={label} className="rounded-xl border border-border bg-card p-4"><p className="text-xs text-muted-foreground">{label}</p><strong className="mt-2 block text-xl text-primary">{value}</strong></div>)}</div></section>
+      <section className="space-y-3"><h2 className="text-base">Kişisel Öğrenme Planın</h2><div className="rounded-xl border border-border bg-card p-5"><p className="text-xs text-muted-foreground">{preview}</p><div className={cn("mt-4 space-y-2", !pro && "pointer-events-none select-none blur-sm")}>{weeks.map((title, i) => <Button key={title} variant={i === week ? "secondary" : "ghost"} disabled={!pro} className="h-auto w-full justify-start whitespace-normal py-3 text-left" onClick={() => setWeek(i)}>{i < week ? <Check className="shrink-0 text-success" /> : <span className="shrink-0 text-primary">{i + 1}.</span>}<span className="text-xs">{title}</span>{i === week && <span className="ml-auto shrink-0 text-[10px] text-primary">Şu an</span>}</Button>)}</div>{!pro && <Button className="mt-4 w-full" onClick={() => document.getElementById("plans-heading")?.scrollIntoView({ behavior: "smooth" })}><LockKeyhole />Pro'ya Geç</Button>}</div></section>
+      <section className="space-y-3"><h2 className="flex items-center gap-2 text-base"><FileText className="text-primary" />Portföy & CV Analizi</h2><div className="rounded-xl border border-border bg-card p-5"><p className="text-xs text-muted-foreground">{preview}</p><div className={cn("mt-4 flex items-center gap-4", !pro && "select-none blur-sm")}><strong className="flex size-20 shrink-0 items-center justify-center rounded-full border-8 border-success text-2xl">88</strong><p className="text-xs leading-6 text-muted-foreground">Örnek CV skoru<br />İçerik güçlü<br />Teknik yetkinlikler net</p></div><Button variant="outline" className="mt-4 w-full" onClick={() => pro ? setPanel("cv") : document.getElementById("plans-heading")?.scrollIntoView({ behavior: "smooth" })}>{pro ? <FileText /> : <LockKeyhole />}{pro ? "Örnek Geri Bildirimi Gör" : "Pro'ya Geç"}</Button></div></section>
+    </aside>
+    <Dialog open={panel !== null} onOpenChange={open => { if (!open) setPanel(null); }}><DialogContent className="max-h-[85dvh] overflow-y-auto"><DialogHeader><DialogTitle>{panel === "interview" ? "Örnek Teknik Mülakat" : "Örnek CV Geri Bildirimi"}</DialogTitle><DialogDescription>{preview} · Otomatik değerlendirme yapılmaz.</DialogDescription></DialogHeader>{panel === "interview" ? finished ? <><h3>Örnek çalışma tamamlandı</h3><p className="text-sm text-muted-foreground">Yanıtlarını gerçek proje örnekleriyle desteklemeyi ve teknik tercihlerini gerekçelendirmeyi unutma.</p><Button onClick={() => setPanel(null)}>Tamam</Button></> : <><p className="text-xs text-primary">Soru {question + 1} / {questions.length}</p><h3>{questions[question]}</h3><Textarea aria-label="Mülakat yanıtın" value={answer} onChange={e => setAnswer(e.target.value)} maxLength={3000} placeholder="Yanıtın…" /><Button disabled={!answer.trim()} onClick={() => { if (question === questions.length - 1) setFinished(true); else setQuestion(question + 1); setAnswer(""); }}> {question === questions.length - 1 ? "Tamamla" : "Sonraki Soru"}</Button></> : <ul className="list-disc space-y-3 pl-5 text-sm leading-6"><li>Projelerinin kullandığı teknolojileri açıkça belirt.</li><li>Çalışmalarının sonuçlarını ölçülebilir örneklerle destekle.</li><li>Portföy ve kaynak kod bağlantılarını ekle.</li></ul>}</DialogContent></Dialog>
+  </div>;
+}

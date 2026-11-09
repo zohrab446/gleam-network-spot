@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useProfile } from "@/hooks/useGameData";
+import { useProfile, useProgress } from "@/hooks/useGameData";
+import { ProWorkspace } from "@/components/ProWorkspace";
 import { useEnergySync, useStartProTrial } from "@/hooks/useEnergy";
 import { PRO_PERKS, PRO_PLANS, energyErrorMessage, isProActive } from "@/lib/energy";
 import { celebrate } from "@/lib/celebrate";
@@ -36,6 +37,7 @@ function ProPage() {
   const t = useT();
   const lang = useLanguage();
   const { data: profile, isLoading } = useProfile();
+  const { data: progress } = useProgress();
   const startTrial = useStartProTrial();
 
   if (isLoading || !profile) {
@@ -49,22 +51,10 @@ function ProPage() {
   const pro = isProActive(profile);
 
   return (
-    <AppShell>
+    <AppShell dashboard>
       <div className="space-y-6">
-        <section className="card-surface overflow-hidden">
-          <div className="bg-brand-gradient p-6 text-primary-foreground">
-            <p className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-bold">
-              <Crown className="h-3.5 w-3.5" /> CodeQuest Pro
-            </p>
-            <h1 className="mt-3 text-3xl">{t("Enerji derdi olmadan öğren", "Learn without energy worries")}</h1>
-            <p className="mt-2 max-w-xl text-sm opacity-90">
-              {t(
-                "Sınırsız enerji, yanlış cevapta kayıp yok, reklamsız deneyim ve 2x coin.",
-                "Unlimited energy, no loss on wrong answers, ad-free experience, and 2x coins.",
-              )}
-            </p>
-          </div>
-          <div className="p-6">
+        <ProWorkspace profile={profile} pro={pro} completed={progress?.length ?? 0} />
+        <section>
             {pro ? (
               <div className="rounded-2xl bg-success-soft p-4">
                 <p className="font-bold text-success">{t("Pro üyeliğin aktif 👑", "Your Pro membership is active 👑")}</p>
@@ -94,7 +84,6 @@ function ProPage() {
                 {profile.pro_trial_used ? t("Deneme kullanıldı", "Trial used") : t("7 gün ücretsiz dene", "Try 7 days free")}
               </Button>
             )}
-          </div>
         </section>
 
         <section className="card-surface p-5" aria-labelledby="plans-heading">
@@ -103,7 +92,9 @@ function ProPage() {
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">{t("Ücretli planlarda kart ödemen PayTR güvencesiyle alınır.", "Card payments on paid plans are secured by PayTR.")}</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {PRO_PLANS.map((plan) => (
+            {PRO_PLANS.map((plan) => {
+              const product = PRO_PRODUCTS.find((item) => item.id === `pro-${plan.id}`);
+              return (
               <div
                 key={plan.id}
                 className={cn(
@@ -131,9 +122,9 @@ function ProPage() {
                   >
                     {pro ? t("Aktif", "Active") : profile.pro_trial_used ? t("Kullanıldı", "Used") : t("Başlat", "Start")}
                   </Button>
-                ) : <PaytrCheckoutDialog product={PRO_PRODUCTS.find((item) => item.id === `pro-${plan.id}`)!} />}
+                ) : product ? <PaytrCheckoutDialog product={product} /> : null}
               </div>
-            ))}
+            ); })}
           </div>
         </section>
 

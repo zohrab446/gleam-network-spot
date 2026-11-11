@@ -1,4 +1,5 @@
 # Reference redesign
+- [ ] Fix shared navigation and page layouts at phone/tablet widths; verify no horizontal overflow.
 - [x] Add Community feed, persisted posts/comments/likes/saves, detail page and event registration; connect shared navigation.
 - [x] Redesign Pro with clearly marked illustrative career panels, membership-gated previews and preserved checkout.
 - [ ] Real AI code analysis — deferred by the user until model access is resolved.

@@ -20,3 +20,5 @@
 - [ ] Verify successful human claim on the allowed live domain — requires publishing and a human challenge completion.
 - [ ] Protect direct Auth-provider calls — native CAPTCHA configuration is not exposed by available tools.
 - [ ] Authoritative runtime/DOM/style grading and ad-completion receipts — require an external isolated grader and rewarded-ad provider.
+# Username profile links
+- [x] Connect dashboard and competition leaderboard usernames to existing permission-scoped profiles and verify signed-in navigation.

@@ -742,6 +742,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_view_project_cover: { Args: { p_name: string }; Returns: boolean }
       energy_claim_badge: {
         Args: { p_badge_id: string; p_user: string }
         Returns: Json

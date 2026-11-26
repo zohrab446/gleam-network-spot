@@ -671,6 +671,54 @@ export type Database = {
         }
         Relationships: []
       }
+      user_projects: {
+        Row: {
+          category: string
+          cover: string
+          created_at: string
+          demo: string
+          description: string
+          featured: boolean
+          github: string
+          id: string
+          status: string
+          tech: string[]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          cover?: string
+          created_at?: string
+          demo?: string
+          description: string
+          featured?: boolean
+          github?: string
+          id?: string
+          status?: string
+          tech?: string[]
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          category?: string
+          cover?: string
+          created_at?: string
+          demo?: string
+          description?: string
+          featured?: boolean
+          github?: string
+          id?: string
+          status?: string
+          tech?: string[]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -960,6 +1008,7 @@ export type Database = {
           xp: number
         }[]
       }
+      get_public_profile: { Args: { p_username: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

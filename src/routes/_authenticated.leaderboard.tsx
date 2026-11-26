@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Gift, Share2, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
@@ -148,7 +148,7 @@ function Leaderboard() {
                 <PlayerAvatar shape={row.avatar_shape} color={row.avatar_color} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold">
-                    {row.username}
+                    {row.username ? <Link to="/u/$username" params={{ username: row.username }} className="hover:text-primary hover:underline">{row.username}</Link> : null}
                     {row.is_pro && " 👑"}
                   </p>
                   <p className="text-sm text-muted-foreground">

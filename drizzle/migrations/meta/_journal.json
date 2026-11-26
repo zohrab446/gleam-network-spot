@@ -43,6 +43,13 @@
       "when": 1795716579651,
       "tag": "0005_competitions_read_published_only",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795718563921,
+      "tag": "0006_public_profiles_and_projects",
+      "breakpoints": true
     }
   ]
 }

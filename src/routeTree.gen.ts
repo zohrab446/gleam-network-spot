@@ -32,6 +32,7 @@ import { Route as AuthenticatedLessonLevelRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPaymentFailedRouteImport } from './routes/_authenticated.payment.failed'
 import { Route as AuthenticatedPaymentSuccessRouteImport } from './routes/_authenticated.payment.success'
 import { Route as AuthenticatedToplulukPostIdRouteImport } from './routes/_authenticated.topluluk_.$postId'
+import { Route as AuthenticatedUUsernameRouteImport } from './routes/_authenticated.u.$username'
 import { Route as ApiPublicPaytrCallbackRouteImport } from './routes/api/public/paytr/callback'
 
 const IndexRoute = IndexRouteImport.update({
@@ -153,6 +154,11 @@ const AuthenticatedToplulukPostIdRoute =
     path: '/topluluk/$postId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedUUsernameRoute = AuthenticatedUUsernameRouteImport.update({
+  id: '/u/$username',
+  path: '/u/$username',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const ApiPublicPaytrCallbackRoute = ApiPublicPaytrCallbackRouteImport.update({
   id: '/api/public/paytr/callback',
   path: '/api/public/paytr/callback',
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/payment/failed': typeof AuthenticatedPaymentFailedRoute
   '/payment/success': typeof AuthenticatedPaymentSuccessRoute
   '/topluluk/$postId': typeof AuthenticatedToplulukPostIdRoute
+  '/u/$username': typeof AuthenticatedUUsernameRoute
   '/api/public/paytr/callback': typeof ApiPublicPaytrCallbackRoute
 }
 export interface FileRoutesByTo {
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/payment/failed': typeof AuthenticatedPaymentFailedRoute
   '/payment/success': typeof AuthenticatedPaymentSuccessRoute
   '/topluluk/$postId': typeof AuthenticatedToplulukPostIdRoute
+  '/u/$username': typeof AuthenticatedUUsernameRoute
   '/api/public/paytr/callback': typeof ApiPublicPaytrCallbackRoute
 }
 export interface FileRoutesById {
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/_authenticated/payment/failed': typeof AuthenticatedPaymentFailedRoute
   '/_authenticated/payment/success': typeof AuthenticatedPaymentSuccessRoute
   '/_authenticated/topluluk_/$postId': typeof AuthenticatedToplulukPostIdRoute
+  '/_authenticated/u/$username': typeof AuthenticatedUUsernameRoute
   '/api/public/paytr/callback': typeof ApiPublicPaytrCallbackRoute
 }
 export interface FileRouteTypes {
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/payment/failed'
     | '/payment/success'
     | '/topluluk/$postId'
+    | '/u/$username'
     | '/api/public/paytr/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/payment/failed'
     | '/payment/success'
     | '/topluluk/$postId'
+    | '/u/$username'
     | '/api/public/paytr/callback'
   id:
     | '__root__'
@@ -312,6 +323,7 @@ export interface FileRouteTypes {
     | '/_authenticated/payment/failed'
     | '/_authenticated/payment/success'
     | '/_authenticated/topluluk_/$postId'
+    | '/_authenticated/u/$username'
     | '/api/public/paytr/callback'
   fileRoutesById: FileRoutesById
 }
@@ -489,6 +501,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedToplulukPostIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/u/$username': {
+      id: '/_authenticated/u/$username'
+      path: '/u/$username'
+      fullPath: '/u/$username'
+      preLoaderRoute: typeof AuthenticatedUUsernameRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/api/public/paytr/callback': {
       id: '/api/public/paytr/callback'
       path: '/api/public/paytr/callback'
@@ -516,6 +535,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPaymentFailedRoute: typeof AuthenticatedPaymentFailedRoute
   AuthenticatedPaymentSuccessRoute: typeof AuthenticatedPaymentSuccessRoute
   AuthenticatedToplulukPostIdRoute: typeof AuthenticatedToplulukPostIdRoute
+  AuthenticatedUUsernameRoute: typeof AuthenticatedUUsernameRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -535,6 +555,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPaymentFailedRoute: AuthenticatedPaymentFailedRoute,
   AuthenticatedPaymentSuccessRoute: AuthenticatedPaymentSuccessRoute,
   AuthenticatedToplulukPostIdRoute: AuthenticatedToplulukPostIdRoute,
+  AuthenticatedUUsernameRoute: AuthenticatedUUsernameRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import mascot from "@/assets/mascot.png";
+import { useAuth } from "@/lib/auth";
+import { useProjectMutations, useUserProjects } from "@/hooks/useProjects";
 
 export const Route = createFileRoute("/_authenticated/projeler")({
   head: () => ({ meta: [
@@ -23,7 +25,6 @@ export const Route = createFileRoute("/_authenticated/projeler")({
 type ProjectStatus = "Yayında" | "Tamamlandı" | "Geliştirme Aşamasında" | "Takım Projesi";
 type Project = { id: string; title: string; description: string; tech: string[]; status: ProjectStatus; category: "Web" | "Mobil" | "AI" | "Takım Projesi"; views: string; likes: number; updated: string; github: string; demo: string; icon: string; cover?: string; featured?: boolean };
 
-const INITIAL: Project[] = [];
 
 const STATUS_TONE: Record<ProjectStatus, string> = {
   "Yayında": "bg-success-soft text-success",
@@ -34,7 +35,10 @@ const STATUS_TONE: Record<ProjectStatus, string> = {
 const FILTERS = ["Tümü", "Web", "Mobil", "AI", "Takım Projesi"] as const;
 
 function ProjectsPage() {
-  const [projects, setProjects] = useState(INITIAL);
+  const { user } = useAuth();
+  const { data: rows = [] } = useUserProjects(user?.id);
+  const { save, remove, feature } = useProjectMutations(user?.id);
+  const projects: Project[] = useMemo(() => rows.map((r) => ({ id: r.id, title: r.title, description: r.description, tech: r.tech, status: r.status as ProjectStatus, category: r.category as Project["category"], views: "0", likes: 0, updated: new Date(r.updated_at).toLocaleDateString("tr-TR"), github: r.github, demo: r.demo, cover: r.cover, icon: "🚀", featured: r.featured })), [rows]);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Tümü");
   const [sort, setSort] = useState("newest");
@@ -60,12 +64,12 @@ function ProjectsPage() {
     for (const value of [form.github, form.demo]) {
       if (value && !/^https?:\/\//i.test(value)) { toast.error("Bağlantılar http:// veya https:// ile başlamalı."); return; }
     }
-    const project: Project = { id: editing ?? `p-${Date.now()}`, title: form.title.trim(), description: form.description.trim(), tech: form.tech.split(",").map((t) => t.trim()).filter(Boolean), status: form.status, category: form.category, views: "0", likes: 0, updated: "az önce güncellendi", github: form.github, demo: form.demo, cover: form.cover, icon: "🚀" };
-    setProjects((prev) => editing ? prev.map((p) => p.id === editing ? { ...p, ...project, likes: p.likes, views: p.views, featured: p.featured ?? false } : p) : [project, ...prev]);
-    setAddOpen(false);
-    setEditing(null);
-    setForm({ title: "", description: "", tech: "", github: "", demo: "", cover: "", category: "Web", status: "Geliştirme Aşamasında" });
-    toast.success("Proje bu önizlemede güncellendi.");
+    if (form.cover && !/^https?:\/\//i.test(form.cover)) { toast.error("Kapak bağlantısı http:// veya https:// ile başlamalı."); return; }
+    const input = { title: form.title.trim(), description: form.description.trim(), tech: form.tech.split(",").map((t) => t.trim()).filter(Boolean), status: form.status, category: form.category, github: form.github.trim(), demo: form.demo.trim(), cover: form.cover.trim() };
+    save.mutate({ id: editing, input }, {
+      onSuccess: () => { setAddOpen(false); setEditing(null); setForm({ title: "", description: "", tech: "", github: "", demo: "", cover: "", category: "Web", status: "Geliştirme Aşamasında" }); toast.success("Proje kaydedildi."); },
+      onError: () => toast.error("Proje kaydedilemedi."),
+    });
   }
 
   const featured = projects.find((p) => p.featured) ?? projects[0];
@@ -88,7 +92,7 @@ function ProjectsPage() {
         <div className="cq-hero relative flex w-40 shrink-0 items-center justify-center rounded-xl text-4xl max-sm:w-28"><span className={`absolute left-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-bold ${STATUS_TONE[p.status]}`}>{p.status}</span>{p.cover ? <img src={p.cover} alt={p.title} className="h-full min-h-32 w-full rounded-xl object-cover" /> : p.icon}</div>
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2"><h2 className="truncate text-sm font-extrabold">{p.title}</h2>
-            <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="size-7 shrink-0" aria-label="Proje menüsü"><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={() => editProject(p)}>Düzenle</DropdownMenuItem><DropdownMenuItem onClick={() => setProjects((prev) => prev.map((x) => ({ ...x, featured: x.id === p.id })))}>Öne çıkar</DropdownMenuItem><DropdownMenuItem className="text-destructive" onClick={() => { setProjects((prev) => prev.filter((x) => x.id !== p.id)); toast.success("Proje silindi."); }}>Sil</DropdownMenuItem></DropdownMenuContent></DropdownMenu></div>
+            <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="size-7 shrink-0" aria-label="Proje menüsü"><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={() => editProject(p)}>Düzenle</DropdownMenuItem><DropdownMenuItem onClick={() => feature.mutate(p.id, { onError: () => toast.error("Güncellenemedi.") })}>Öne çıkar</DropdownMenuItem><DropdownMenuItem className="text-destructive" onClick={() => { if (window.confirm("Projeyi silmek istiyor musun?")) remove.mutate(p.id, { onSuccess: () => toast.success("Proje silindi."), onError: () => toast.error("Silinemedi.") }); }}>Sil</DropdownMenuItem></DropdownMenuContent></DropdownMenu></div>
           <p className="mt-1 line-clamp-2 text-[10px] leading-4 text-muted-foreground">{p.description}</p>
           <div className="mt-2 flex flex-wrap gap-1">{p.tech.slice(0, 3).map((t) => <span key={t} className="rounded-md bg-primary-soft px-2 py-0.5 text-[9px] font-bold text-primary">{t}</span>)}{p.tech.length > 3 && <span className="rounded-md bg-secondary px-2 py-0.5 text-[9px] font-bold text-muted-foreground">+{p.tech.length - 3}</span>}</div>
           <div className="mt-2 flex gap-2"><Button asChild variant="outline" size="sm" className="h-7 flex-1 text-[10px]" disabled={!p.github}><a href={p.github} target="_blank" rel="noreferrer"><Github className="size-3" />GitHub</a></Button><Button asChild size="sm" className="h-7 flex-1 text-[10px]" disabled={!p.demo}><a href={p.demo} target="_blank" rel="noreferrer">Canlı Demo<ArrowRight className="size-3" /></a></Button></div>

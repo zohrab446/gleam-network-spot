@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IletisimRouteImport } from './routes/iletisim'
 import { Route as MesafeliSatisRouteImport } from './routes/mesafeli-satis'
 import { Route as SifreSifirlaRouteImport } from './routes/sifre-sifirla'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated.leaderboard'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
@@ -60,6 +61,11 @@ const SifreSifirlaRoute = SifreSifirlaRouteImport.update({
   id: '/sifre-sifirla',
   path: '/sifre-sifirla',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/iletisim': typeof IletisimRoute
   '/mesafeli-satis': typeof MesafeliSatisRoute
   '/sifre-sifirla': typeof SifreSifirlaRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -176,6 +183,7 @@ export interface FileRoutesByTo {
   '/iletisim': typeof IletisimRoute
   '/mesafeli-satis': typeof MesafeliSatisRoute
   '/sifre-sifirla': typeof SifreSifirlaRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/iletisim': typeof IletisimRoute
   '/mesafeli-satis': typeof MesafeliSatisRoute
   '/sifre-sifirla': typeof SifreSifirlaRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/iletisim'
     | '/mesafeli-satis'
     | '/sifre-sifirla'
+    | '/admin'
     | '/dashboard'
     | '/leaderboard'
     | '/onboarding'
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/iletisim'
     | '/mesafeli-satis'
     | '/sifre-sifirla'
+    | '/admin'
     | '/dashboard'
     | '/leaderboard'
     | '/onboarding'
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/iletisim'
     | '/mesafeli-satis'
     | '/sifre-sifirla'
+    | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/leaderboard'
     | '/_authenticated/onboarding'
@@ -345,6 +357,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/sifre-sifirla'
       preLoaderRoute: typeof SifreSifirlaRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -462,6 +481,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
@@ -479,6 +499,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,

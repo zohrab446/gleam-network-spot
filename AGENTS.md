@@ -18,3 +18,4 @@
 - Redesign pages use the shared QuestNavigation and semantic theme tokens; unconnected portfolio, exam history, and competition content remains explicitly labelled as preview data so it cannot be confused with persisted account records.
 - Pro career previews live in ProWorkspace, separate from paid plans and checkout; illustrative scores and interview practice never imply persisted or AI-evaluated results.
 - Pro AI code analysis runs in a Pro-checked, fresh-Turnstile server function using a retention-policy-allowed gateway model; submitted code is only read by the model, never executed.
+- Roles live in public.user_roles (app_role enum) checked via has_role; admin-only writes (e.g. competitions) are enforced by RLS and a server-side has_role check, never client state.

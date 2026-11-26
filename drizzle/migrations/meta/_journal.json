@@ -29,6 +29,13 @@
       "when": 1795697565396,
       "tag": "0003_energy_allow_overflow",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795698847789,
+      "tag": "0004_roles_and_competitions",
+      "breakpoints": true
     }
   ]
 }

@@ -201,6 +201,51 @@ export type Database = {
           },
         ]
       }
+      competitions: {
+        Row: {
+          categories: string[]
+          created_at: string
+          created_by: string | null
+          date_label: string
+          description: string
+          featured: boolean
+          icon: string
+          id: string
+          participation: string
+          prize: string
+          status: string
+          title: string
+        }
+        Insert: {
+          categories?: string[]
+          created_at?: string
+          created_by?: string | null
+          date_label?: string
+          description?: string
+          featured?: boolean
+          icon?: string
+          id?: string
+          participation?: string
+          prize?: string
+          status?: string
+          title: string
+        }
+        Update: {
+          categories?: string[]
+          created_at?: string
+          created_by?: string | null
+          date_label?: string
+          description?: string
+          featured?: boolean
+          icon?: string
+          id?: string
+          participation?: string
+          prize?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
       energy_transactions: {
         Row: {
           after_energy: number
@@ -626,6 +671,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -897,6 +960,13 @@ export type Database = {
           xp: number
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       leaderboard_period_start: { Args: { p_at?: string }; Returns: string }
       pro_start_trial: {
         Args: { p_user: string }
@@ -977,7 +1047,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "ogrenci" | "sirket" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1104,6 +1174,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["ogrenci", "sirket", "admin"],
+    },
   },
 } as const

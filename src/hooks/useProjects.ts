@@ -13,7 +13,7 @@ export function useUserProjects(userId: string | undefined) {
     queryKey: ["user-projects", userId],
     enabled: !!userId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("user_projects").select("*").eq("user_id", userId!).order("created_at", { ascending: false });
+      const { data, error } = await supabase.rpc("get_user_projects", { p_user: userId! });
       if (error) throw error;
       return (data ?? []) as DbProject[];
     },

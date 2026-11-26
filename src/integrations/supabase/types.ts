@@ -1009,6 +1009,24 @@ export type Database = {
         }[]
       }
       get_public_profile: { Args: { p_username: string }; Returns: Json }
+      get_user_projects: {
+        Args: { p_user: string }
+        Returns: {
+          category: string
+          cover: string
+          created_at: string
+          demo: string
+          description: string
+          featured: boolean
+          github: string
+          id: string
+          status: string
+          tech: string[]
+          title: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -373,7 +373,22 @@ function checkOne(check: LessonCheck, lesson: Lesson, files: Files, logs: string
       }
       if (!el) return false;
       const actual = win.getComputedStyle(el).getPropertyValue(check.property);
-      return styleMatches(actual, check.value);
+      if (styleMatches(actual, check.value)) return true;
+      // Yüzde değerleri tarayıcı px'e çevirir: üst elemana oranla karşılaştır.
+      const pct = /^(-?\d+(?:\.\d+)?)%$/.exec(check.value.trim());
+      if (pct && (check.property === "width" || check.property === "height")) {
+        const parent = el.parentElement;
+        if (!parent) return false;
+        const ps = win.getComputedStyle(parent);
+        const pad = check.property === "width"
+          ? parseFloat(ps.paddingLeft) + parseFloat(ps.paddingRight)
+          : parseFloat(ps.paddingTop) + parseFloat(ps.paddingBottom);
+        const base = (check.property === "width" ? parent.clientWidth : parent.clientHeight) - pad;
+        const px = parseFloat(actual);
+        if (!base || Number.isNaN(px)) return false;
+        return Math.abs((px / base) * 100 - Number(pct[1])) < 1;
+      }
+      return false;
     }
   }
 }

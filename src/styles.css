@@ -276,3 +276,6 @@
   font-family: "JetBrains Mono", ui-monospace, monospace;
   line-height: 1.6;
 }
+
+/* Mobilde yatay kaymayı engelle */
+html, body { overflow-x: clip; }

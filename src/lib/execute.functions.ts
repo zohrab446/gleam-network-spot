@@ -54,6 +54,8 @@ export const executeRemote = createServerFn({ method: "POST" })
         codes,
         stdin: data.stdin ?? "",
         "compiler-option-raw": codes.map((c) => c.file).join("\n"),
+        // Türkçe karakterler (ş, ğ, ı) stdin/stdout'ta bozulmasın.
+        "runtime-option-raw": "-Dfile.encoding=UTF-8\n-Dstdout.encoding=UTF-8\n-Dstderr.encoding=UTF-8\n-Dstdin.encoding=UTF-8",
       };
     } else {
       body = {

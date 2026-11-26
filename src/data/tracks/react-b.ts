@@ -78,7 +78,7 @@ export const REACT_B: Lesson[] = [
       { type: "dom", selector: "h2", text: "Ad girin", label: "Başlık gösteriliyor" },
       { type: "dom", selector: "input", count: 1, label: "input elemanı var" },
       { type: "regex", value: "useRef\\(", label: "useRef kullanılmış" },
-      { type: "regex", value: "\\.current\\.focus\\(\\)", label: "focus() çağrılmış" },
+      { type: "regex", value: "\\.current\\??\\.focus\\(\\s*\\)", label: "focus() çağrılmış" },
     ],
   },
   {

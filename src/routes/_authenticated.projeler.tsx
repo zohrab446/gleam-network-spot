@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/projeler")({
 });
 
 type ProjectStatus = "Yayında" | "Tamamlandı" | "Geliştirme Aşamasında" | "Takım Projesi";
-type Project = { id: string; title: string; description: string; tech: string[]; status: ProjectStatus; category: "Web" | "Mobil" | "AI" | "Takım Projesi"; views: string; likes: number; updated: string; github: string; demo: string; icon: string; cover?: string; featured?: boolean };
+type Project = { id: string; title: string; description: string; tech: string[]; status: ProjectStatus; category: "Web" | "Mobil" | "AI" | "Takım Projesi"; views: string; likes: number; updated: string; github: string; demo: string; icon: string; cover?: string; coverPath: string; featured?: boolean };
 
 
 const STATUS_TONE: Record<ProjectStatus, string> = {
@@ -38,13 +38,16 @@ function ProjectsPage() {
   const { user } = useAuth();
   const { data: rows = [] } = useUserProjects(user?.id);
   const { save, remove, feature } = useProjectMutations(user?.id);
-  const projects: Project[] = useMemo(() => rows.map((r) => ({ id: r.id, title: r.title, description: r.description, tech: r.tech, status: r.status as ProjectStatus, category: r.category as Project["category"], views: "0", likes: 0, updated: new Date(r.updated_at).toLocaleDateString("tr-TR"), github: r.github, demo: r.demo, cover: r.cover, icon: "🚀", featured: r.featured })), [rows]);
+  const projects: Project[] = useMemo(() => rows.map((r) => ({ id: r.id, title: r.title, description: r.description, tech: r.tech, status: r.status as ProjectStatus, category: r.category as Project["category"], views: "0", likes: 0, updated: new Date(r.updated_at).toLocaleDateString("tr-TR"), github: r.github, demo: r.demo, cover: r.cover, coverPath: r.coverPath ?? r.cover, icon: "🚀", featured: r.featured })), [rows]);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Tümü");
   const [sort, setSort] = useState("newest");
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
-  const [form, setForm] = useState({ title: "", description: "", tech: "", github: "", demo: "", cover: "", category: "Web" as Project["category"], status: "Geliştirme Aşamasında" as ProjectStatus });
+  const [form, setForm] = useState({ title: "", description: "", tech: "", github: "", demo: "", category: "Web" as Project["category"], status: "Geliştirme Aşamasında" as ProjectStatus });
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState("");
+  const [removeCover, setRemoveCover] = useState(false);
 
   const visible = useMemo(() => {
     const q = query.trim().toLocaleLowerCase("tr");
@@ -56,7 +59,10 @@ function ProjectsPage() {
 
   function editProject(project: Project) {
     setEditing(project.id);
-    setForm({ title: project.title, description: project.description, tech: project.tech.join(", "), github: project.github, demo: project.demo, cover: project.cover ?? "", category: project.category, status: project.status });
+    setForm({ title: project.title, description: project.description, tech: project.tech.join(", "), github: project.github, demo: project.demo, category: project.category, status: project.status });
+    setCoverFile(null);
+    setCoverPreview(project.cover ?? "");
+    setRemoveCover(false);
     setAddOpen(true);
   }
   function addProject() {
@@ -64,11 +70,11 @@ function ProjectsPage() {
     for (const value of [form.github, form.demo]) {
       if (value && !/^https?:\/\//i.test(value)) { toast.error("Bağlantılar http:// veya https:// ile başlamalı."); return; }
     }
-    if (form.cover && !/^https?:\/\//i.test(form.cover)) { toast.error("Kapak bağlantısı http:// veya https:// ile başlamalı."); return; }
-    const input = { title: form.title.trim(), description: form.description.trim(), tech: form.tech.split(",").map((t) => t.trim()).filter(Boolean), status: form.status, category: form.category, github: form.github.trim(), demo: form.demo.trim(), cover: form.cover.trim() };
-    save.mutate({ id: editing, input }, {
-      onSuccess: () => { setAddOpen(false); setEditing(null); setForm({ title: "", description: "", tech: "", github: "", demo: "", cover: "", category: "Web", status: "Geliştirme Aşamasında" }); toast.success("Proje kaydedildi."); },
-      onError: () => toast.error("Proje kaydedilemedi."),
+    const previousCover = editing ? projects.find((project) => project.id === editing)?.coverPath ?? "" : "";
+    const input = { title: form.title.trim(), description: form.description.trim(), tech: form.tech.split(",").map((t) => t.trim()).filter(Boolean), status: form.status, category: form.category, github: form.github.trim(), demo: form.demo.trim(), cover: removeCover ? "" : previousCover };
+    save.mutate({ id: editing, input, coverFile }, {
+      onSuccess: () => { setAddOpen(false); setEditing(null); setForm({ title: "", description: "", tech: "", github: "", demo: "", category: "Web", status: "Geliştirme Aşamasında" }); setCoverFile(null); setCoverPreview(""); setRemoveCover(false); toast.success("Proje kaydedildi."); },
+      onError: (error) => toast.error(error instanceof Error && error.message === "Kapak görseli yüklenemedi. Tekrar dene." ? error.message : "Proje kaydedilemedi."),
     });
   }
 
@@ -84,7 +90,7 @@ function ProjectsPage() {
       <label className="flex min-w-52 flex-1 items-center gap-2 rounded-full bg-card px-4 py-2.5 shadow-card"><Search className="size-4 shrink-0 text-muted-foreground" /><input aria-label="Projelerde ara" placeholder="Projelerde ara..." value={query} onChange={(e) => setQuery(e.target.value)} className="w-full bg-transparent text-xs outline-none" /></label>
       {FILTERS.map((f) => <Button key={f} size="sm" variant={filter === f ? "default" : "outline"} className={filter === f ? "" : "bg-card"} onClick={() => setFilter(f)}>{f}</Button>)}
       <Select value={sort} onValueChange={setSort}><SelectTrigger className="w-36 bg-card text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="newest">En Yeniler</SelectItem><SelectItem value="likes">En Beğenilen</SelectItem><SelectItem value="views">En Çok Görüntülenen</SelectItem></SelectContent></Select>
-      <Button size="sm" onClick={() => { setEditing(null); setForm({ title: "", description: "", tech: "", github: "", demo: "", cover: "", category: "Web", status: "Geliştirme Aşamasında" }); setAddOpen(true); }}><Plus />Yeni Proje Ekle</Button>
+      <Button size="sm" onClick={() => { setEditing(null); setForm({ title: "", description: "", tech: "", github: "", demo: "", category: "Web", status: "Geliştirme Aşamasında" }); setCoverFile(null); setCoverPreview(""); setRemoveCover(false); setAddOpen(true); }}><Plus />Yeni Proje Ekle</Button>
     </div>
 
     <div className="grid gap-4 lg:grid-cols-2">{visible.map((p) => <article key={p.id} className="card-surface p-4">
@@ -123,10 +129,10 @@ function ProjectsPage() {
       <div><Label htmlFor="p-desc">Açıklama</Label><Textarea id="p-desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Projen ne yapıyor, hangi problemi çözüyor?" rows={3} /></div>
       <div><Label htmlFor="p-tech">Teknolojiler (virgülle ayır)</Label><Input id="p-tech" value={form.tech} onChange={(e) => setForm({ ...form, tech: e.target.value })} placeholder="React, Node.js, PostgreSQL" /></div>
       <div className="grid gap-3 sm:grid-cols-2"><div><Label htmlFor="p-github">GitHub URL</Label><Input id="p-github" value={form.github} onChange={(e) => setForm({ ...form, github: e.target.value })} placeholder="https://github.com/..." /></div><div><Label htmlFor="p-demo">Canlı demo URL</Label><Input id="p-demo" value={form.demo} onChange={(e) => setForm({ ...form, demo: e.target.value })} placeholder="https://..." /></div></div>
-      <div><Label htmlFor="p-cover">Kapak görseli</Label><Input id="p-cover" type="file" accept="image/*" onChange={(e) => { const file = e.target.files?.[0]; if (!file) return; if (file.size > 5 * 1024 * 1024) { toast.error("Görsel en fazla 5 MB olabilir."); return; } const reader = new FileReader(); reader.onload = () => { if (typeof reader.result === "string") { const cover = reader.result; setForm((f) => ({ ...f, cover })); } }; reader.readAsDataURL(file); }} /></div>
+      <div><Label htmlFor="p-cover">Kapak görseli</Label><Input id="p-cover" type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => { const file = e.target.files?.[0]; if (!file) return; if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) { toast.error("JPG, PNG veya WebP görsel seç."); e.currentTarget.value = ""; return; } if (file.size > 5 * 1024 * 1024) { toast.error("Görsel en fazla 5 MB olabilir."); e.currentTarget.value = ""; return; } setCoverFile(file); setRemoveCover(false); const reader = new FileReader(); reader.onload = () => { if (typeof reader.result === "string") setCoverPreview(reader.result); }; reader.readAsDataURL(file); }} /><p className="mt-1 text-[10px] text-muted-foreground">JPG, PNG veya WebP · En fazla 5 MB. Bağlantı eklemene gerek yok.</p>{coverPreview && !removeCover && <div className="relative mt-2"><img src={coverPreview} alt="Seçilen kapak önizlemesi" className="h-32 w-full rounded-xl object-cover" /><Button type="button" variant="secondary" size="sm" className="absolute right-2 top-2" onClick={() => { setCoverFile(null); setCoverPreview(""); setRemoveCover(true); const input = document.getElementById("p-cover"); if (input instanceof HTMLInputElement) input.value = ""; }}>Kapağı kaldır</Button></div>}</div>
       <div><Label>Kategori</Label><Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v as Project["category"] })}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>{FILTERS.filter((f) => f !== "Tümü").map((f) => <SelectItem key={f} value={f}>{f}</SelectItem>)}</SelectContent></Select></div>
       <div><Label>Durum</Label><Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as ProjectStatus })}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>{(["Yayında", "Tamamlandı", "Geliştirme Aşamasında", "Takım Projesi"] as const).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select></div>
-      <Button className="w-full" onClick={addProject}><Plus />{editing ? "Değişiklikleri Kaydet" : "Projeyi Ekle"}</Button>
+      <Button className="w-full" disabled={save.isPending} onClick={addProject}><Plus />{save.isPending ? "Kaydediliyor…" : editing ? "Değişiklikleri Kaydet" : "Projeyi Ekle"}</Button>
     </div></DialogContent></Dialog>
   </AppShell>;
 }

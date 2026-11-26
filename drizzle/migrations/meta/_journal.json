@@ -57,6 +57,20 @@
       "when": 1795718839630,
       "tag": "0007_user_projects_owner_read",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795730068021,
+      "tag": "0008_project_cover_storage_policies",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795730182661,
+      "tag": "0009_allow_uploaded_project_cover_paths",
+      "breakpoints": true
     }
   ]
 }

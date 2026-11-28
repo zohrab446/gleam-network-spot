@@ -1,4 +1,5 @@
 # Reference redesign
+- [x] Add H–M career and talent screens with real account activity counts, explicitly session-only example jobs/invitations/matching/exams, company role gate, consent preview and reports; verify admin interactions, four evidence/permission tests, and 375/768/1440px layouts. Real company sharing and recruiting integrations are not connected.
 - [ ] Fix shared navigation and page layouts at phone/tablet widths; verify no horizontal overflow.
 - [x] Add Community feed, persisted posts/comments/likes/saves, detail page and event registration; connect shared navigation.
 - [x] Redesign Pro with clearly marked illustrative career panels, membership-gated previews and preserved checkout.

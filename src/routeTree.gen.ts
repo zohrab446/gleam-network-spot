@@ -15,8 +15,12 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IletisimRouteImport } from './routes/iletisim'
 import { Route as MesafeliSatisRouteImport } from './routes/mesafeli-satis'
 import { Route as SifreSifirlaRouteImport } from './routes/sifre-sifirla'
+import { Route as AuthenticatedAdaylarRouteImport } from './routes/_authenticated.adaylar'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedDavetlerRouteImport } from './routes/_authenticated.davetler'
+import { Route as AuthenticatedIsIlanlariRouteImport } from './routes/_authenticated.is-ilanlari'
+import { Route as AuthenticatedKariyerRouteImport } from './routes/_authenticated.kariyer'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated.leaderboard'
 import { Route as AuthenticatedOgrenRouteImport } from './routes/_authenticated.ogren'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
@@ -25,9 +29,12 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedProjelerRouteImport } from './routes/_authenticated.projeler'
 import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated.rewards'
 import { Route as AuthenticatedSinavlarRouteImport } from './routes/_authenticated.sinavlar'
+import { Route as AuthenticatedSirketRouteImport } from './routes/_authenticated.sirket'
+import { Route as AuthenticatedSirketSinavlarRouteImport } from './routes/_authenticated.sirket-sinavlar'
 import { Route as AuthenticatedToplulukRouteImport } from './routes/_authenticated.topluluk'
 import { Route as AuthenticatedYarismalarRouteImport } from './routes/_authenticated.yarismalar'
 import { Route as ApiTestEndpointRouteImport } from './routes/api/test-endpoint'
+import { Route as AuthenticatedIsIlanlariJobIdRouteImport } from './routes/_authenticated.is-ilanlari_.$jobId'
 import { Route as AuthenticatedLessonLevelRouteImport } from './routes/_authenticated.lesson.$level'
 import { Route as AuthenticatedPaymentFailedRouteImport } from './routes/_authenticated.payment.failed'
 import { Route as AuthenticatedPaymentSuccessRouteImport } from './routes/_authenticated.payment.success'
@@ -64,6 +71,11 @@ const SifreSifirlaRoute = SifreSifirlaRouteImport.update({
   path: '/sifre-sifirla',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdaylarRoute = AuthenticatedAdaylarRouteImport.update({
+  id: '/adaylar',
+  path: '/adaylar',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -72,6 +84,21 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDavetlerRoute = AuthenticatedDavetlerRouteImport.update({
+  id: '/davetler',
+  path: '/davetler',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedIsIlanlariRoute = AuthenticatedIsIlanlariRouteImport.update({
+  id: '/is-ilanlari',
+  path: '/is-ilanlari',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedKariyerRoute = AuthenticatedKariyerRouteImport.update({
+  id: '/kariyer',
+  path: '/kariyer',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedLeaderboardRoute =
@@ -115,6 +142,17 @@ const AuthenticatedSinavlarRoute = AuthenticatedSinavlarRouteImport.update({
   path: '/sinavlar',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedSirketRoute = AuthenticatedSirketRouteImport.update({
+  id: '/sirket',
+  path: '/sirket',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSirketSinavlarRoute =
+  AuthenticatedSirketSinavlarRouteImport.update({
+    id: '/sirket-sinavlar',
+    path: '/sirket-sinavlar',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedToplulukRoute = AuthenticatedToplulukRouteImport.update({
   id: '/topluluk',
   path: '/topluluk',
@@ -130,6 +168,12 @@ const ApiTestEndpointRoute = ApiTestEndpointRouteImport.update({
   path: '/api/test-endpoint',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedIsIlanlariJobIdRoute =
+  AuthenticatedIsIlanlariJobIdRouteImport.update({
+    id: '/is-ilanlari_/$jobId',
+    path: '/is-ilanlari/$jobId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedLessonLevelRoute =
   AuthenticatedLessonLevelRouteImport.update({
     id: '/lesson/$level',
@@ -171,8 +215,12 @@ export interface FileRoutesByFullPath {
   '/iletisim': typeof IletisimRoute
   '/mesafeli-satis': typeof MesafeliSatisRoute
   '/sifre-sifirla': typeof SifreSifirlaRoute
+  '/adaylar': typeof AuthenticatedAdaylarRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/davetler': typeof AuthenticatedDavetlerRoute
+  '/is-ilanlari': typeof AuthenticatedIsIlanlariRoute
+  '/kariyer': typeof AuthenticatedKariyerRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/ogren': typeof AuthenticatedOgrenRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -181,9 +229,12 @@ export interface FileRoutesByFullPath {
   '/projeler': typeof AuthenticatedProjelerRoute
   '/rewards': typeof AuthenticatedRewardsRoute
   '/sinavlar': typeof AuthenticatedSinavlarRoute
+  '/sirket': typeof AuthenticatedSirketRoute
+  '/sirket-sinavlar': typeof AuthenticatedSirketSinavlarRoute
   '/topluluk': typeof AuthenticatedToplulukRoute
   '/yarismalar': typeof AuthenticatedYarismalarRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
+  '/is-ilanlari/$jobId': typeof AuthenticatedIsIlanlariJobIdRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
   '/payment/failed': typeof AuthenticatedPaymentFailedRoute
   '/payment/success': typeof AuthenticatedPaymentSuccessRoute
@@ -197,8 +248,12 @@ export interface FileRoutesByTo {
   '/iletisim': typeof IletisimRoute
   '/mesafeli-satis': typeof MesafeliSatisRoute
   '/sifre-sifirla': typeof SifreSifirlaRoute
+  '/adaylar': typeof AuthenticatedAdaylarRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/davetler': typeof AuthenticatedDavetlerRoute
+  '/is-ilanlari': typeof AuthenticatedIsIlanlariRoute
+  '/kariyer': typeof AuthenticatedKariyerRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/ogren': typeof AuthenticatedOgrenRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -207,9 +262,12 @@ export interface FileRoutesByTo {
   '/projeler': typeof AuthenticatedProjelerRoute
   '/rewards': typeof AuthenticatedRewardsRoute
   '/sinavlar': typeof AuthenticatedSinavlarRoute
+  '/sirket': typeof AuthenticatedSirketRoute
+  '/sirket-sinavlar': typeof AuthenticatedSirketSinavlarRoute
   '/topluluk': typeof AuthenticatedToplulukRoute
   '/yarismalar': typeof AuthenticatedYarismalarRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
+  '/is-ilanlari/$jobId': typeof AuthenticatedIsIlanlariJobIdRoute
   '/lesson/$level': typeof AuthenticatedLessonLevelRoute
   '/payment/failed': typeof AuthenticatedPaymentFailedRoute
   '/payment/success': typeof AuthenticatedPaymentSuccessRoute
@@ -225,8 +283,12 @@ export interface FileRoutesById {
   '/iletisim': typeof IletisimRoute
   '/mesafeli-satis': typeof MesafeliSatisRoute
   '/sifre-sifirla': typeof SifreSifirlaRoute
+  '/_authenticated/adaylar': typeof AuthenticatedAdaylarRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/davetler': typeof AuthenticatedDavetlerRoute
+  '/_authenticated/is-ilanlari': typeof AuthenticatedIsIlanlariRoute
+  '/_authenticated/kariyer': typeof AuthenticatedKariyerRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/ogren': typeof AuthenticatedOgrenRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -235,9 +297,12 @@ export interface FileRoutesById {
   '/_authenticated/projeler': typeof AuthenticatedProjelerRoute
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
   '/_authenticated/sinavlar': typeof AuthenticatedSinavlarRoute
+  '/_authenticated/sirket': typeof AuthenticatedSirketRoute
+  '/_authenticated/sirket-sinavlar': typeof AuthenticatedSirketSinavlarRoute
   '/_authenticated/topluluk': typeof AuthenticatedToplulukRoute
   '/_authenticated/yarismalar': typeof AuthenticatedYarismalarRoute
   '/api/test-endpoint': typeof ApiTestEndpointRoute
+  '/_authenticated/is-ilanlari_/$jobId': typeof AuthenticatedIsIlanlariJobIdRoute
   '/_authenticated/lesson/$level': typeof AuthenticatedLessonLevelRoute
   '/_authenticated/payment/failed': typeof AuthenticatedPaymentFailedRoute
   '/_authenticated/payment/success': typeof AuthenticatedPaymentSuccessRoute
@@ -253,8 +318,12 @@ export interface FileRouteTypes {
     | '/iletisim'
     | '/mesafeli-satis'
     | '/sifre-sifirla'
+    | '/adaylar'
     | '/admin'
     | '/dashboard'
+    | '/davetler'
+    | '/is-ilanlari'
+    | '/kariyer'
     | '/leaderboard'
     | '/ogren'
     | '/onboarding'
@@ -263,9 +332,12 @@ export interface FileRouteTypes {
     | '/projeler'
     | '/rewards'
     | '/sinavlar'
+    | '/sirket'
+    | '/sirket-sinavlar'
     | '/topluluk'
     | '/yarismalar'
     | '/api/test-endpoint'
+    | '/is-ilanlari/$jobId'
     | '/lesson/$level'
     | '/payment/failed'
     | '/payment/success'
@@ -279,8 +351,12 @@ export interface FileRouteTypes {
     | '/iletisim'
     | '/mesafeli-satis'
     | '/sifre-sifirla'
+    | '/adaylar'
     | '/admin'
     | '/dashboard'
+    | '/davetler'
+    | '/is-ilanlari'
+    | '/kariyer'
     | '/leaderboard'
     | '/ogren'
     | '/onboarding'
@@ -289,9 +365,12 @@ export interface FileRouteTypes {
     | '/projeler'
     | '/rewards'
     | '/sinavlar'
+    | '/sirket'
+    | '/sirket-sinavlar'
     | '/topluluk'
     | '/yarismalar'
     | '/api/test-endpoint'
+    | '/is-ilanlari/$jobId'
     | '/lesson/$level'
     | '/payment/failed'
     | '/payment/success'
@@ -306,8 +385,12 @@ export interface FileRouteTypes {
     | '/iletisim'
     | '/mesafeli-satis'
     | '/sifre-sifirla'
+    | '/_authenticated/adaylar'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
+    | '/_authenticated/davetler'
+    | '/_authenticated/is-ilanlari'
+    | '/_authenticated/kariyer'
     | '/_authenticated/leaderboard'
     | '/_authenticated/ogren'
     | '/_authenticated/onboarding'
@@ -316,9 +399,12 @@ export interface FileRouteTypes {
     | '/_authenticated/projeler'
     | '/_authenticated/rewards'
     | '/_authenticated/sinavlar'
+    | '/_authenticated/sirket'
+    | '/_authenticated/sirket-sinavlar'
     | '/_authenticated/topluluk'
     | '/_authenticated/yarismalar'
     | '/api/test-endpoint'
+    | '/_authenticated/is-ilanlari_/$jobId'
     | '/_authenticated/lesson/$level'
     | '/_authenticated/payment/failed'
     | '/_authenticated/payment/success'
@@ -382,6 +468,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SifreSifirlaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/adaylar': {
+      id: '/_authenticated/adaylar'
+      path: '/adaylar'
+      fullPath: '/adaylar'
+      preLoaderRoute: typeof AuthenticatedAdaylarRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -394,6 +487,27 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/davetler': {
+      id: '/_authenticated/davetler'
+      path: '/davetler'
+      fullPath: '/davetler'
+      preLoaderRoute: typeof AuthenticatedDavetlerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/is-ilanlari': {
+      id: '/_authenticated/is-ilanlari'
+      path: '/is-ilanlari'
+      fullPath: '/is-ilanlari'
+      preLoaderRoute: typeof AuthenticatedIsIlanlariRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/kariyer': {
+      id: '/_authenticated/kariyer'
+      path: '/kariyer'
+      fullPath: '/kariyer'
+      preLoaderRoute: typeof AuthenticatedKariyerRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/leaderboard': {
@@ -452,6 +566,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSinavlarRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/sirket': {
+      id: '/_authenticated/sirket'
+      path: '/sirket'
+      fullPath: '/sirket'
+      preLoaderRoute: typeof AuthenticatedSirketRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sirket-sinavlar': {
+      id: '/_authenticated/sirket-sinavlar'
+      path: '/sirket-sinavlar'
+      fullPath: '/sirket-sinavlar'
+      preLoaderRoute: typeof AuthenticatedSirketSinavlarRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/topluluk': {
       id: '/_authenticated/topluluk'
       path: '/topluluk'
@@ -472,6 +600,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/test-endpoint'
       preLoaderRoute: typeof ApiTestEndpointRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/is-ilanlari_/$jobId': {
+      id: '/_authenticated/is-ilanlari_/$jobId'
+      path: '/is-ilanlari/$jobId'
+      fullPath: '/is-ilanlari/$jobId'
+      preLoaderRoute: typeof AuthenticatedIsIlanlariJobIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/lesson/$level': {
       id: '/_authenticated/lesson/$level'
@@ -519,8 +654,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdaylarRoute: typeof AuthenticatedAdaylarRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDavetlerRoute: typeof AuthenticatedDavetlerRoute
+  AuthenticatedIsIlanlariRoute: typeof AuthenticatedIsIlanlariRoute
+  AuthenticatedKariyerRoute: typeof AuthenticatedKariyerRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedOgrenRoute: typeof AuthenticatedOgrenRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
@@ -529,8 +668,11 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProjelerRoute: typeof AuthenticatedProjelerRoute
   AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
   AuthenticatedSinavlarRoute: typeof AuthenticatedSinavlarRoute
+  AuthenticatedSirketRoute: typeof AuthenticatedSirketRoute
+  AuthenticatedSirketSinavlarRoute: typeof AuthenticatedSirketSinavlarRoute
   AuthenticatedToplulukRoute: typeof AuthenticatedToplulukRoute
   AuthenticatedYarismalarRoute: typeof AuthenticatedYarismalarRoute
+  AuthenticatedIsIlanlariJobIdRoute: typeof AuthenticatedIsIlanlariJobIdRoute
   AuthenticatedLessonLevelRoute: typeof AuthenticatedLessonLevelRoute
   AuthenticatedPaymentFailedRoute: typeof AuthenticatedPaymentFailedRoute
   AuthenticatedPaymentSuccessRoute: typeof AuthenticatedPaymentSuccessRoute
@@ -539,8 +681,12 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdaylarRoute: AuthenticatedAdaylarRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDavetlerRoute: AuthenticatedDavetlerRoute,
+  AuthenticatedIsIlanlariRoute: AuthenticatedIsIlanlariRoute,
+  AuthenticatedKariyerRoute: AuthenticatedKariyerRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedOgrenRoute: AuthenticatedOgrenRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
@@ -549,8 +695,11 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProjelerRoute: AuthenticatedProjelerRoute,
   AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
   AuthenticatedSinavlarRoute: AuthenticatedSinavlarRoute,
+  AuthenticatedSirketRoute: AuthenticatedSirketRoute,
+  AuthenticatedSirketSinavlarRoute: AuthenticatedSirketSinavlarRoute,
   AuthenticatedToplulukRoute: AuthenticatedToplulukRoute,
   AuthenticatedYarismalarRoute: AuthenticatedYarismalarRoute,
+  AuthenticatedIsIlanlariJobIdRoute: AuthenticatedIsIlanlariJobIdRoute,
   AuthenticatedLessonLevelRoute: AuthenticatedLessonLevelRoute,
   AuthenticatedPaymentFailedRoute: AuthenticatedPaymentFailedRoute,
   AuthenticatedPaymentSuccessRoute: AuthenticatedPaymentSuccessRoute,

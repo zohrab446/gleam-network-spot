@@ -20,3 +20,4 @@
 - Pro AI code analysis runs in a Pro-checked, fresh-Turnstile server function using a retention-policy-allowed gateway model; submitted code is only read by the model, never executed.
 - Roles live in public.user_roles (app_role enum) checked via has_role; admin-only writes (e.g. competitions) are enforced by RLS and a server-side has_role check, never client state.
 - Private project covers are readable by their owner or signed-in viewers only when referenced by that owner's project; this preserves profile images without exposing unattached uploads.
+- Career modules use real account evidence only as activity counts, never verified skill levels; disconnected jobs, invitations, matching and exams use an explicitly labelled session-only demo store with no real applications or profile sharing. Company screens require a database-backed company/admin role and never assign roles from browser state.
